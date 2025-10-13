@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Toast from "../lib/toast";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [offsetY, setOffsetY] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
 
@@ -79,6 +80,7 @@ export default function Login() {
 
       // Toast shows the success message
       Toast.success("Login successful!");
+      navigate("/dashboard");
     });
   };
 

@@ -36,38 +36,6 @@ export default function Navbar() {
           RentWise
         </h1>
 
-        {/* Desktop Nav Links (centered) */}
-        {user && (
-          <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 space-x-6 text-lg">
-            <NavLink
-              to="/properties"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 px-3 py-2 rounded-md ${
-                  isActive
-                    ? "text-blue-700 font-semibold border-b-2 border-blue-700"
-                    : "text-gray-700 hover:text-blue-700 transition duration-300"
-                }`
-              }
-            >
-              <FaBuilding className="w-5 h-5" />
-              <span>Properties</span>
-            </NavLink>
-            <NavLink
-              to="/analytics"
-              className={({ isActive }) =>
-                `flex items-center space-x-2 px-3 py-2 rounded-md ${
-                  isActive
-                    ? "text-blue-700 font-semibold border-b-2 border-blue-700"
-                    : "text-gray-700 hover:text-blue-700 transition duration-300"
-                }`
-              }
-            >
-              <FaChartBar className="w-5 h-5" />
-              <span>Analytics</span>
-            </NavLink>
-          </div>
-        )}
-
         {/* Desktop User Actions fixed right */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
@@ -135,35 +103,6 @@ export default function Navbar() {
             exit="exit"
             className="md:hidden origin-top bg-white shadow-lg w-full flex flex-col space-y-4 py-6 px-6 rounded-b-xl border-t border-gray-200 overflow-hidden"
           >
-            {user && (
-              <>
-                <NavLink
-                  to="/properties"
-                  className={({ isActive }) =>
-                    `flex items-center space-x-3 px-4 py-4 rounded-md ${
-                      isActive ? "bg-blue-100 text-blue-700" : "hover:bg-blue-50"
-                    } transition`
-                  }
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <FaBuilding className="w-5 h-5" />
-                  <span>Properties</span>
-                </NavLink>
-                <NavLink
-                  to="/analytics"
-                  className={({ isActive }) =>
-                    `flex items-center space-x-3 px-4 py-4 rounded-md ${
-                      isActive ? "bg-blue-100 text-blue-700" : "hover:bg-blue-50"
-                    } transition`
-                  }
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <FaChartBar className="w-5 h-5" />
-                  <span>Analytics</span>
-                </NavLink>
-              </>
-            )}
-
             <div className="flex flex-col space-y-4 mt-2">
               {user ? (
                 <>
