@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 const { ObjectId } = require('mongodb');
 dotenv.config();
+const validation = require('../utils/validation');
 
 function toObjectId(id) {
   if (id instanceof ObjectId) return id;
@@ -24,6 +25,12 @@ async function register(data){
     if(!email || !password){
         throw new Error("Please provide all required fields");
     }
+
+    validation.sanitizeInput(email);
+    validation.sanitizeInput(password);
+
+    validation.validateEmail(email);
+    validation.validatePassword(password);
 
     //check if user already exists
     const existingUser = await systemUsers.findOne({ email: email });
@@ -69,6 +76,12 @@ async function login(data){
         if(!email || !password){
             throw new Error("Please provide all required fields");
         }
+
+        validation.sanitizeInput(email);
+        validation.sanitizeInput(password);
+
+        validation.validateEmail(email);
+        validation.validatePassword(password);
 
         //check if user exists
         const user = await systemUsers.findOne({ email: email });
