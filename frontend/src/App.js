@@ -1,8 +1,12 @@
-import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import Home from './components/Home.js';
-import Navbar from './components/Navbar.js';
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer, Slide } from "react-toastify";
+import Home from "./components/Home.js";
+import Navbar from "./components/Navbar.js";
+import Login from "./components/Login.js";
+import Register from "./components/Register.js";
+import ForgotPassword from "./components/ForgotPassword.js";
+import ResetPassword from "./components/PasswordReset.js";
 
 function App() {
   return (
@@ -10,8 +14,14 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
-      <ToastContainer />
+      <ToastContainer
+        theme="colored"
+      />
     </Router>
   );
 }
