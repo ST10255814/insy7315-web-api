@@ -17,6 +17,18 @@ app.get('/', (req, res) => {
 // Connect to MongoDB
 connectMongo();
 
+//cookie parser middleware
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true, // Allow cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 //controller declarations
 const userController = require('./Controllers/userController');
 
