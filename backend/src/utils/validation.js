@@ -19,37 +19,161 @@ const jsEventPattern = /on\w+=".*?"/g;
 const jsProtocolPattern = /javascript:/i;
 const dataProtocolPattern = /data:text\/html/i;
 
-// Profanity filter list
+// Enhanced profanity filter list
 const profanityList = [
     // Common profanity
-    'fuck', 'shit', 'damn', 'bitch', 'ass', 'hell', 'crap', 'piss',
-    'bastard', 'whore', 'slut', 'fag', 'retard', 'stupid',
-    'idiot', 'moron', 'dumb', 'hate', 'kill', 'die', 'death',
-    // Inappropriate sexual content
-    'sex', 'porn', 'xxx', 'nude', 'naked', 'penis', 'vagina',
-    'boobs', 'tits', 'cock', 'dick', 'pussy', 'anal',
+    'fuck', 'fck', 'fuk', 'feck', 'phuck', 'fucc', 'fuckin', 'fucking',
+    'shit', 'sht', 'shyt', 'shite', 'crap', 'poop',
+    'damn', 'damm', 'dammit', 'damnit',
+    'bitch', 'btch', 'bych', 'biatch', 'beotch',
+    'ass', 'arse', 'butt', 'butthole', 'asshole', 'arsehole',
+    'hell', 'heck', 'piss', 'pissed', 'pissing',
+    'bastard', 'bstrd', 'basterd',
+    
+    // Sexual content - explicit
+    'whore', 'slut', 'slutty', 'hoe', 'hooker', 'prostitute',
+    'sex', 'sexy', 'porn', 'porno', 'pornography', 'xxx',
+    'nude', 'naked', 'strip', 'stripper',
+    'penis', 'cock', 'dick', 'prick', 'schlong', 'wang',
+    'vagina', 'pussy', 'cunt', 'twat', 'snatch',
+    'boobs', 'tits', 'titties', 'breasts', 'nipples',
+    'anal', 'anus', 'buttocks', 'orgasm', 'climax',
+    'masturbate', 'jerkoff', 'handjob', 'blowjob',
+    'suck', 'sucking', 'lick', 'licking',
+    
     // Hate speech and discriminatory terms
-    'nazi', 'hitler', 'racist', 'nigger', 'faggot', 'terrorist',
-    // Drug-related
-    'weed', 'cocaine', 'heroin', 'meth', 'drugs', 'dealer',
-    // Violence-related
-    'murder', 'rape', 'abuse', 'violence', 'weapon', 'bomb',
-    // Common variations and leetspeak
-    'f*ck', 'sh*t', 'b*tch', 'a$$', 'h3ll', 'cr@p',
-    '4ss', 'h4te', 'k1ll', 'd1e', 's3x', 'p0rn'
+    'nazi', 'hitler', 'fascist', 'racist', 'racism',
+    'nigger', 'nigga', 'negro', 'coon',
+    'faggot', 'fag', 'homo', 'queer', 'dyke',
+    'terrorist', 'jihad', 'taliban',
+    'retard', 'retarded', 'spastic', 'autistic',
+    
+    // Violence and threats
+    'kill', 'murder', 'die', 'death', 'dead', 'suicide',
+    'rape', 'raping', 'molest', 'abuse', 'beat',
+    'violence', 'violent', 'weapon', 'gun', 'knife',
+    'bomb', 'explosive', 'terror', 'attack',
+    'hate', 'hatred', 'enemy',
+    
+    // Drugs and substances
+    'weed', 'marijuana', 'cannabis', 'pot', 'dope',
+    'cocaine', 'coke', 'crack', 'heroin', 'meth',
+    'drugs', 'dealer', 'addict', 'junkie',
+    'ecstasy', 'lsd', 'acid', 'molly',
+    
+    // Insults and derogatory terms
+    'stupid', 'idiot', 'moron', 'dumb', 'dumbass',
+    'loser', 'failure', 'worthless', 'pathetic',
+    'ugly', 'fat', 'skinny', 'freak',
+    
+    // Leetspeak and symbol variations
+    'f*ck', 'f**k', 'f***', 'fvck', 'phuk',
+    'sh*t', 'sh!t', 'sht', 'shyt',
+    'b*tch', 'b!tch', 'bytch',
+    'a$$', 'a**', '4ss', '455',
+    'h3ll', 'h311', 'h@te', 'h4te',
+    'k1ll', 'k!ll', 'ki11',
+    'd1e', 'd!e', 'di3',
+    's3x', 's@x', 'se><',
+    'p0rn', 'p@rn', 'pr0n',
+    'd1ck', 'd!ck', 'dik', 'dck',
+    'c0ck', 'c@ck', 'cok',
+    'pu$$y', 'pus5y', 'p*ssy',
+    
+    // Admin/system impersonation
+    'admin', 'administrator', 'root', 'system', 'mod', 'moderator',
+    'support', 'staff', 'employee', 'manager', 'owner', 'founder'
 ];
 
-// Function to check if text contains profanity
+// Enhanced character substitution mappings for leetspeak detection
+const leetspeakMap = {
+    '0': 'o',
+    '1': 'i',
+    '3': 'e',
+    '4': 'a',
+    '5': 's',
+    '7': 't',
+    '8': 'b',
+    '@': 'a',
+    '$': 's',
+    '!': 'i',
+    '+': 't',
+    '<': 'c',
+    '>': 'c',
+    '|': 'l',
+    '()': 'o',
+    '[]': 'o'
+};
+
+// Function to normalize text by removing separators and converting leetspeak
+function normalizeText(text) {
+    if (!text || typeof text !== 'string') return '';
+    
+    let normalized = text.toLowerCase();
+    
+    // Remove common separators and special characters
+    normalized = normalized.replace(/[_\-\.~`!@#$%^&*()+=\[\]{}|\\:";'<>?,/\s]/g, '');
+    
+    // Convert leetspeak
+    for (const [leet, normal] of Object.entries(leetspeakMap)) {
+        const regex = new RegExp(leet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        normalized = normalized.replace(regex, normal);
+    }
+    
+    // Remove repeated characters (like "heeelllloooo" -> "helo")
+    normalized = normalized.replace(/(.)\1{2,}/g, '$1');
+    
+    return normalized;
+}
+
+// Enhanced function to check if text contains profanity
 function containsProfanity(text) {
     if (!text || typeof text !== 'string') {
         return false;
     }
     
     const lowerText = text.toLowerCase();
+    const normalizedText = normalizeText(text);
     
-    // Check against profanity list
+    // Check against profanity list - both original and normalized text
     for (const word of profanityList) {
+        const normalizedWord = normalizeText(word);
+        
+        // Check direct matches in original text
         if (lowerText.includes(word.toLowerCase())) {
+            return true;
+        }
+        
+        // Check matches in normalized text (catches leetspeak and separators)
+        if (normalizedText.includes(normalizedWord)) {
+            return true;
+        }
+        
+        // Check for partial matches with word boundaries
+        const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (wordRegex.test(lowerText)) {
+            return true;
+        }
+        
+        // Check normalized version with word boundaries
+        const normalizedRegex = new RegExp(`\\b${normalizedWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (normalizedRegex.test(normalizedText)) {
+            return true;
+        }
+    }
+    
+    // Additional pattern checks for common bypass attempts
+    const bypassPatterns = [
+        /i[\W_]*suck[\W_]*d[\W_]*[i1][\W_]*[ck]/i, // "I_Suck_D1ck" and variations
+        /suck[\W_]*[md][\W_]*[yi1][\W_]*[ck]/i,    // "suck_my_dick" variations
+        /f[\W_]*u[\W_]*c[\W_]*k[\W_]*y[\W_]*o[\W_]*u/i, // "f_u_c_k_y_o_u" variations
+        /go[\W_]*to[\W_]*hell/i,                    // "go_to_hell" variations
+        /kiss[\W_]*[md][\W_]*[yi1][\W_]*a[\W_]*[sz]/i, // "kiss_my_ass" variations
+        /eat[\W_]*[sz][\W_]*h[\W_]*[i1][\W_]*t/i,   // "eat_shit" variations
+    ];
+    
+    for (const pattern of bypassPatterns) {
+        if (pattern.test(text)) {
             return true;
         }
     }
@@ -118,30 +242,6 @@ function sanitizeInput(input) {
     return sanitizer.sanitize(input);
 }
 
-// Debug function to test email validation step by step
-function debugEmailValidation(email) {
-    console.log(`\n=== DEBUG EMAIL VALIDATION: ${email} ===`);
-    
-    const formatTest = emailPattern.test(email);
-    console.log(`1. Format test: ${formatTest}`);
-    
-    const xssTest = !(xssPattern.test(email) || htmlTagPattern.test(email) || jsEventPattern.test(email) || jsProtocolPattern.test(email) || dataProtocolPattern.test(email));
-    console.log(`2. XSS test passed: ${xssTest}`);
-    
-    const noSqlTest = !noSqlInjectionPattern.test(email);
-    console.log(`3. NoSQL injection test passed: ${noSqlTest}`);
-    
-    const localPart = email.split('@')[0];
-    const profanityTest = !containsProfanity(localPart);
-    console.log(`4. Profanity test passed (local part: ${localPart}): ${profanityTest}`);
-    
-    const overall = validateEmail(email);
-    console.log(`5. Overall result: ${overall}`);
-    console.log(`=== END DEBUG ===\n`);
-    
-    return overall;
-}
-
 module.exports = {
     validateEmail,
     validatePassword,
@@ -149,5 +249,4 @@ module.exports = {
     validateFullname,
     containsProfanity,
     sanitizeInput,
-    debugEmailValidation
 };
