@@ -1,5 +1,5 @@
 import { client } from '../utils/db.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb';
@@ -148,4 +148,5 @@ async function login(data){
     }
 }
 
-module.exports = { register, login};
+const userService = { register, login };
+export default userService;

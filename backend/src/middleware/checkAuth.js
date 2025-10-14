@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { client } from '../utils/db.js';
 import { ObjectId } from 'mongodb';
-import { setTokenCookie, clearTokenCookie } from '../utils/cookieUtils.js';
+import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
 dotenv.config();
 
 function toObjectId(id) {
@@ -57,21 +57,4 @@ const checkAuth = async (req, res, next) => {
   }
 };
 
-/**
- * Helper function to set authentication token in cookie
- * @param {Object} res - Express response object
- * @param {string} token - JWT token to store
- */
-const setAuthCookie = (res, token) => {
-  setTokenCookie(res, token);
-};
-
-/**
- * Helper function to clear authentication cookie
- * @param {Object} res - Express response object
- */
-const clearAuthCookie = (res) => {
-  clearTokenCookie(res);
-};
-
-module.exports = { checkAuth, setAuthCookie, clearAuthCookie };
+export { checkAuth };

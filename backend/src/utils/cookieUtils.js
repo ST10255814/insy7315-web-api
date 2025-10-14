@@ -8,7 +8,7 @@
  * @param {string} token - JWT token to store
  * @param {Object} options - Cookie options
  */
-const setTokenCookie = (res, token, options = {}) => {
+export const setAuthCookie = (res, token, options = {}) => {
   const defaultOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
@@ -26,16 +26,11 @@ const setTokenCookie = (res, token, options = {}) => {
  * Clear authentication cookie
  * @param {Object} res - Express response object
  */
-const clearTokenCookie = (res) => {
+export const clearAuthCookie = (res) => {
   res.clearCookie('authToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
   });
-};
-
-module.exports = {
-  setTokenCookie,
-  clearTokenCookie,
 };

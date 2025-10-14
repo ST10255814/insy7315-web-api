@@ -2,7 +2,7 @@ import userService from '../Services/userService.js';
 import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
 
 //controller to handle user registration
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
     try{
         const result = await userService.register(req.body);
         res.status(201).json({ message: "User registered successfully", user: result });
@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 }
 
 //controller to handle user login
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
     try{
         const result = await userService.login(req.body);
         
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
 }
 
 //controller to handle user logout
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
     try {
         // Clear the authentication cookie
         clearAuthCookie(res);
@@ -42,3 +42,11 @@ exports.logout = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 }
+
+const userController = {
+    register,
+    login,
+    logout
+};
+
+export default userController;

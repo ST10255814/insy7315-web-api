@@ -64,7 +64,7 @@ function containsExplicitProfanity(text) {
 }
 
 //function to validate email against attacks and proper format
-function validateEmail(email) {
+export function validateEmail(email) {
     // First check basic format
     if (!emailPattern.test(email)) {
         return false;
@@ -91,7 +91,7 @@ function validateEmail(email) {
 }
 
 //function to validate password
-function validatePassword(password) {
+export function validatePassword(password) {
     if (containsExplicitProfanity(password)) {
         return false;
     } else if (noSqlInjectionPattern.test(password) || xssPattern.test(password) || htmlTagPattern.test(password) || jsEventPattern.test(password) || jsProtocolPattern.test(password) || dataProtocolPattern.test(password)) {
@@ -102,7 +102,7 @@ function validatePassword(password) {
 }
 
 //function to validate username
-function validateUsername(username) {
+export function validateUsername(username) {
     if(containsExplicitProfanity(username)){
         return false;
     }else if(noSqlInjectionPattern.test(username) || xssPattern.test(username) || htmlTagPattern.test(username) || jsEventPattern.test(username) || jsProtocolPattern.test(username) || dataProtocolPattern.test(username)) {
@@ -112,7 +112,7 @@ function validateUsername(username) {
 }
 
 //function to validate fullname
-function validateFullname(fullname) {
+export function validateFullname(fullname) {
     if(containsExplicitProfanity(fullname)){
         return false;
     }else if(noSqlInjectionPattern.test(fullname) || xssPattern.test(fullname) || htmlTagPattern.test(fullname) || jsEventPattern.test(fullname) || jsProtocolPattern.test(fullname) || dataProtocolPattern.test(fullname)) {
@@ -122,14 +122,6 @@ function validateFullname(fullname) {
 }
 
 //function to sanitize input strings
-function sanitizeInput(input) {
+export function sanitizeInput(input) {
     return sanitizer.sanitize(input);
 }
-
-module.exports = {
-    validateEmail,
-    validatePassword,
-    validateUsername,
-    validateFullname,
-    sanitizeInput,
-};

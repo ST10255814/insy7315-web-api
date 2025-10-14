@@ -1,8 +1,8 @@
 import express from "express";
 const app = express();
 import path from "path";
-import { connectMongo } from './utils/db';
-import { checkAuth } from './middleware/checkAuth';
+import { mongoConnection } from './utils/db.js';
+import { checkAuth } from './middleware/checkAuth.js';
 import cors from 'cors'; 
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -34,11 +34,11 @@ app.get('/', (req, res) => {
 });
 
 // Connect to MongoDB
-connectMongo();
+mongoConnection();
 
 //controller declarations
-const userController = require('./Controllers/userController');
-const { arcjetMiddleware } = require('./middleware/arcjet.middleware');
+import userController from './Controllers/userController.js';
+import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
 
 //user routes
 app.post('/api/user/login', arcjetMiddleware, userController.login);
