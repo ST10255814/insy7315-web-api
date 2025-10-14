@@ -1,6 +1,5 @@
 import express from "express";
 const app = express();
-import path from "path";
 import { client, mongoConnection } from './utils/db.js';
 import { checkAuth } from './middleware/checkAuth.js';
 import cors from 'cors';
@@ -8,8 +7,6 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 dotenv.config();
-
-const __dirname = path.resolve();
 
 const PORT = process.env.PORT || 5000;
 
@@ -50,6 +47,11 @@ mongoConnection();
 //controller declarations
 import userController from './Controllers/userController.js';
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
+
+// Test route
+app.get('/', (_, res) => {
+  res.json({ message: 'API is running!' });
+});
 
 //user routes
 app.post('/api/user/login', arcjetMiddleware, userController.login);
