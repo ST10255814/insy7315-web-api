@@ -3,17 +3,16 @@ const app = express();
 const { connectMongo } = require('./utils/db');
 const { checkAuth } = require('./utils/checkAuth');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Parse JSON bodies
 
-//cookie parser middleware
-const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 //helmet for security headers
-const helmet = require('helmet');
 app.use(helmet());
 
 // CORS configuration - MUST be before routes
