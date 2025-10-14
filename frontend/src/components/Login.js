@@ -44,7 +44,7 @@ export default function Login() {
 
     if (userEmail && userFullname) {
       try {
-        const response = await api.post("/api/user/forgot-password", {
+          await api.post("/api/user/forgot-password", {
           email: userEmail.toLowerCase(),
           name: userFullname,
         });
