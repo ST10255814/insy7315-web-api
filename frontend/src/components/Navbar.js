@@ -11,6 +11,8 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import Toast from "../lib/toast.js";
+import api from "../lib/axios.js";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -18,6 +20,17 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
+
+  const handleLogout = async () => {
+    try {
+      const res = await api.post("/api/user/logout", {}, { withCredentials: true });
+      Toast.success(res.data.message);
+      localStorage.removeItem("user");
+      navigate("/login");
+    } catch (err) {
+      Toast.error(err.response?.data?.error || "Logout failed");
+    }
+  };
 
   const menuVariants = {
     hidden: { opacity: 0, scaleY: 0, transformOrigin: "top" },
@@ -44,7 +57,8 @@ export default function Navbar() {
                 <FaUserCircle className="text-blue-700 text-2xl" />
                 <span>Welcome, {user}</span>
               </span>
-              <button className="flex items-center space-x-2 px-5 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-transform transform hover:scale-105">
+              <button className="flex items-center space-x-2 px-5 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-transform transform hover:scale-105"
+                onClick={handleLogout}>
                 <FaSignOutAlt />
                 <span>Logout</span>
               </button>
@@ -110,7 +124,8 @@ export default function Navbar() {
                     <FaUserCircle className="text-blue-700 text-2xl" />
                     <span>Welcome, {user}</span>
                   </span>
-                  <button className="flex items-center space-x-3 px-4 py-4 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
+                  <button className="flex items-center space-x-3 px-4 py-4 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition"
+                    onClick={handleLogout}>
                     <FaSignOutAlt />
                     <span>Logout</span>
                   </button>
