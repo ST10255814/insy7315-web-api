@@ -124,6 +124,10 @@ async function login(data){
             var user = await systemUsers.findOne({ username: prefLogin});
         }
 
+        if(!user){
+            throw new Error("Invalid email or password");
+        }
+
         //compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
