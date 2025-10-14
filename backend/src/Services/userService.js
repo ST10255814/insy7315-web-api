@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { ObjectId } from 'mongodb';
 dotenv.config();
 import * as validation from '../utils/validation.js';
+import { sendResetPasswordEmail } from '../emails/emailHandler.js';
 
 function toObjectId(id) {
   if (id instanceof ObjectId) return id;
@@ -148,5 +149,20 @@ async function login(data){
     }
 }
 
-const userService = { register, login };
+async function resetPassword(data) {
+    try {
+        const { email, name } = data;
+
+        if(!email || !name) {
+            throw new Error("No email was found");
+        }
+
+        // Send password reset email
+        await sendResetPasswordEmail(email, name, process.env.CLIENT_URL);
+    } catch (err) {
+        throw new Error("Failed to send reset email: " + err.message);
+    }
+}
+
+const userService = { register, login, resetPassword };
 export default userService;
