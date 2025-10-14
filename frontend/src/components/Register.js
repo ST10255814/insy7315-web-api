@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Toast from "../lib/toast.js";
+import api from "../lib/axios.js";
 
 export default function Register() {
   const [offsetY, setOffsetY] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -15,7 +17,6 @@ export default function Register() {
     password: "",
     confirmPassword: "",
     showPassword: false,
-    showConfirmPassword: false,
     errors: {},
     isLoading: false,
     registerText: "Register",
@@ -43,16 +44,15 @@ export default function Register() {
     setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Form validation
     const newErrors = {};
     if (!formData.username) newErrors.username = "Username is required";
     if (!formData.fullName) newErrors.fullName = "Full name is required";
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.password) newErrors.password = "Passwords are required";
-    if (!formData.confirmPassword)
-      newErrors.confirmPassword = "Passwords are required";
     if (formData.password && formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
 
@@ -64,6 +64,7 @@ export default function Register() {
       return;
     }
 
+    // Start loading animation
     setFormData((prev) => ({
       ...prev,
       errors: {},
@@ -71,12 +72,27 @@ export default function Register() {
       registerText: "Registering",
     }));
 
-    // Simulate API call
-    new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-      setFormData((prev) => ({
-        ...prev,
-        registerText: "Register",
-        isLoading: false,
+    // Wait for button tap animation to finish
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      // Call registration API
+      const response = await api.post("/api/user/register", {
+        username: formData.username,
+        fullname: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // Only set localStorage if successful
+      if (response.data && response.data.user) {
+        localStorage.setItem("userEmail", response.data.user.email);
+      }
+
+      Toast.success(response.data.message);
+
+      // Reset form immediately
+      setFormData({
         username: "",
         fullName: "",
         email: "",
@@ -85,9 +101,27 @@ export default function Register() {
         showPassword: false,
         showConfirmPassword: false,
         errors: {},
+        isLoading: false,
+        registerText: "Register",
+      });
+
+      // Navigate to login after a short delay
+      setTimeout(() => navigate("/login"), 500);
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || "Registration failed";
+      console.log("Registration error:", errorMsg);
+
+      setFormData((prev) => ({
+        ...prev,
+        isLoading: false,
+        registerText: "Register",
       }));
-      Toast.success("Registration successful!");
-    });
+
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 600);
+
+      Toast.error(errorMsg);
+    }
   };
 
   const shakeAnimation = {
