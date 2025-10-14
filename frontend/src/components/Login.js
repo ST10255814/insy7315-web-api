@@ -46,7 +46,7 @@ export default function Login() {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.prefLogin) newErrors.email = "Email is required";
+    if (!formData.prefLogin) newErrors.prefLogin = "Email or username is required";
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password && formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";

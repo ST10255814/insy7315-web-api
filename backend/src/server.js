@@ -1,5 +1,4 @@
 import express from "express";
-const app = express();
 import { client, mongoConnection } from './utils/db.js';
 import { checkAuth } from './middleware/checkAuth.js';
 import cors from 'cors';
@@ -9,8 +8,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
+const app = express();
 
 app.use(express.json()); // Parse JSON bodies
+
+app.set('trust proxy', true);
 
 app.use(cookieParser());
 
