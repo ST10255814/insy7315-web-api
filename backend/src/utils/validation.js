@@ -2,7 +2,7 @@
 //This class will make use of regex to validate inputs
 //it will be used in the services before any database operations are performed
 
-const sanitizere = require('sanitizer');
+const sanitizer = require('sanitizer');
 
 //regex patterns for validation
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

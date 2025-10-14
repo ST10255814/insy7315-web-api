@@ -18,7 +18,7 @@ async function register(data){
         const db = client.db('RentWise');
     const systemUsers = db.collection('System-Users');
 
-    const {email, password, username, fullname, role} = data;
+    const {email, password, username, fullname} = data;
 
     //check if all fields are provided
     if(!email || !password || !username || !fullname){
@@ -46,7 +46,7 @@ async function register(data){
     const hashedPassword = await bcrypt.hash(password, salt);
 
     //assign default role value
-    role = 'landlord';
+    const role = 'landlord';
 
     //create new user
     const newUser = {
