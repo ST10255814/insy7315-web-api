@@ -99,7 +99,7 @@ async function login(data){
             throw new Error("Please provide all required fields");
         }
 
-        validation.sanitizeInput(prefLoginq);
+        validation.sanitizeInput(prefLogin);
         validation.sanitizeInput(password);
 
         //validate email/username
