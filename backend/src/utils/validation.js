@@ -258,7 +258,10 @@ function validatePassword(password) {
         return false;
     } else if (noSqlInjectionPattern.test(password) || xssPattern.test(password) || htmlTagPattern.test(password) || jsEventPattern.test(password) || jsProtocolPattern.test(password) || dataProtocolPattern.test(password)) {
         return false;
+    }else if (containsExplicitProfanity(password)) {
+        return false;
     }
+    
     return passwordPattern.test(password);
 }
 
