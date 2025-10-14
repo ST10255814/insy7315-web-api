@@ -17,20 +17,23 @@ async function register(data){
     try{
         const db = client.db('RentWise');
     const systemUsers = db.collection('System-Users');
-    const userSettings = db.collection('User-Settings');
 
-    const {email, password, role} = data;
+    const {email, password, username, fullname, role} = data;
 
     //check if all fields are provided
-    if(!email || !password){
+    if(!email || !password || !username || !fullname){
         throw new Error("Please provide all required fields");
     }
 
     validation.sanitizeInput(email);
     validation.sanitizeInput(password);
+    validation.sanitizeInput(username);
+    validation.sanitizeInput(fullname);
 
     validation.validateEmail(email);
     validation.validatePassword(password);
+    validation.validateUsername(username);
+    validation.validateFullname(fullname);
 
     //check if user already exists
     const existingUser = await systemUsers.findOne({ email: email });
@@ -49,6 +52,8 @@ async function register(data){
     const newUser = {
         email: email,
         password: hashedPassword,
+        username: username,
+        fullname: fullname,
         role: role, //default value when registering on the website
         createdAt: new Date(),
         updatedAt: new Date()
@@ -56,7 +61,6 @@ async function register(data){
 
     //insert new user into database
     await systemUsers.insertOne(newUser);
-    await userSettings.insertOne({ userId: newUser._id, settings: {} });
 
     return { email: newUser.email, createdAt: newUser.createdAt };
     }
@@ -97,7 +101,7 @@ async function login(data){
 
         //create and sign JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email, role: user.role },
+            { userId: user._id, fullname: user.fullname, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );

@@ -4,7 +4,7 @@ const { connectMongo } = require('./utils/db');
 const { checkAuth } = require('./utils/checkAuth');
 const cors = require('cors');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Parse JSON bodies
 app.use(cors()) // Enable CORS for all routes
