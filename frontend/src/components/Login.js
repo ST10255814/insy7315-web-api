@@ -55,6 +55,9 @@ export default function Login() {
         Toast.error(errorMsg);
       }
     }
+    else{
+      Toast.error("No account registered with us. Please register first.");
+    }
   };
 
   const togglePassword = () => {
