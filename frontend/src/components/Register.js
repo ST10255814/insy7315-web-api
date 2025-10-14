@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Toast from "../lib/toast.js";
@@ -8,6 +8,7 @@ import api from "../lib/axios.js";
 export default function Register() {
   const [offsetY, setOffsetY] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -103,6 +104,9 @@ export default function Register() {
         isLoading: false,
         registerText: "Register",
       });
+
+      // Navigate to login after a short delay
+      setTimeout(() => navigate("/login"), 500);
     } catch (error) {
       const errorMsg = error.response?.data?.error || "Registration failed";
       console.log("Registration error:", errorMsg);
