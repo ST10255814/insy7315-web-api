@@ -5,7 +5,7 @@
 const sanitizer = require('sanitizer');
 
 //regex patterns for validation
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //simple email regex
 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //minimum 8 characters, at least one letter and one number
 const usernamePattern = /^[a-zA-Z0-9_]{6,30}$/; //alphanumeric and underscores, 3-30 characters
 

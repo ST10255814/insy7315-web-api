@@ -30,10 +30,10 @@ async function register(data){
     validation.sanitizeInput(username);
     validation.sanitizeInput(fullname);
 
-    validation.validateEmail(email);
-    validation.validatePassword(password);
-    validation.validateUsername(username);
-    validation.validateFullname(fullname);
+    validation.validateEmail(email.toLowerCase());
+    validation.validatePassword(password.toLowerCase());
+    validation.validateUsername(username.toLowerCase());
+    validation.validateFullname(fullname.toLowerCase());
 
     //check if user already exists
     const existingUser = await systemUsers.findOne({ email: email });
