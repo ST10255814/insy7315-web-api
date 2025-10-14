@@ -123,7 +123,7 @@ async function login(data){
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
-        return { token };
+        return { token, user };
 
     }
     catch(err){
