@@ -6,6 +6,7 @@ import Toast from "../lib/toast";
 
 export default function Login() {
   const navigate = useNavigate();
+  const userEmail = JSON.parse(localStorage.getItem("userEmail"));
   const [offsetY, setOffsetY] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
 
@@ -250,7 +251,7 @@ export default function Login() {
         >
           <Link
             to={formData.email ? "/forgot-password" : "#"} // navigate only if email is filled
-            state={{ email: formData.email }} 
+            state={{ email: userEmail }} 
             onClick={(e) => {
               if (!formData.email) {
                 e.preventDefault(); // prevent navigation
