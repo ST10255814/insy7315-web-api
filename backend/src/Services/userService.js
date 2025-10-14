@@ -32,8 +32,6 @@ async function register(data){
 
     // Validate inputs and throw errors if validation fails
     if (!validation.validateEmail(email.toLowerCase())) {
-        // Debug the email validation
-        validation.debugEmailValidation(email.toLowerCase());
         throw new Error("Invalid email format or contains inappropriate content");
     }
     
