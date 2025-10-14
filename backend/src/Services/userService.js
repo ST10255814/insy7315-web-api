@@ -131,4 +131,4 @@ async function login(data){
     }
 }
 
-module.exports = { register, login, logout };
+module.exports = { register, login};
