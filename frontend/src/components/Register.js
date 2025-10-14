@@ -86,7 +86,7 @@ export default function Register() {
 
       // Only set localStorage if successful
       if (response.data && response.data.user) {
-        localStorage.setItem("userEmail", response.data.user.email);
+        localStorage.setItem("userEmail", JSON.stringify(response.data.user.email));
       }
 
       Toast.success(response.data.message);
