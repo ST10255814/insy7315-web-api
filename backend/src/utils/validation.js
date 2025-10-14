@@ -5,12 +5,12 @@
 const sanitizer = require('sanitizer');
 
 //regex patterns for validation
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //simple email regex
+const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/; //comprehensive email regex
 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //minimum 8 characters, at least one letter and one number
 const usernamePattern = /^[a-zA-Z0-9_]{6,30}$/; //alphanumeric and underscores, 3-30 characters
 
-//patterns to protect against NoSQL injection
-const noSqlInjectionPattern = /[$.]/;
+//patterns to protect against NoSQL injection (excluding dot for emails)
+const noSqlInjectionPattern = /[\$]/; // Only block $ symbol, allow dots for emails
 
 //common patterns to protect against XSS
 const xssPattern = /<script.*?>.*?<\/script.*?>/i;
@@ -59,12 +59,28 @@ function containsProfanity(text) {
 
 //function to validate email against attacks and proper format
 function validateEmail(email) {
-    if (containsProfanity(email)) {
-        return false;
-    } else if (noSqlInjectionPattern.test(email) || xssPattern.test(email) || htmlTagPattern.test(email) || jsEventPattern.test(email) || jsProtocolPattern.test(email) || dataProtocolPattern.test(email)) {
+    // First check basic format
+    if (!emailPattern.test(email)) {
         return false;
     }
-    return emailPattern.test(email);
+    
+    // Check for XSS patterns (but not profanity in email addresses)
+    if (xssPattern.test(email) || htmlTagPattern.test(email) || jsEventPattern.test(email) || jsProtocolPattern.test(email) || dataProtocolPattern.test(email)) {
+        return false;
+    }
+    
+    // Check for NoSQL injection (only $ symbol, not dots)
+    if (noSqlInjectionPattern.test(email)) {
+        return false;
+    }
+    
+    // Only check profanity in the local part (before @), not the domain
+    const localPart = email.split('@')[0];
+    if (containsProfanity(localPart)) {
+        return false;
+    }
+    
+    return true;
 }
 
 //function to validate password
@@ -101,11 +117,37 @@ function validateFullname(fullname) {
 function sanitizeInput(input) {
     return sanitizer.sanitize(input);
 }
+
+// Debug function to test email validation step by step
+function debugEmailValidation(email) {
+    console.log(`\n=== DEBUG EMAIL VALIDATION: ${email} ===`);
+    
+    const formatTest = emailPattern.test(email);
+    console.log(`1. Format test: ${formatTest}`);
+    
+    const xssTest = !(xssPattern.test(email) || htmlTagPattern.test(email) || jsEventPattern.test(email) || jsProtocolPattern.test(email) || dataProtocolPattern.test(email));
+    console.log(`2. XSS test passed: ${xssTest}`);
+    
+    const noSqlTest = !noSqlInjectionPattern.test(email);
+    console.log(`3. NoSQL injection test passed: ${noSqlTest}`);
+    
+    const localPart = email.split('@')[0];
+    const profanityTest = !containsProfanity(localPart);
+    console.log(`4. Profanity test passed (local part: ${localPart}): ${profanityTest}`);
+    
+    const overall = validateEmail(email);
+    console.log(`5. Overall result: ${overall}`);
+    console.log(`=== END DEBUG ===\n`);
+    
+    return overall;
+}
+
 module.exports = {
     validateEmail,
     validatePassword,
     validateUsername,
     validateFullname,
     containsProfanity,
-    sanitizeInput
+    sanitizeInput,
+    debugEmailValidation
 };
