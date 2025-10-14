@@ -12,7 +12,7 @@ export default function Login() {
   const [isShaking, setIsShaking] = useState(false);
 
   const [formData, setFormData] = useState({
-    email: "",
+    prefLogin: "",
     password: "",
     showPassword: false,
     errors: {},
@@ -46,7 +46,7 @@ export default function Login() {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.prefLogin) newErrors.email = "Email is required";
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password && formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
@@ -71,7 +71,7 @@ export default function Login() {
 
     try {
       const response = await api.post("/api/user/login", {
-        email: formData.email,
+        prefLogin: formData.prefLogin,
         password: formData.password,
       });
       console.log("Login response:", response.data);
@@ -80,7 +80,7 @@ export default function Login() {
 
       // Reset form and loading state
       setFormData((prev) => ({
-        email: "",
+        prefLogin: "",
         password: "",
         isLoading: false,
         loginText: "Login",
@@ -143,31 +143,31 @@ export default function Login() {
           {/* Email */}
           <div>
             <label className="block text-blue-700 font-semibold mb-1">
-              Email
+              Email or Username
             </label>
             <motion.input
               type="text"
-              name="email"
-              value={formData.email}
+              name="prefLogin"
+              value={formData.prefLogin}
               onChange={handleChange}
-              placeholder="Enter your email..."
+              placeholder="Enter your email or username..."
               className={`w-full p-3 border rounded-xl outline-none shadow-sm transition
                 ${
-                  formData.errors.email && !formData.email
+                  formData.errors.prefLogin && !formData.prefLogin
                     ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
                     : "border-gray-300 focus:ring-2 focus:ring-blue-700"
                 }`}
               disabled={formData.isLoading}
             />
             <AnimatePresence>
-              {formData.errors.email && (
+              {formData.errors.prefLogin && (
                 <motion.p
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
                   className="text-[#FF3B30] text-sm mt-1 font-medium"
                 >
-                  {formData.errors.email}
+                  {formData.errors.prefLogin}
                 </motion.p>
               )}
             </AnimatePresence>
