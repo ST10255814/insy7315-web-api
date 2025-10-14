@@ -30,10 +30,22 @@ async function register(data){
     validation.sanitizeInput(username);
     validation.sanitizeInput(fullname);
 
-    validation.validateEmail(email.toLowerCase());
-    validation.validatePassword(password.toLowerCase());
-    validation.validateUsername(username.toLowerCase());
-    validation.validateFullname(fullname.toLowerCase());
+    // Validate inputs and throw errors if validation fails
+    if (!validation.validateEmail(email.toLowerCase())) {
+        throw new Error("Invalid email format or contains inappropriate content");
+    }
+    
+    if (!validation.validatePassword(password)) {
+        throw new Error("Password must be at least 8 characters with letters and numbers, and cannot contain inappropriate content");
+    }
+    
+    if (!validation.validateUsername(username.toLowerCase())) {
+        throw new Error("Username contains inappropriate content or invalid format");
+    }
+    
+    if (!validation.validateFullname(fullname.toLowerCase())) {
+        throw new Error("Full name contains inappropriate content");
+    }
 
     //check if user already exists
     const existingUser = await systemUsers.findOne({ email: email });
@@ -84,8 +96,14 @@ async function login(data){
         validation.sanitizeInput(email);
         validation.sanitizeInput(password);
 
-        validation.validateEmail(email.toLowerCase());
-        validation.validatePassword(password.toLowerCase());
+        // Validate inputs and throw errors if validation fails
+        if (!validation.validateEmail(email.toLowerCase())) {
+            throw new Error("Invalid email format");
+        }
+        
+        if (!validation.validatePassword(password)) {
+            throw new Error("Invalid password format");
+        }
 
         //check if user exists
         const user = await systemUsers.findOne({ email: email });
