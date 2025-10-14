@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Toast from "../lib/toast";
+import Toast from "../lib/toast.js";
+import api from "../lib/axios.js";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function Login() {
     setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
@@ -66,23 +67,41 @@ export default function Login() {
       loginText: "Logging in",
     }));
 
-    // Simulate API call
-    new Promise((resolve) => setTimeout(resolve, 2000)).then(() => {
-      // Reset form and button text immediately
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      const response = await api.post("/api/user/register", {
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("Login response:", response.data);
+      Toast.success(response.data.message);
+
+      // Reset form and loading state
       setFormData((prev) => ({
-        ...prev,
-        loginText: "Login", // Button text immediately back to Login
-        isLoading: false,
         email: "",
         password: "",
+        isLoading: false,
+        loginText: "Login",
         showPassword: false,
         errors: {},
       }));
+      // Navigate to dashboard
+      setTimeout(() => navigate("/dashboard"), 500);
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || "Login failed";
+      console.log("Login error:", errorMsg);
 
-      // Toast shows the success message
-      Toast.success("Login successful!");
-      navigate("/dashboard");
-    });
+      setFormData((prev) => ({
+        ...prev,
+        isLoading: false,
+        loginText: "Login",
+      }));
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 600);
+
+      Toast.error(errorMsg);
+    }
   };
 
   const shakeAnimation = {
@@ -251,7 +270,7 @@ export default function Login() {
         >
           <Link
             to={formData.email ? "/forgot-password" : "#"} // navigate only if email is filled
-            state={{ email: userEmail }} 
+            state={{ email: userEmail }}
             onClick={(e) => {
               if (!formData.email) {
                 e.preventDefault(); // prevent navigation
