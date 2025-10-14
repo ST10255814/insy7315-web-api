@@ -18,20 +18,31 @@ app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser());
 
 //helmet for security headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "http://127.0.0.1:5000",
+          "http://localhost:5000",
+          "http://localhost:3000",
+          "https://rentwiseproperty.onrender.com/",
+        ],
+      },
+    },
+  })
+);
 
 // CORS configuration - MUST be before routes
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || 'http://localhost:5000',
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-// Simple test route
-app.get('/', (req, res) => {
-  res.json({ message: 'API is running!' });
-});
 
 // Connect to MongoDB
 mongoConnection();
