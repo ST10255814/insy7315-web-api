@@ -6,8 +6,8 @@ import Navbar from "./components/Navbar.js";
 import Login from "./components/Login.js";
 import Register from "./components/Register.js";
 import ForgotPassword from "./components/ForgotPassword.js";
-import ResetPassword from "./components/PasswordReset.js";
 import Dashboard from "./components/Dashboard.js";
+import PasswordReset from "./components/PasswordReset.js";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<PasswordReset />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <ToastContainer

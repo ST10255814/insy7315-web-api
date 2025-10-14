@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function ResetPassword() {
+export default function PasswordReset() {
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
