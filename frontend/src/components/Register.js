@@ -90,6 +90,10 @@ export default function Register() {
           "userEmail",
           JSON.stringify(response.data.user.email)
         );
+        localStorage.setItem(
+          "userFullname",
+          JSON.stringify(response.data.user.fullname)
+        );
       }
 
       Toast.success(response.data.message);

@@ -59,7 +59,7 @@ app.get('/', (_, res) => {
 app.post('/api/user/login', arcjetMiddleware, userController.login);
 app.post('/api/user/register', arcjetMiddleware, userController.register);
 app.post('/api/user/logout', arcjetMiddleware, userController.logout);
-app.post('/api/user/reset-password', arcjetMiddleware, userController.resetPassword);
+app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPassword);
 
 // Start server
 app.listen(PORT, () => {

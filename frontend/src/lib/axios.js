@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: 'https://rentwisepropertyapi.onrender.com',
+    baseURL: process.env.BASE_URL || 'http://localhost:5000',
     headers: {'Content-Type': 'application/json'},
     withCredentials: true
 })

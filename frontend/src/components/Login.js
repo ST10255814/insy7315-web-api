@@ -7,7 +7,6 @@ import api from "../lib/axios.js";
 
 export default function Login() {
   const navigate = useNavigate();
-  const userEmail = JSON.parse(localStorage.getItem("userEmail"));
   const [offsetY, setOffsetY] = useState(0);
   const [isShaking, setIsShaking] = useState(false);
 
@@ -38,6 +37,26 @@ export default function Login() {
     }));
   };
 
+  const handleEmailSending = async (e) => {
+    e.preventDefault();
+    const userEmail = JSON.parse(localStorage.getItem("userEmail"));
+    const userFullname = JSON.parse(localStorage.getItem("userFullname"));
+
+    if (userEmail && userFullname) {
+      try {
+        const response = await api.post("/api/user/forgot-password", {
+          email: userEmail.toLowerCase(),
+          name: userFullname,
+        });
+        navigate("/forgot-password", { state: { email: userEmail } });
+      } catch (error) {
+        const errorMsg = error.response?.data?.error || "Request failed";
+        console.log("Request error:", errorMsg);
+        Toast.error(errorMsg);
+      }
+    }
+  };
+
   const togglePassword = () => {
     setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }));
   };
@@ -46,7 +65,8 @@ export default function Login() {
     e.preventDefault();
 
     const newErrors = {};
-    if (!formData.prefLogin) newErrors.prefLogin = "Email or username is required";
+    if (!formData.prefLogin)
+      newErrors.prefLogin = "Email or username is required";
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password && formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
@@ -67,15 +87,16 @@ export default function Login() {
       loginText: "Logging in",
     }));
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     try {
       const response = await api.post("/api/user/login", {
         prefLogin: formData.prefLogin,
         password: formData.password,
       });
       console.log("Login response:", response.data);
-      localStorage.setItem("user", JSON.stringify(response.data.userData.user.fullname));
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.userData.user.fullname)
+      );
       Toast.success(response.data.message);
 
       // Reset form and loading state
@@ -269,13 +290,12 @@ export default function Login() {
           transition={{ duration: 0.1 }}
           className="text-center mt-4"
         >
-          <Link
-            to={userEmail ? "/forgot-password" : "#"} // navigate only if there is a userEmail
-            state={{ email: userEmail }}
-            className="text-sm text-blue-700 hover:text-blue-800 hover:underline transition-all duration-100"
+          <button
+            onClick={handleEmailSending}
+            className="text-sm text-blue-700 hover:text-blue-800 hover:underline transition-all duration-100 bg-transparent border-none cursor-pointer"
           >
             Forgot Password?
-          </Link>
+          </button>
         </motion.div>
 
         {/* Register CTA */}

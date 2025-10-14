@@ -158,7 +158,7 @@ async function resetPassword(data) {
         }
 
         // Send password reset email
-        await sendResetPasswordEmail(email, name, process.env.CLIENT_URL);
+        await sendResetPasswordEmail(email, name, process.env.RESET_PASSWORD_URL);
     } catch (err) {
         throw new Error("Failed to send reset email: " + err.message);
     }
