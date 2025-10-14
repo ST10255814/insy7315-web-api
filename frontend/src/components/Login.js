@@ -75,6 +75,7 @@ export default function Login() {
         password: formData.password,
       });
       console.log("Login response:", response.data);
+      localStorage.setItem("user", JSON.stringify(response.data.userData.user.fullname));
       Toast.success(response.data.message);
 
       // Reset form and loading state
