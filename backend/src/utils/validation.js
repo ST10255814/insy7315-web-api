@@ -181,6 +181,50 @@ function containsProfanity(text) {
     return false;
 }
 
+// More restrictive profanity check for email addresses - only blocks extremely explicit content
+function containsExplicitProfanity(text) {
+    if (!text || typeof text !== 'string') {
+        return false;
+    }
+    
+    // Only the most explicit profanity that should never be in email addresses
+    const explicitProfanityList = [
+        'fuck', 'fck', 'fuk', 'phuck', 'fucc', 'fucking',
+        'shit', 'shyt', 'shite',
+        'bitch', 'btch', 'bych', 'biatch',
+        'asshole', 'arsehole',
+        'whore', 'slut', 'slutty', 'hoe',
+        'porn', 'porno', 'pornography', 'xxx',
+        'penis', 'cock', 'dick', 'prick',
+        'vagina', 'pussy', 'cunt', 'twat',
+        'boobs', 'tits', 'titties',
+        'nigger', 'nigga', 'faggot', 'fag',
+        'rape', 'raping', 'molest',
+        'f*ck', 'f**k', 'f***', 'fvck', 'phuk',
+        'sh*t', 'sh!t', 'b*tch', 'b!tch', 'bytch',
+        'a$$hole', 'a**hole', 'pu$$y', 'pus5y', 'p*ssy',
+        'd1ck', 'd!ck', 'dik', 'dck', 'c0ck', 'c@ck', 'cok'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    
+    // Check for explicit profanity without aggressive normalization
+    for (const word of explicitProfanityList) {
+        // Check direct matches
+        if (lowerText.includes(word.toLowerCase())) {
+            return true;
+        }
+        
+        // Check for word boundaries to avoid false positives
+        const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (wordRegex.test(lowerText)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 //function to validate email against attacks and proper format
 function validateEmail(email) {
     // First check basic format
@@ -188,7 +232,7 @@ function validateEmail(email) {
         return false;
     }
     
-    // Check for XSS patterns (but not profanity in email addresses)
+    // Check for XSS patterns
     if (xssPattern.test(email) || htmlTagPattern.test(email) || jsEventPattern.test(email) || jsProtocolPattern.test(email) || dataProtocolPattern.test(email)) {
         return false;
     }
@@ -198,9 +242,10 @@ function validateEmail(email) {
         return false;
     }
     
-    // Only check profanity in the local part (before @), not the domain
+    // For emails, only check for extremely explicit profanity, not common words
+    // Split email to check only the local part (before @)
     const localPart = email.split('@')[0];
-    if (containsProfanity(localPart)) {
+    if (containsExplicitProfanity(localPart)) {
         return false;
     }
     
