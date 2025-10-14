@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+import dotenv from 'dotenv';
 import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/node";
 dotenv.config();
 
