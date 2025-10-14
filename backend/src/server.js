@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
 const { connectMongo } = require('./utils/db');
-const { checkAuth } = require('./utils/checkAuth');
+const { checkAuth } = require('./middleware/checkAuth');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
@@ -33,11 +35,12 @@ connectMongo();
 
 //controller declarations
 const userController = require('./Controllers/userController');
+const { arcjetMiddleware } = require('./middleware/arcjet.middleware');
 
 //user routes
-app.post('/api/user/login', userController.login);
-app.post('/api/user/register', userController.register);
-app.post('/api/user/logout', userController.logout);
+app.post('/api/user/login', arcjetMiddleware, userController.login);
+app.post('/api/user/register', arcjetMiddleware, userController.register);
+app.post('/api/user/logout', arcjetMiddleware, userController.logout);
 
 // Start server
 app.listen(PORT, () => {

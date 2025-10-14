@@ -1,5 +1,5 @@
 const userService = require('../Services/userService');
-const { setAuthCookie, clearAuthCookie } = require('../utils/checkAuth');
+const { setAuthCookie, clearAuthCookie } = require('../middleware/checkAuth');
 
 //controller to handle user registration
 exports.register = async (req, res) => {
