@@ -56,17 +56,6 @@ app.post('/api/user/login', arcjetMiddleware, userController.login);
 app.post('/api/user/register', arcjetMiddleware, userController.register);
 app.post('/api/user/logout', arcjetMiddleware, userController.logout);
 
-// Production deployment setup
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../frontend/build");
-  app.use(express.static(frontendPath));
-
-  // Catch all handler: send back React's index.html file
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
-}
-
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
