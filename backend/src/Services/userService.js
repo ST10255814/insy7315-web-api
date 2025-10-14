@@ -47,6 +47,12 @@ async function register(data){
         throw new Error("Full name contains inappropriate content");
     }
 
+    //check if username already exists
+    const existingUsername = await systemUsers.findOne({ username: username });
+    if(existingUsername){
+        throw new Error("Username already taken");
+    }
+
     //check if user already exists
     const existingUser = await systemUsers.findOne({ email: email });
     if(existingUser){
@@ -86,19 +92,25 @@ async function login(data){
         const db = client.db('RentWise');
         const systemUsers = db.collection('System-Users');
 
-        const {email, password} = data;
+        const {prefLogin, password} = data;
 
         //check if all fields are provided
-        if(!email || !password){
+        if(!prefLogin || !password){
             throw new Error("Please provide all required fields");
         }
 
-        validation.sanitizeInput(email);
+        validation.sanitizeInput(prefLoginq);
         validation.sanitizeInput(password);
 
-        // Validate inputs and throw errors if validation fails
-        if (!validation.validateEmail(email.toLowerCase())) {
-            throw new Error("Invalid email format");
+        //validate email/username
+        if(prefLogin.includes('@')){
+            if (!validation.validateEmail(prefLogin.toLowerCase())) {
+                throw new Error("Invalid email format or contains inappropriate content");
+            }
+        }else{
+            if (!validation.validateUsername(prefLogin.toLowerCase())) {
+                throw new Error("Username contains inappropriate content or invalid format");
+            }
         }
         
         if (!validation.validatePassword(password)) {
@@ -106,9 +118,10 @@ async function login(data){
         }
 
         //check if user exists
-        const user = await systemUsers.findOne({ email: email });
-        if(!user){
-            throw new Error("Invalid email or password");
+        if(prefLogin.includes('@')){
+            var user = await systemUsers.findOne({ email: prefLogin});
+        }else{
+            var user = await systemUsers.findOne({ username: prefLogin});
         }
 
         //compare passwords
