@@ -84,8 +84,8 @@ async function login(data){
         validation.sanitizeInput(email);
         validation.sanitizeInput(password);
 
-        validation.validateEmail(email);
-        validation.validatePassword(password);
+        validation.validateEmail(email.toLowerCase());
+        validation.validatePassword(password.toLowerCase());
 
         //check if user exists
         const user = await systemUsers.findOne({ email: email });
