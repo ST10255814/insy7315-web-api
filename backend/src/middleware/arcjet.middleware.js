@@ -6,18 +6,35 @@ import { isSpoofedBot } from "@arcjet/inspect";
  */
 export const arcjetMiddleware = async (req, res, next) => {
   try {
-    const decision = await aj.protect(req);
+    const decision = await aj.protect(req, { email: req.body.prefLogin ? req.body.prefLogin : req.body.email });
+    console.log("Arcjet decision:", decision);
 
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
         return res
           .status(429)
-          .json({ message: "Rate limit exceeded. Please try again later." });
+          .json({ error: "Rate limit exceeded. Please try again later." });
       } else if (decision.reason.isBot()) {
-        return res.status(403).json({ message: "Bot access denied." });
+        return res.status(403).json({ error: "Bot access denied." });
+      } else if (decision.reason.isEmail()) {
+        // Extract the emailTypes directly from decision.reason
+        const types = decision.reason.emailTypes || [];
+
+        // Map to user-friendly messages
+        const emailTypeMessages = {
+          DISPOSABLE: "Disposable email addresses are not allowed.",
+          INVALID: "This email address is invalid.",
+          NO_MX_RECORDS: "Email domain cannot receive emails.",
+        };
+
+        const errorString = types
+          .map((type) => emailTypeMessages[type] || type)
+          .join(" "); // join multiple types if needed
+
+        return res.status(403).json({ error: `Invalid Email: ${errorString}` });
       } else {
         return res.status(403).json({
-          message: "Access denied by security policy.",
+          error: "Access denied by security policy.",
         });
       }
     }

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/node";
+import arcjet, { shield, detectBot, slidingWindow, validateEmail } from "@arcjet/node";
 dotenv.config();
 
 // https://docs.arcjet.com/get-started?f=node-js-express
@@ -26,6 +26,11 @@ const aj = arcjet({
       mode: "LIVE", // Blocks requests. Use "DRY_RUN" to log only
       max: 10, // Max 5 requests in the window
       interval: 10 * 60, // 10 minutes
+    }),
+    validateEmail({
+      mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
+      // block disposable, invalid, and email addresses with no MX records
+      deny: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
     }),
   ],
 });
