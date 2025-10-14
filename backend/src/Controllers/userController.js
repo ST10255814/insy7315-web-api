@@ -1,5 +1,5 @@
-const userService = require('../Services/userService');
-const { setAuthCookie, clearAuthCookie } = require('../middleware/checkAuth');
+import userService from '../Services/userService.js';
+import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
 
 //controller to handle user registration
 exports.register = async (req, res) => {

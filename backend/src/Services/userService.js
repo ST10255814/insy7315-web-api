@@ -1,10 +1,10 @@
-const { client } = require('../utils/db');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require("dotenv");
-const { ObjectId } = require('mongodb');
+import { client } from '../utils/db.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
 dotenv.config();
-const validation = require('../utils/validation');
+import * as validation from '../utils/validation.js';
 
 function toObjectId(id) {
   if (id instanceof ObjectId) return id;

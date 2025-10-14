@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const { client } = require('../utils/db.js');
-const { ObjectId } = require('mongodb');
-const { setTokenCookie, clearTokenCookie } = require('../utils/cookieUtils.js');
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { client } from '../utils/db.js';
+import { ObjectId } from 'mongodb';
+import { setTokenCookie, clearTokenCookie } from '../utils/cookieUtils.js';
 dotenv.config();
 
 function toObjectId(id) {
