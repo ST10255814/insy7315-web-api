@@ -74,7 +74,7 @@ async function register(data){
     //insert new user into database
     await systemUsers.insertOne(newUser);
 
-    return { email: newUser.email, createdAt: newUser.createdAt };
+    return { fullname: newUser.fullname, createdAt: newUser.createdAt };
     }
     catch(err){
         throw new Error("Registration failed: " + err.message);
