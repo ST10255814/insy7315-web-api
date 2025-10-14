@@ -7,15 +7,6 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Parse JSON bodies
-app.use(cors()) // Enable CORS for all routes
-
-// Simple test route
-app.get('/', (req, res) => {
-  res.json({ message: 'API is running!' });
-});
-
-// Connect to MongoDB
-connectMongo();
 
 //cookie parser middleware
 const cookieParser = require('cookie-parser');
@@ -25,13 +16,21 @@ app.use(cookieParser());
 const helmet = require('helmet');
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - MUST be before routes
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Simple test route
+app.get('/', (req, res) => {
+  res.json({ message: 'API is running!' });
+});
+
+// Connect to MongoDB
+connectMongo();
 
 //controller declarations
 const userController = require('./Controllers/userController');
