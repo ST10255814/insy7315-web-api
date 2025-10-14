@@ -6,7 +6,7 @@ import sanitizer from 'sanitizer';
 
 //regex patterns for validation
 const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/; //comprehensive email regex
-const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; //minimum 8 characters, at least one letter and one number
+const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; //minimum 8 characters, at least one letter, one number, and one special character
 const usernamePattern = /^[a-zA-Z0-9_]{3,30}$/; //alphanumeric and underscores, 3-30 characters
 
 //patterns to protect against NoSQL injection (excluding dot for emails)

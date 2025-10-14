@@ -43,10 +43,20 @@ export const logout = async (req, res) => {
     }
 }
 
+export const resetPassword = async (req, res) => {
+    try {
+        const result = await userService.resetPassword(req.body);
+        res.status(200).json({ message: "Reset email sent", user: result });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+}
+
 const userController = {
     register,
     login,
-    logout
+    logout,
+    resetPassword
 };
 
 export default userController;
