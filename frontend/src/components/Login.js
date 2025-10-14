@@ -70,7 +70,7 @@ export default function Login() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      const response = await api.post("/api/user/register", {
+      const response = await api.post("/api/user/login", {
         email: formData.email,
         password: formData.password,
       });
@@ -269,20 +269,8 @@ export default function Login() {
           className="text-center mt-4"
         >
           <Link
-            to={formData.email ? "/forgot-password" : "#"} // navigate only if email is filled
+            to={userEmail ? "/forgot-password" : "#"} // navigate only if there is a userEmail
             state={{ email: userEmail }}
-            onClick={(e) => {
-              if (!formData.email) {
-                e.preventDefault(); // prevent navigation
-                setFormData((prev) => ({
-                  ...prev,
-                  errors: {
-                    ...prev.errors,
-                    email: "Please enter your email before resetting password",
-                  },
-                }));
-              }
-            }}
             className="text-sm text-blue-700 hover:text-blue-800 hover:underline transition-all duration-100"
           >
             Forgot Password?
