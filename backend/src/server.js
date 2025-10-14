@@ -38,6 +38,7 @@ const userController = require('./Controllers/userController');
 //user routes
 app.post('/api/user/login', userController.login);
 app.post('/api/user/register', userController.register);
+app.post('/api/user/logout', userController.logout);
 
 // Start server
 app.listen(PORT, () => {

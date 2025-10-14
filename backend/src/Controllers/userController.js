@@ -1,4 +1,5 @@
 const userService = require('../Services/userService');
+const { setAuthCookie, clearAuthCookie } = require('../utils/checkAuth');
 
 //controller to handle user registration
 exports.register = async (req, res) => {
@@ -14,8 +15,28 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try{
         const result = await userService.login(req.body);
-        res.status(200).json({ message: "User logged in successfully", token: result.token });
+        
+        // Set JWT token in HTTP-only cookie
+        setAuthCookie(res, result.token);
+        
+        res.status(200).json({ 
+            message: "User logged in successfully", 
+            token: result.token,
+            user: result.user || null
+        });
     }catch(err){
         res.status(400).json({error: err.message });
+    }
+}
+
+//controller to handle user logout
+exports.logout = async (req, res) => {
+    try {
+        // Clear the authentication cookie
+        clearAuthCookie(res);
+        
+        res.status(200).json({ message: "User logged out successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 }
