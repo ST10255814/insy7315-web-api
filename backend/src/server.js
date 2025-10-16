@@ -49,6 +49,7 @@ mongoConnection();
 //controller declarations
 import userController from './Controllers/userController.js';
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
+import leaseController from './Controllers/leaseController.js';
 
 // Test route
 app.get('/', (_, res) => {
@@ -60,6 +61,10 @@ app.post('/api/user/login', arcjetMiddleware, userController.login);
 app.post('/api/user/register', arcjetMiddleware, userController.register);
 app.post('/api/user/logout', arcjetMiddleware, userController.logout);
 app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPassword);
+
+//lease routes (protected)
+app.post('/api/lease/create', checkAuth, leaseController.createLease);
+
 
 // Start server
 app.listen(PORT, () => {
