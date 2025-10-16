@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const [offsetY, setOffsetY] = useState(0);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const handleScroll = () => setOffsetY(window.pageYOffset);
@@ -68,18 +69,29 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex gap-4 flex-wrap justify-center"
           >
-            <Link
-              to="/register"
-              className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-full shadow-md hover:bg-white hover:text-blue-700 hover:shadow-lg transition transform hover:scale-105"
-            >
-              Get Started
-            </Link>
-            <Link
-              to="/login"
-              className="bg-white text-blue-700 font-bold px-8 py-3 rounded-full shadow-md hover:bg-gray-100 hover:text-blue-800 hover:shadow-lg transition transform hover:scale-105"
-            >
-              Login
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-full shadow-md hover:bg-white hover:text-blue-700 hover:shadow-lg transition transform hover:scale-105"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-full shadow-md hover:bg-white hover:text-blue-700 hover:shadow-lg transition transform hover:scale-105"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  to="/login"
+                  className="bg-white text-blue-700 font-bold px-8 py-3 rounded-full shadow-md hover:bg-gray-100 hover:text-blue-800 hover:shadow-lg transition transform hover:scale-105"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </motion.div>
         </motion.div>
       </section>
