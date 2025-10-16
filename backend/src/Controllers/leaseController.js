@@ -14,8 +14,8 @@ export const getAdminLeases = async (req, res) => {
 export const createLease = async (req, res) => {
     try{
         const { bookingID } = req.body;
-        const {userId } = req.user
-        const leaseId = await leaseService.createLease(bookingID);
+        const adminId = req.user.userId;
+        const leaseId = await leaseService.createLease(bookingID, adminId);
         res.status(201).json({ leaseId });
     }catch(error){
         console.error("Error creating lease:", error);

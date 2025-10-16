@@ -65,6 +65,10 @@ app.post('/api/user/register', arcjetMiddleware, userController.register);
 app.post('/api/user/logout', userController.logout);
 app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPassword);
 
+//lease routes
+app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
+app.post('/api/leases/create', checkAuth, arcjetMiddleware, leaseController.createLease);
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
