@@ -11,17 +11,10 @@ export const getAdminLeases = async (req, res) => {
     }
 }
 
-const leaseController = {
-    getAdminLeases
-};
-
-export default leaseController;
-import leaseService from '../Services/leaseService.js';
-
-//controller to handle lease creation
 export const createLease = async (req, res) => {
     try{
         const { bookingID } = req.body;
+        const {userId } = req.user
         const leaseId = await leaseService.createLease(bookingID);
         res.status(201).json({ leaseId });
     }catch(error){
@@ -29,3 +22,10 @@ export const createLease = async (req, res) => {
         res.status(500).json({ error: "Error creating lease" });
     }
 }
+
+const leaseController = {
+    getAdminLeases,
+    createLease
+};
+
+export default leaseController;
