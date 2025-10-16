@@ -5,9 +5,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import userController from './Controllers/userController.js';
-import leaseController from './Controllers/leaseController.js';
-import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
 
 dotenv.config();
 
@@ -52,6 +49,9 @@ mongoConnection();
 
 //controller declarations
 import userController from './Controllers/userController.js';
+import leaseController from './Controllers/leaseController.js';
+
+// Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
 
 // Test route
