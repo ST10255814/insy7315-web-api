@@ -8,6 +8,9 @@ import sanitizer from 'sanitizer';
 const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/; //comprehensive email regex
 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; //minimum 8 characters, at least one letter, one number, and one special character
 const usernamePattern = /^[a-zA-Z0-9_]{3,30}$/; //alphanumeric and underscores, 3-30 characters
+const startDatePattern = /^\d{2}-\d{2}-\d{4}$/; //DD-MM-YYYY
+const endDatePattern = /^\d{2}-\d{2}-\d{4}$/; //DD-MM-YYYY
+const rentAmountPattern = /^\d+(\.\d{1,2})?$/; //numeric with up to 2 decimal places
 
 //patterns to protect against NoSQL injection (excluding dot for emails)
 const noSqlInjectionPattern = /[\$]/; // Only block $ symbol, allow dots for emails
@@ -119,6 +122,27 @@ export function validateFullname(fullname) {
         return false;
     }
     return true; //allow any characters in fullname as long as it passes the above checks
+}
+
+export function validateStartDate(startDate) {
+    if(noSqlInjectionPattern.test(startDate) || xssPattern.test(startDate) || htmlTagPattern.test(startDate) || jsEventPattern.test(startDate) || jsProtocolPattern.test(startDate) || dataProtocolPattern.test(startDate)) {
+        return false;
+    }
+    return startDatePattern.test(startDate);
+}
+
+export function validateEndDate(endDate) {
+    if(noSqlInjectionPattern.test(endDate) || xssPattern.test(endDate) || htmlTagPattern.test(endDate) || jsEventPattern.test(endDate) || jsProtocolPattern.test(endDate) || dataProtocolPattern.test(endDate)) {
+        return false;
+    }
+    return endDatePattern.test(endDate);
+}
+
+export function validateRentAmount(rentAmount) {
+    if(noSqlInjectionPattern.test(rentAmount) || xssPattern.test(rentAmount) || htmlTagPattern.test(rentAmount) || jsEventPattern.test(rentAmount) || jsProtocolPattern.test(rentAmount) || dataProtocolPattern.test(rentAmount)) {
+        return false;
+    }
+    return rentAmountPattern.test(rentAmount);
 }
 
 //function to sanitize input strings
