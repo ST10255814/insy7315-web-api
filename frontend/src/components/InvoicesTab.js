@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Toast from "../lib/toast";
 
 export default function InvoicesTab() {
   const [invoices, setInvoices] = useState([
@@ -8,7 +9,7 @@ export default function InvoicesTab() {
       tenant: "John Smith",
       property: "Unit 4A",
       amount: 22500,
-      due: "28 Feb 2025",
+      due: "2025-02-28",
       status: "Paid",
       notes: "Paid via EFT",
     },
@@ -17,140 +18,98 @@ export default function InvoicesTab() {
       tenant: "Mike Davis",
       property: "Unit 12B",
       amount: 33800,
-      due: "28 Feb 2025",
+      due: "2025-02-28",
       status: "Unpaid",
       notes: "Reminder sent",
     },
-    {
-      invoiceNumber: "INV-003",
-      tenant: "Alice Brown",
-      property: "Unit 7C",
-      amount: 15000,
-      due: "28 Feb 2025",
-      status: "Overdue",
-      notes: "Late fee applied",
-    },
   ]);
 
-  const [invoiceNotes, setInvoiceNotes] = useState(
-    invoices.map((inv) => inv.notes)
-  );
-  const [lastActions, setLastActions] = useState(invoices.map(() => ""));
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    tenant: "",
+    property: "",
+    amount: "",
+    due: "",
+    errors: {},
+  });
 
-  const handleAction = (index, action) => {
-    const newLastActions = [...lastActions];
-    newLastActions[index] = action;
-    setLastActions(newLastActions);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+      errors: { ...formData.errors, [name]: false },
+    });
+  };
 
-    const newNotes = [...invoiceNotes];
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString("en-GB", {
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.email) errors.email = "Email required";
+    if (!formData.tenant) errors.tenant = "Tenant required";
+    if (!formData.property) errors.property = "Property required";
+    if (!formData.amount || isNaN(formData.amount))
+      errors.amount = "Valid amount required";
+    if (!formData.due) errors.due = "Due date required";
+    setFormData((prev) => ({ ...prev, errors }));
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    
+    // API call to backend would go here
+    Toast.success(`Invoice added: ${formData.invoiceNumber}`);
+    closeModal();
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setFormData({
+      invoiceNumber: "",
+      tenant: "",
+      property: "",
+      amount: "",
+      due: "",
+      errors: {},
+    });
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
-
-    switch (action) {
-      case "Mark Paid":
-        newNotes[index] = `Paid on ${formattedDate}`;
-        break;
-      case "Eviction Notice":
-        newNotes[index] = `Eviction notice sent on ${formattedDate}`;
-        break;
-      case "Send Reminder":
-        newNotes[index] = `Reminder sent on ${formattedDate}`;
-        break;
-      case "Send Final Reminder":
-        newNotes[index] = `Final reminder sent on ${formattedDate}`;
-        break;
-      default:
-        newNotes[index] = action;
-    }
-    setInvoiceNotes(newNotes);
   };
 
-  const getAvailableActions = (invoice, lastAction) => {
-    const today = new Date();
-    const dueDate = new Date(invoice.due);
-    const diffDays = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
-    const actions = [];
-
-    if (invoice.status === "Paid") {
-      if (lastAction !== "Mark Paid") actions.push("Mark Paid");
-    } else {
-      if (diffDays > 0) {
-        if (lastAction !== "Eviction Notice") actions.push("Eviction Notice");
-        if (lastAction !== "Send Final Reminder")
-          actions.push("Send Final Reminder");
-      } else {
-        if (lastAction !== "Send Reminder") actions.push("Send Reminder");
-      }
-      if (lastAction !== "Mark Paid") actions.push("Mark Paid");
-    }
-
-    return actions;
-  };
-
-  const addInvoice = () => {
-    const invoiceNumber = prompt("Enter Invoice Number:");
-    if (!invoiceNumber) return;
-    const tenant = prompt("Enter Tenant Name:");
-    if (!tenant) return;
-    const property = prompt("Enter Property:");
-    if (!property) return;
-    const amount = parseFloat(prompt("Enter Amount:"));
-    if (isNaN(amount)) return;
-    const due = prompt("Enter Due Date (e.g., 28 Feb 2025):");
-    if (!due) return;
-
-    const newInvoice = {
-      invoiceNumber,
-      tenant,
-      property,
-      amount,
-      due,
-      status: "Unpaid",
-      notes: "",
-    };
-
-    setInvoices([...invoices, newInvoice]);
-    setInvoiceNotes([...invoiceNotes, ""]);
-    setLastActions([...lastActions, ""]);
-  };
+  const buttonHoverTransition = { type: "spring", stiffness: 800, damping: 15 };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl shadow-2xl p-10 mx-auto w-full max-w-5xl border border-blue-100"
-    >
-      {/* Header + Animated Add Button */}
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-3xl font-extrabold text-blue-800">
+    <motion.div className="relative p-6 sm:p-10 max-w-6xl mx-auto bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl shadow-2xl border border-blue-100">
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h3 className="text-2xl sm:text-3xl font-extrabold text-blue-800">
           Invoice Management
         </h3>
-
         <motion.button
-          onClick={addInvoice}
-          whileHover={{
-            scale: 1.08,
-            backgroundColor: "#2563eb", // Darker blue on hover
-            boxShadow: "0px 8px 15px rgba(0,0,0,0.2)",
-          }}
+          onClick={() => setShowModal(true)}
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md"
+          transition={buttonHoverTransition}
+          className="w-full sm:w-auto bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md"
         >
           + Add Invoice
         </motion.button>
       </div>
 
-      {/* Table */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6">
-        <table className="w-full text-center border-collapse">
+      {/* TABLE VIEW */}
+      <div className="hidden sm:block overflow-x-auto rounded-2xl shadow-xl bg-white/90 backdrop-blur-md">
+        <table className="min-w-full text-center border-collapse">
           <thead>
-            <tr className="bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm uppercase tracking-wide">
+            <tr className="bg-gradient-to-r from-blue-600 to-blue-500 text-white uppercase tracking-wide text-xs sm:text-sm">
               <th className="px-4 py-3 rounded-l-2xl">Invoice #</th>
               <th className="px-4 py-3">Tenant</th>
               <th className="px-4 py-3">Property</th>
@@ -161,81 +120,186 @@ export default function InvoicesTab() {
               <th className="px-4 py-3 rounded-r-2xl">Actions</th>
             </tr>
           </thead>
-
           <tbody>
-            {invoices.map((inv, i) => (
-              <motion.tr
-                key={i}
-                initial={{
-                  scale: 1,
-                  backgroundColor: "rgba(242, 247, 255, 0)",
-                }}
-                whileHover={{
-                  scale: 1.02,
-                  backgroundColor: "rgba(242, 247, 255, 0.6)",
-                }}
-                transition={{ type: "tween", duration: 0.3 }}
-                className="border-b border-gray-100"
-              >
-                <td className="px-3 py-3 font-semibold text-blue-700">
-                  {inv.invoiceNumber}
-                </td>
-                <td className="px-3 py-3 text-gray-800">{inv.tenant}</td>
-                <td className="px-3 py-3 text-gray-700">{inv.property}</td>
-                <td className="px-3 py-3 font-semibold text-blue-700">
-                  R{inv.amount.toLocaleString()}
-                </td>
-                <td className="px-3 py-3 text-gray-600">{inv.due}</td>
-                <td className="px-3 py-3">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${
-                      inv.status === "Paid"
-                        ? "bg-green-100 text-green-700"
-                        : inv.status === "Unpaid"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {inv.status}
-                  </span>
-                </td>
-                <td className="px-3 py-3 text-gray-700 text-sm italic">
-                  {invoiceNotes[i]}
-                </td>
-                <td className="px-3 py-3 flex justify-center gap-2 flex-wrap">
-                  {getAvailableActions(inv, lastActions[i])
-                    .slice(0, 3)
-                    .map((action, idx) => {
-                      let colorClass = "";
-                      if (action === "Eviction Notice")
-                        colorClass = "bg-red-100 text-red-700";
-                      if (action === "Send Reminder")
-                        colorClass = "bg-yellow-100 text-yellow-700";
-                      if (action === "Send Final Reminder")
-                        colorClass = "bg-yellow-200 text-yellow-800";
-                      if (action === "Mark Paid")
-                        colorClass = "bg-green-100 text-green-700";
-                      else if (!colorClass)
-                        colorClass = "bg-blue-100 text-blue-700";
-
-                      return (
-                        <motion.button
-                          key={idx}
-                          whileHover={{ scale: 1.08 }}
-                          whileTap={{ scale: 0.96 }}
-                          onClick={() => handleAction(i, action)}
-                          className={`${colorClass} rounded-full px-3 py-1 text-xs font-semibold shadow-sm hover:shadow-md transition-all duration-200`}
-                        >
-                          {action}
-                        </motion.button>
-                      );
-                    })}
-                </td>
-              </motion.tr>
-            ))}
+            <AnimatePresence>
+              {invoices.map((inv, i) => (
+                <motion.tr
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="border-b border-gray-100 hover:bg-blue-50/60 transition-colors duration-200"
+                >
+                  <td className="px-3 py-3 text-blue-700 font-bold">{inv.invoiceNumber}</td>
+                  <td className="px-3 py-3">{inv.tenant}</td>
+                  <td className="px-3 py-3">{inv.property}</td>
+                  <td className="px-3 py-3 font-bold text-blue-600">
+                    R{inv.amount.toLocaleString()}
+                  </td>
+                  <td className="px-3 py-3">{formatDate(inv.due)}</td>
+                  <td className="px-3 py-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        inv.status === "Paid"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {inv.status}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-sm italic">{inv.notes}</td>
+                  <td className="px-3 py-3 flex justify-center gap-2 flex-wrap">
+                    {["Edit", "Delete"].map((action, j) => (
+                      <motion.button
+                        key={j}
+                        whileHover={{ scale: 1.12 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={buttonHoverTransition}
+                        className={`${
+                          action === "Edit"
+                            ? "text-blue-600 hover:text-blue-700"
+                            : "text-red-600 hover:text-red-700"
+                        } font-semibold px-3 py-1 rounded text-sm`}
+                      >
+                        {action}
+                      </motion.button>
+                    ))}
+                  </td>
+                </motion.tr>
+              ))}
+            </AnimatePresence>
           </tbody>
         </table>
       </div>
+
+      {/* MOBILE CARD VIEW */}
+      <div className="sm:hidden mt-4 space-y-4">
+        <AnimatePresence>
+          {invoices.map((inv, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-4 rounded-xl shadow-md border border-gray-200"
+            >
+              <div className="flex justify-between items-center mb-1">
+                <h4 className="font-bold text-blue-800 text-lg">{inv.tenant}</h4>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    inv.status === "Paid" ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+                  }`}
+                >
+                  {inv.status}
+                </span>
+              </div>
+              <div className="space-y-1 text-sm text-gray-700">
+                <p><strong>Invoice #:</strong> {inv.invoiceNumber}</p>
+                <p><strong>Property:</strong> {inv.property}</p>
+                <p><strong>Due:</strong> {formatDate(inv.due)}</p>
+                <p className="text-blue-700 font-semibold">Amount: R{inv.amount.toLocaleString()}</p>
+              </div>
+              <div className="flex justify-end gap-3 mt-3">
+                {["Edit", "Delete"].map((action, j) => (
+                  <motion.button
+                    key={j}
+                    whileHover={{ scale: 1.12 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={buttonHoverTransition}
+                    className={`${
+                      action === "Edit" ? "text-blue-600 hover:text-blue-700" : "text-red-600 hover:text-red-700"
+                    } text-xs font-semibold`}
+                  >
+                    {action}
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* ADD INVOICE MODAL */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-gray-900/20 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -50, opacity: 0 }}
+              transition={{ duration: 0.3, type: "spring" }}
+              className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md border border-gray-200"
+            >
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-6 text-center">
+                Add New Invoice
+              </h3>
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                {["tenant", "email","property","amount","due"].map((field) => (
+                  <motion.div
+                    key={field}
+                    animate={
+                      formData.errors[field] ? { x: [0, -5, 5, -5, 5, 0] } : {}
+                    }
+                    transition={{ duration: 0.3 }}
+                  >
+                    <label className="block text-sm font-semibold text-blue-700 mb-1">
+                      {field.charAt(0).toUpperCase() + field.slice(1)}
+                    </label>
+                    <input
+                      type={field === "amount" ? "number" : field === "due" ? "date" : "text"}
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      placeholder={`Enter ${field}`}
+                      className={`w-full px-3 py-2 border rounded-xl shadow-sm transition outline-none ${
+                        formData.errors[field]
+                          ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
+                          : "border-gray-300 focus:ring-2 focus:ring-blue-700"
+                      }`}
+                    />
+                    {formData.errors[field] && (
+                      <p className="text-[#FF3B30] text-sm mt-1 font-semibold">
+                        {formData.errors[field]}
+                      </p>
+                    )}
+                  </motion.div>
+                ))}
+
+                <div className="flex justify-end gap-3 mt-4">
+                  <motion.button
+                    type="button"
+                    onClick={closeModal}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={buttonHoverTransition}
+                    className="px-4 py-2 rounded-lg font-semibold bg-blue-700 text-white hover:bg-blue-800 shadow-md"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={buttonHoverTransition}
+                    className="px-5 py-2 rounded-lg font-semibold bg-blue-700 text-white shadow-md"
+                  >
+                    Add Invoice
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

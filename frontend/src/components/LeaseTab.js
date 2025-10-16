@@ -44,6 +44,7 @@ export default function LeasesTab() {
       setFormData({ ...formData, errors: { bookingID: true } });
       return;
     }
+    // API call to add lease would go here
     Toast.success(`Lease added for Booking ID: ${formData.bookingID}`);
     closeModal();
   };
