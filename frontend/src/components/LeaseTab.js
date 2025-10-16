@@ -1,34 +1,48 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Toast from "../lib/toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { getLeasesByAdminId, createLeaseForBookingID } from "../utils/leases.api.js";
 
 export default function LeasesTab() {
-  const [leases, setLeases] = useState([
-    {
-      tenant: "John Smith",
-      property: "Unit 4A",
-      startDate: "2025-10-01",
-      endDate: "2026-09-30",
-      rent: 12500,
-      status: "Active",
-      bookingID: "B001",
-    },
-    {
-      tenant: "Jane Doe",
-      property: "Unit 5B",
-      startDate: "2025-11-01",
-      endDate: "2026-10-31",
-      rent: 14000,
-      status: "Pending",
-      bookingID: "B002",
-    },
-  ]);
-
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const { userId: adminId } = useParams();
+  const navigate = useNavigate();
+   const [formData, setFormData] = useState({
     bookingID: "",
     errors: { bookingID: false },
   });
+
+  const {
+    status,
+    error,
+    data: leases,
+  } = useQuery({
+    queryKey: ["leases", adminId],
+    queryFn: () => getLeasesByAdminId(adminId),
+    onError: (error) => {
+      if (error.response) {
+        if (error.response.status === 401) {
+          Toast.error("Your session has expired. Please log in again.");
+          //api call to logout
+          localStorage.removeItem('user');
+          navigate('/login');
+        } else {
+          Toast.error(error.response.data?.message || "Server error occurred.");
+        }
+      } else if (error.request) {
+        // No response from server
+        Toast.error("Network error. Please check your connection.");
+      } else {
+        // Something else (like JSON parse, etc.)
+        Toast.error("Unexpected error. Please try again.");
+      }
+    },
+  });
+
+  const [showModal, setShowModal] = useState(false);
+ 
 
   const handleChange = (e) => {
     setFormData({
@@ -44,8 +58,6 @@ export default function LeasesTab() {
       setFormData({ ...formData, errors: { bookingID: true } });
       return;
     }
-    // API call to add lease would go here
-    Toast.success(`Lease added for Booking ID: ${formData.bookingID}`);
     closeModal();
   };
 
@@ -106,139 +118,206 @@ export default function LeasesTab() {
         </motion.button>
       </div>
 
-      {/* TABLE VIEW (Desktop) */}
-      <div className="hidden sm:block overflow-x-auto rounded-2xl shadow-xl bg-white/90 backdrop-blur-md">
-        <table className="min-w-full text-sm sm:text-base text-center border-collapse">
-          <thead>
-            <tr className="bg-gradient-to-r from-blue-600 to-blue-500 text-white uppercase tracking-wide text-xs sm:text-sm">
-              <th className="px-4 py-3 rounded-l-2xl">Booking ID</th>
-              <th className="px-4 py-3">Tenant</th>
-              <th className="px-4 py-3">Property</th>
-              <th className="px-4 py-3">Start</th>
-              <th className="px-4 py-3">End</th>
-              <th className="px-4 py-3">Rent</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 rounded-r-2xl">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence>
-              {leases.map((lease, i) => (
-                <motion.tr
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="border-b border-gray-100 hover:bg-blue-50/60 transition-colors duration-200"
-                >
-                  <td className="px-3 py-3 text-blue-700 font-bold whitespace-nowrap">
-                    {lease.bookingID}
-                  </td>
-                  <td className="px-3 py-3"><strong>{lease.tenant}</strong></td>
-                  <td className="px-3 py-3">{lease.property}</td>
-                  <td className="px-3 py-3">{formatDate(lease.startDate)}</td>
-                  <td className="px-3 py-3">{formatDate(lease.endDate)}</td>
-                  <td className="px-3 py-3 font-bold text-blue-600">
-                    R{lease.rent.toLocaleString()}
-                  </td>
-                  <td className="px-3 py-3">
-                    <span
-                      className={`${getStatusClasses(
-                        lease.status
-                      )} font-semibold px-3 py-1 rounded-full text-xs sm:text-sm`}
+      {/* TABLE / CONTENT AREA */}
+      <div className="relative min-h-[250px] flex items-center justify-center bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-4 sm:p-6">
+        {/* LOADING */}
+        <AnimatePresence>
+          {status === "pending" && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white/70 backdrop-blur-sm"
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.05, 1],
+                  opacity: [0.8, 1, 0.8],
+                }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+                className="text-blue-700 font-extrabold text-lg sm:text-xl"
+              >
+                Loading leases...
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ERROR */}
+        <AnimatePresence>
+          {status === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 flex items-center justify-center bg-red-100/90 rounded-2xl"
+            >
+              <motion.p
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{ repeat: Infinity, duration: 1.2 }}
+                className="text-red-700 font-extrabold text-lg sm:text-xl text-center"
+              >
+                ❌ Error loading leases:
+                <br />
+                {error?.message || "Unknown error"}
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* EMPTY STATE */}
+        {status === "success" && (!leases || leases.length === 0) && (
+          <p className="text-gray-500 text-center w-full">No leases found.</p>
+        )}
+
+        {/* TABLE VIEW */}
+        {status === "success" && leases?.length > 0 && (
+          <div className="hidden sm:block w-full overflow-x-auto rounded-2xl">
+            <table className="min-w-full text-sm sm:text-base text-center border-collapse">
+              <thead>
+                <tr className="bg-gradient-to-r from-blue-600 to-blue-500 text-white uppercase tracking-wide text-xs sm:text-sm">
+                  <th className="px-4 py-3 rounded-l-2xl">Booking ID</th>
+                  <th className="px-4 py-3">Tenant</th>
+                  <th className="px-4 py-3">Property</th>
+                  <th className="px-4 py-3">Start</th>
+                  <th className="px-4 py-3">End</th>
+                  <th className="px-4 py-3">Rent</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 rounded-r-2xl">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <AnimatePresence>
+                  {leases.map((lease, i) => (
+                    <motion.tr
+                      key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="border-b border-gray-100 hover:bg-blue-50/60 transition-colors duration-200"
                     >
-                      {lease.status}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3 flex justify-center gap-2 flex-wrap">
-                    {["Edit", "Delete", "Activate"].map((action, j) => (
-                      <motion.button
-                        key={j}
-                        whileHover={{ scale: 1.12 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={buttonHoverTransition}
-                        className={`${
-                          action === "Edit"
-                            ? "text-blue-600 hover:text-blue-700"
-                            : action === "Delete"
-                            ? "text-red-600 hover:text-red-700"
-                            : "text-green-600 hover:text-green-700"
-                        } font-semibold px-3 py-1 rounded text-xs sm:text-sm`}
-                      >
-                        {action}
-                      </motion.button>
-                    ))}
-                  </td>
-                </motion.tr>
-              ))}
-            </AnimatePresence>
-          </tbody>
-        </table>
+                      <td className="px-3 py-3 text-blue-700 font-bold whitespace-nowrap">
+                        {lease.bookingID}
+                      </td>
+                      <td className="px-3 py-3">
+                        <strong>{lease.tenant}</strong>
+                      </td>
+                      <td className="px-3 py-3">{lease.property}</td>
+                      <td className="px-3 py-3">
+                        {formatDate(lease.startDate)}
+                      </td>
+                      <td className="px-3 py-3">{formatDate(lease.endDate)}</td>
+                      <td className="px-3 py-3 font-bold text-blue-600">
+                        R{lease.rent.toLocaleString()}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span
+                          className={`${getStatusClasses(
+                            lease.status
+                          )} font-semibold px-3 py-1 rounded-full text-xs sm:text-sm`}
+                        >
+                          {lease.status}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 flex justify-center gap-2 flex-wrap">
+                        {["Edit", "Delete", "Activate"].map((action, j) => (
+                          <motion.button
+                            key={j}
+                            whileHover={{ scale: 1.12 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={buttonHoverTransition}
+                            className={`${
+                              action === "Edit"
+                                ? "text-blue-600 hover:text-blue-700"
+                                : action === "Delete"
+                                ? "text-red-600 hover:text-red-700"
+                                : "text-green-600 hover:text-green-700"
+                            } font-semibold px-3 py-1 rounded text-xs sm:text-sm`}
+                          >
+                            {action}
+                          </motion.button>
+                        ))}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* MOBILE CARD VIEW */}
-      <div className="sm:hidden mt-4 space-y-4">
-        <AnimatePresence>
-          {leases.map((lease, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white p-4 rounded-xl shadow-md border border-gray-200"
-            >
-              <div className="flex justify-between items-center mb-1">
-                <h4 className="font-bold text-blue-800 text-lg">
-                  {lease.tenant}
-                </h4>
-                <span
-                  className={`${getStatusClasses(
-                    lease.status
-                  )} font-semibold px-3 py-1 rounded-full text-xs`}
-                >
-                  {lease.status}
-                </span>
-              </div>
-              <div className="space-y-1 text-sm text-gray-700">
-                <p>
-                  <strong>Booking ID:</strong> {lease.bookingID}
-                </p>
-                <p>
-                  <strong>Property:</strong> {lease.property}
-                </p>
-                <p>
-                  <strong>Duration:</strong> {formatDate(lease.startDate)} –{" "}
-                  {formatDate(lease.endDate)}
-                </p>
-                <p className="text-blue-700 font-semibold">
-                  Rent: R{lease.rent.toLocaleString()}
-                </p>
-              </div>
-              <div className="flex justify-end gap-3 mt-3">
-                {["Edit", "Delete", "Activate"].map((action, j) => (
-                  <motion.button
-                    key={j}
-                    whileHover={{ scale: 1.12 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={buttonHoverTransition}
-                    className={`${
-                      action === "Edit"
-                        ? "text-blue-600 hover:text-blue-700"
-                        : action === "Delete"
-                        ? "text-red-600 hover:text-red-700"
-                        : "text-green-600 hover:text-green-700"
-                    } text-xs font-semibold`}
+      {status === "success" && leases?.length > 0 && (
+        <div className="sm:hidden mt-4 space-y-4">
+          <AnimatePresence>
+            {leases.map((lease, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+                className="bg-white p-4 rounded-xl shadow-md border border-gray-200"
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className="font-bold text-blue-800 text-lg">
+                    {lease.tenant}
+                  </h4>
+                  <span
+                    className={`${getStatusClasses(
+                      lease.status
+                    )} font-semibold px-3 py-1 rounded-full text-xs`}
                   >
-                    {action}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+                    {lease.status}
+                  </span>
+                </div>
+                <div className="space-y-1 text-sm text-gray-700">
+                  <p>
+                    <strong>Booking ID:</strong> {lease.bookingID}
+                  </p>
+                  <p>
+                    <strong>Property:</strong> {lease.property}
+                  </p>
+                  <p>
+                    <strong>Duration:</strong> {formatDate(lease.startDate)} –{" "}
+                    {formatDate(lease.endDate)}
+                  </p>
+                  <p className="text-blue-700 font-semibold">
+                    Rent: R{lease.rent.toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex justify-end gap-3 mt-3">
+                  {["Edit", "Delete", "Activate"].map((action, j) => (
+                    <motion.button
+                      key={j}
+                      whileHover={{ scale: 1.12 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={buttonHoverTransition}
+                      className={`${
+                        action === "Edit"
+                          ? "text-blue-600 hover:text-blue-700"
+                          : action === "Delete"
+                          ? "text-red-600 hover:text-red-700"
+                          : "text-green-600 hover:text-green-700"
+                      } text-xs font-semibold`}
+                    >
+                      {action}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* ADD LEASE MODAL */}
       <AnimatePresence>

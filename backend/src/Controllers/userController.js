@@ -31,7 +31,7 @@ export const login = async (req, res) => {
 }
 
 //controller to handle user logout
-export const logout = async (req, res) => {
+export const logout = async (_, res) => {
     try {
         // Clear the authentication cookie
         clearAuthCookie(res);

@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
   ArcElement,
+  Filler,
 } from "chart.js";
 
 import {
@@ -30,7 +31,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  Filler
 );
 
 export default function OverviewTab() {

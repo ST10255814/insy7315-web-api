@@ -95,7 +95,6 @@ export default function Login() {
         prefLogin: formData.prefLogin,
         password: formData.password,
       });
-      console.log("Login response:", response.data);
       localStorage.setItem(
         "user",
         JSON.stringify(response.data.user.fullname)
@@ -103,14 +102,14 @@ export default function Login() {
       Toast.success(response.data.message);
 
       // Reset form and loading state
-      setFormData((prev) => ({
+      setFormData({
         prefLogin: "",
         password: "",
         isLoading: false,
         loginText: "Login",
         showPassword: false,
         errors: {},
-      }));
+      });
       // Navigate to dashboard
       setTimeout(() => navigate(`/dashboard/${response.data.user._id}`), 500);
     } catch (error) {

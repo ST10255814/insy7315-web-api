@@ -17,71 +17,71 @@ function toObjectId(id) {
 async function register(data){
     try{
         const db = client.db('RentWise');
-    const systemUsers = db.collection('System-Users');
+        const systemUsers = db.collection('System-Users');
 
-    const {email, password, username, fullname} = data;
+        const {email, password, username, fullname} = data;
 
-    //check if all fields are provided
-    if(!email || !password || !username || !fullname){
-        throw new Error("Please provide all required fields");
-    }
+        //check if all fields are provided
+        if(!email || !password || !username || !fullname){
+            throw new Error("Please provide all required fields");
+        }
 
-    validation.sanitizeInput(email);
-    validation.sanitizeInput(password);
-    validation.sanitizeInput(username);
-    validation.sanitizeInput(fullname);
+        validation.sanitizeInput(email);
+        validation.sanitizeInput(password);
+        validation.sanitizeInput(username);
+        validation.sanitizeInput(fullname);
 
-    // Validate inputs and throw errors if validation fails
-    if (!validation.validateEmail(email.toLowerCase())) {
-        throw new Error("Invalid email format or contains inappropriate content");
-    }
-    
-    if (!validation.validatePassword(password)) {
-        throw new Error("Password must be at least 8 characters with letters and numbers, and cannot contain inappropriate content");
-    }
-    
-    if (!validation.validateUsername(username.toLowerCase())) {
-        throw new Error("Username contains inappropriate content or invalid format");
-    }
-    
-    if (!validation.validateFullname(fullname.toLowerCase())) {
-        throw new Error("Full name contains inappropriate content");
-    }
+        // Validate inputs and throw errors if validation fails
+        if (!validation.validateEmail(email.toLowerCase())) {
+            throw new Error("Invalid email format or contains inappropriate content");
+        }
+        
+        if (!validation.validatePassword(password)) {
+            throw new Error("Password must be at least 8 characters with letters and numbers, and cannot contain inappropriate content");
+        }
+        
+        if (!validation.validateUsername(username.toLowerCase())) {
+            throw new Error("Username contains inappropriate content or invalid format");
+        }
+        
+        if (!validation.validateFullname(fullname.toLowerCase())) {
+            throw new Error("Full name contains inappropriate content");
+        }
 
-    //check if username already exists
-    const existingUsername = await systemUsers.findOne({ username: username });
-    if(existingUsername){
-        throw new Error("Username already taken");
-    }
+        //check if username already exists
+        const existingUsername = await systemUsers.findOne({ username: username });
+        if(existingUsername){
+            throw new Error("Username already taken");
+        }
 
-    //check if user already exists
-    const existingUser = await systemUsers.findOne({ email: email });
-    if(existingUser){
-        throw new Error("User already exists with this email");
-    }
+        //check if user already exists
+        const existingUser = await systemUsers.findOne({ email: email });
+        if(existingUser){
+            throw new Error("User already exists with this email");
+        }
 
-    //salt & hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+        //salt & hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-    //assign default role value
-    const role = 'landlord';
+        //assign default role value
+        const role = 'landlord';
 
-    //create new user
-    const newUser = {
-        email: email,
-        password: hashedPassword,
-        username: username,
-        fullname: fullname,
-        role: role, //default value when registering on the website
-        createdAt: new Date(),
-        updatedAt: new Date()
-    }
+        //create new user
+        const newUser = {
+            email: email,
+            password: hashedPassword,
+            username: username,
+            fullname: fullname,
+            role: role, //default value when registering on the website
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }
 
-    //insert new user into database
-    await systemUsers.insertOne(newUser);
+        //insert new user into database
+        await systemUsers.insertOne(newUser);
 
-    return { fullname: newUser.fullname, email: newUser.email, createdAt: newUser.createdAt };
+        return { fullname: newUser.fullname, email: newUser.email, createdAt: newUser.createdAt };
     }
     catch(err){
         throw new Error("Registration failed: " + err.message);

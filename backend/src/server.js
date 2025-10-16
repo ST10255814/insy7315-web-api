@@ -5,6 +5,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import userController from './Controllers/userController.js';
+import leaseController from './Controllers/leaseController.js';
+import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
+
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
@@ -46,10 +50,6 @@ app.use(cors({
 // Connect to MongoDB
 mongoConnection();
 
-//controller declarations
-import userController from './Controllers/userController.js';
-import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
-
 // Test route
 app.get('/', (_, res) => {
   res.json({ message: 'API is running!' });
@@ -58,8 +58,11 @@ app.get('/', (_, res) => {
 //user routes
 app.post('/api/user/login', arcjetMiddleware, userController.login);
 app.post('/api/user/register', arcjetMiddleware, userController.register);
-app.post('/api/user/logout', arcjetMiddleware, userController.logout);
+app.post('/api/user/logout', userController.logout);
 app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPassword);
+
+app.get('/api/:id/leases', checkAuth, leaseController.getAdminLeases);
+//app.post('/api/:id/leases/create', checkAuth, leaseController.createLease);
 
 // Start server
 app.listen(PORT, () => {

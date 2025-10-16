@@ -35,7 +35,7 @@ function toObjectId(id) {
  * 
  * On failure, returns 401 status with error message
  */
-const checkAuth = async (req, res, next) => {
+export const checkAuth = async (req, res, next) => {
   try {
     // Try to get token from cookies first (preferred), then from Authorization header
     let token = req.cookies?.authToken;
@@ -56,5 +56,3 @@ const checkAuth = async (req, res, next) => {
     res.status(401).json({ error: "Your session is expired. Please login again." });
   }
 };
-
-export { checkAuth };
