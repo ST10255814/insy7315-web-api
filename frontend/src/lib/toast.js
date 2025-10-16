@@ -5,10 +5,10 @@ class Toast {
   static success(message, options = {}) {
     toast.success(message, {
       position: options.position || "top-right", 
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
-      pauseOnHover: true,
+      pauseOnHover: false,
       draggable: true,
       progress: undefined,
       transition: Slide,
@@ -19,10 +19,10 @@ class Toast {
   static error(message, options = {}) {
     toast.error(message, {
       position: options.position || "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar:  false,
       closeOnClick: true,
-      pauseOnHover: true,
+      pauseOnHover: false,
       draggable: true,
       progress: undefined,
       transition: Slide,
@@ -33,10 +33,10 @@ class Toast {
   static info(message, options = {}) {
     toast.info(message, {
       position: options.position || "top-right",
-      autoClose:  3000,
+      autoClose:  2000,
       hideProgressBar: false,
       closeOnClick: true,
-      pauseOnHover: true,
+      pauseOnHover: false,
       draggable: true,
       progress: undefined,
       transition: Slide,
@@ -47,10 +47,10 @@ class Toast {
   static warning(message, options = {}) {
     toast.warning(message, {
       position: options.position || "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar:  false,
       closeOnClick: true,
-      pauseOnHover: true,
+      pauseOnHover: false,
       draggable: true,
       progress: undefined,
       transition: Slide,

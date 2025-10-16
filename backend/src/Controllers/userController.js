@@ -19,12 +19,11 @@ export const login = async (req, res) => {
         // Set JWT token in HTTP-only cookie
         setAuthCookie(res, result.token);
 
-        const {token, ...userData} = result;
+        const {token, ...user} = result;
         
         res.status(200).json({ 
-            message: "User logged in successfully", 
-            token: result.token,
-            userData
+            message: "User logged in successfully",
+            ...user
         });
     }catch(err){
         res.status(400).json({error: err.message });

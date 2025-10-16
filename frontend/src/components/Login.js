@@ -98,7 +98,7 @@ export default function Login() {
       console.log("Login response:", response.data);
       localStorage.setItem(
         "user",
-        JSON.stringify(response.data.userData.user.fullname)
+        JSON.stringify(response.data.user.fullname)
       );
       Toast.success(response.data.message);
 
@@ -112,7 +112,7 @@ export default function Login() {
         errors: {},
       }));
       // Navigate to dashboard
-      setTimeout(() => navigate("/dashboard"), 500);
+      setTimeout(() => navigate(`/dashboard/${response.data.user._id}`), 500);
     } catch (error) {
       const errorMsg = error.response?.data?.error || "Login failed";
       console.log("Login error:", errorMsg);

@@ -3,8 +3,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaSignOutAlt,
   FaUserCircle,
-  FaBuilding,
-  FaChartBar,
   FaSignInAlt,
   FaUserPlus,
   FaBars,
