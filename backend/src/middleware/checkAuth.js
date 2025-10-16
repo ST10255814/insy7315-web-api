@@ -44,7 +44,7 @@ const checkAuth = async (req, res, next) => {
     }
     
     if (!token) {
-      return res.status(401).json({ message: "No token provided" });
+      return res.status(401).json({ error: "No token provided" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -53,7 +53,7 @@ const checkAuth = async (req, res, next) => {
     next();
   } catch (err) {
     console.error("checkAuth error:", err.message);
-    res.status(401).json({ message: "Your session is expired. Please login again." });
+    res.status(401).json({ error: "Your session is expired. Please login again." });
   }
 };
 
