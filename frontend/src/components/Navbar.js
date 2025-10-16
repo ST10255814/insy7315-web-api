@@ -9,8 +9,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import Toast from "../lib/toast.js";
-import api from "../lib/axios.js";
+import { logoutUser } from "../utils/login.api.js";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,13 +19,10 @@ export default function Navbar() {
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
 
   const handleLogout = async () => {
-    try {
-      const res = await api.post("/api/user/logout", {}, { withCredentials: true });
-      Toast.success(res.data.message);
-      localStorage.removeItem("user");
-      navigate("/login");
-    } catch (err) {
-      Toast.error(err.response?.data?.error || "Logout failed");
+    const response = await logoutUser()
+    if(response){
+      navigate('/login')
+      localStorage.removeItem('user')
     }
   };
 

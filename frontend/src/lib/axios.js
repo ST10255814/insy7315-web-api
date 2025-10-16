@@ -6,4 +6,15 @@ const api = axios.create({
     withCredentials: true
 })
 
+api.interceptors.response.use(
+  (response) => {
+    console.log("Axios response:", response);
+    return response;
+  },
+  (error) => {
+    console.log("Axios intercepted error:", error.response?.status, error.response?.data);
+    throw error; 
+  }
+);
+
 export default api;

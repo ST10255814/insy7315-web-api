@@ -12,12 +12,14 @@ async function getLeasesByAdminId(adminId) {
     if (!adminId) {
       throw new Error("Admin ID is required");
     }
+    
     const db = client.db("RentWise");
     const leasesCollection = db.collection("Leases");
 
     const leases = await leasesCollection
-      .find({ _id: toObjectId(adminId) })
+      .find({ adminId: toObjectId(adminId) })
       .toArray();
+
     return leases;
   } catch (err) {
     throw new Error("Error fetching leases: " + err.message);
@@ -52,15 +54,16 @@ async function createLease(bookingID, adminId) {
     //create tenant Object
     const tenant = {
         userId: userID._id,
-        firstName: userID.firstName,
-        surname: userID.surname,
+        //firstName: userID.firstName,
+        //surname: userID.surname,
+        fullname: userID.name,
         email: userID.email
     }
 
     //create listing object with address 
     const listing = {
-        listingId : booking.ListingDetail.listingID,
-        address: booking.ListingDetail.address
+        listingId : booking.listingDetail.listingID,
+        address: booking.listingDetail.address
     }
 
     //create booking details object with startDate, endDate and rentAmount
@@ -76,6 +79,7 @@ async function createLease(bookingID, adminId) {
         bookingDetails,
         tenant,
         listing,
+        status: "Pending",
         leaseCreatedAt: new Date()
     };
 

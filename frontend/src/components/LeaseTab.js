@@ -1,48 +1,18 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import Toast from "../lib/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getLeasesByAdminId, createLeaseForBookingID } from "../utils/leases.api.js";
+import { useLeasesQuery, useCreateLeaseMutation } from "../utils/queries";
 
 export default function LeasesTab() {
   const { userId: adminId } = useParams();
-  const navigate = useNavigate();
-   const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     bookingID: "",
     errors: { bookingID: false },
   });
-
-  const {
-    status,
-    error,
-    data: leases,
-  } = useQuery({
-    queryKey: ["leases", adminId],
-    queryFn: () => getLeasesByAdminId(adminId),
-    onError: (error) => {
-      if (error.response) {
-        if (error.response.status === 401) {
-          Toast.error("Your session has expired. Please log in again.");
-          //api call to logout
-          localStorage.removeItem('user');
-          navigate('/login');
-        } else {
-          Toast.error(error.response.data?.message || "Server error occurred.");
-        }
-      } else if (error.request) {
-        // No response from server
-        Toast.error("Network error. Please check your connection.");
-      } else {
-        // Something else (like JSON parse, etc.)
-        Toast.error("Unexpected error. Please try again.");
-      }
-    },
-  });
-
   const [showModal, setShowModal] = useState(false);
- 
+
+  const { status, error, data: leases } = useLeasesQuery(adminId);
+  const createLeaseMutation = useCreateLeaseMutation();
 
   const handleChange = (e) => {
     setFormData({
@@ -58,7 +28,17 @@ export default function LeasesTab() {
       setFormData({ ...formData, errors: { bookingID: true } });
       return;
     }
-    closeModal();
+    createLeaseMutation.mutate(formData.bookingID, {
+      onSuccess: () => {
+        closeModal();
+        setFormData({ bookingID: "", errors: { bookingID: false } });
+      },
+    });
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setFormData({ bookingID: "", errors: { bookingID: false } });
   };
 
   const formatDate = (dateStr) => {
@@ -83,11 +63,6 @@ export default function LeasesTab() {
     }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setFormData({ bookingID: "", errors: { bookingID: false } });
-  };
-
   const buttonHoverTransition = {
     type: "spring",
     stiffness: 800,
@@ -106,7 +81,6 @@ export default function LeasesTab() {
         <h3 className="text-2xl sm:text-3xl font-extrabold text-blue-800">
           Lease Management
         </h3>
-
         <motion.button
           onClick={() => setShowModal(true)}
           whileHover={{ scale: 1.1 }}
@@ -118,8 +92,8 @@ export default function LeasesTab() {
         </motion.button>
       </div>
 
-      {/* TABLE / CONTENT AREA */}
-      <div className="relative min-h-[250px] flex items-center justify-center bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-4 sm:p-6">
+      {/* CONTENT AREA */}
+      <div className="relative min-h-[250px] flex flex-col items-center justify-center bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-4 sm:p-6">
         {/* LOADING */}
         <AnimatePresence>
           {status === "pending" && (
@@ -129,7 +103,7 @@ export default function LeasesTab() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white/70 backdrop-blur-sm"
+              className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-white/70 backdrop-blur-sm z-10"
             >
               <motion.div
                 animate={{
@@ -154,7 +128,7 @@ export default function LeasesTab() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4 }}
-              className="absolute inset-0 flex items-center justify-center bg-red-100/90 rounded-2xl"
+              className="absolute inset-0 flex items-center justify-center bg-red-100/90 rounded-2xl z-10"
             >
               <motion.p
                 animate={{
@@ -173,10 +147,12 @@ export default function LeasesTab() {
 
         {/* EMPTY STATE */}
         {status === "success" && (!leases || leases.length === 0) && (
-          <p className="text-gray-500 text-center w-full">No leases found.</p>
+          <p className="text-gray-500 text-center w-full mt-4">
+            No leases found.
+          </p>
         )}
 
-        {/* TABLE VIEW */}
+        {/* DESKTOP TABLE */}
         {status === "success" && leases?.length > 0 && (
           <div className="hidden sm:block w-full overflow-x-auto rounded-2xl">
             <table className="min-w-full text-sm sm:text-base text-center border-collapse">
@@ -204,18 +180,20 @@ export default function LeasesTab() {
                       className="border-b border-gray-100 hover:bg-blue-50/60 transition-colors duration-200"
                     >
                       <td className="px-3 py-3 text-blue-700 font-bold whitespace-nowrap">
-                        {lease.bookingID}
+                        {lease.bookingDetails.bookingId}
                       </td>
                       <td className="px-3 py-3">
-                        <strong>{lease.tenant}</strong>
+                        <strong>{lease.tenant.fullname}</strong>
                       </td>
-                      <td className="px-3 py-3">{lease.property}</td>
+                      <td className="px-3 py-3">{lease.listing.address}</td>
                       <td className="px-3 py-3">
-                        {formatDate(lease.startDate)}
+                        {formatDate(lease.bookingDetails.startDate)}
                       </td>
-                      <td className="px-3 py-3">{formatDate(lease.endDate)}</td>
+                      <td className="px-3 py-3">
+                        {formatDate(lease.bookingDetails.endDate)}
+                      </td>
                       <td className="px-3 py-3 font-bold text-blue-600">
-                        R{lease.rent.toLocaleString()}
+                        R{lease.bookingDetails.rentAmount.toLocaleString()}
                       </td>
                       <td className="px-3 py-3">
                         <span
@@ -252,72 +230,74 @@ export default function LeasesTab() {
             </table>
           </div>
         )}
-      </div>
 
-      {/* MOBILE CARD VIEW */}
-      {status === "success" && leases?.length > 0 && (
-        <div className="sm:hidden mt-4 space-y-4">
-          <AnimatePresence>
-            {leases.map((lease, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-4 rounded-xl shadow-md border border-gray-200"
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <h4 className="font-bold text-blue-800 text-lg">
-                    {lease.tenant}
-                  </h4>
-                  <span
-                    className={`${getStatusClasses(
-                      lease.status
-                    )} font-semibold px-3 py-1 rounded-full text-xs`}
-                  >
-                    {lease.status}
-                  </span>
-                </div>
-                <div className="space-y-1 text-sm text-gray-700">
-                  <p>
-                    <strong>Booking ID:</strong> {lease.bookingID}
-                  </p>
-                  <p>
-                    <strong>Property:</strong> {lease.property}
-                  </p>
-                  <p>
-                    <strong>Duration:</strong> {formatDate(lease.startDate)} –{" "}
-                    {formatDate(lease.endDate)}
-                  </p>
-                  <p className="text-blue-700 font-semibold">
-                    Rent: R{lease.rent.toLocaleString()}
-                  </p>
-                </div>
-                <div className="flex justify-end gap-3 mt-3">
-                  {["Edit", "Delete", "Activate"].map((action, j) => (
-                    <motion.button
-                      key={j}
-                      whileHover={{ scale: 1.12 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={buttonHoverTransition}
-                      className={`${
-                        action === "Edit"
-                          ? "text-blue-600 hover:text-blue-700"
-                          : action === "Delete"
-                          ? "text-red-600 hover:text-red-700"
-                          : "text-green-600 hover:text-green-700"
-                      } text-xs font-semibold`}
+        {/* MOBILE CARD VIEW */}
+        {status === "success" && leases?.length > 0 && (
+          <div className="sm:hidden mt-4 space-y-4 relative w-full">
+            <AnimatePresence>
+              {leases.map((lease, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white p-4 rounded-xl shadow-md border border-gray-200 relative"
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <h4 className="font-bold text-blue-800 text-lg">
+                      {lease.tenant.fullname}
+                    </h4>
+                    <span
+                      className={`${getStatusClasses(
+                        lease.status
+                      )} font-semibold px-3 py-1 rounded-full text-xs`}
                     >
-                      {action}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
+                      {lease.status}
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-sm text-gray-700">
+                    <p>
+                      <strong>Booking ID:</strong>{" "}
+                      {lease.bookingDetails.bookingId}
+                    </p>
+                    <p>
+                      <strong>Property:</strong> {lease.listing.address}
+                    </p>
+                    <p>
+                      <strong>Duration:</strong>{" "}
+                      {formatDate(lease.bookingDetails.startDate)} –{" "}
+                      {formatDate(lease.bookingDetails.endDate)}
+                    </p>
+                    <p className="text-blue-700 font-semibold">
+                      Rent: R{lease.bookingDetails.rentAmount.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex justify-end gap-3 mt-3">
+                    {["Edit", "Delete", "Activate"].map((action, j) => (
+                      <motion.button
+                        key={j}
+                        whileHover={{ scale: 1.12 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={buttonHoverTransition}
+                        className={`${
+                          action === "Edit"
+                            ? "text-blue-600 hover:text-blue-700"
+                            : action === "Delete"
+                            ? "text-red-600 hover:text-red-700"
+                            : "text-green-600 hover:text-green-700"
+                        } text-xs font-semibold`}
+                      >
+                        {action}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
 
       {/* ADD LEASE MODAL */}
       <AnimatePresence>
@@ -338,7 +318,6 @@ export default function LeasesTab() {
               <h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-6 text-center">
                 Add New Lease
               </h3>
-
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <motion.div
                   animate={
@@ -357,12 +336,11 @@ export default function LeasesTab() {
                     value={formData.bookingID}
                     onChange={handleChange}
                     placeholder="Enter Booking ID"
-                    className={`w-full px-3 py-2 border rounded-xl shadow-sm transition outline-none
-                      ${
-                        formData.errors.bookingID && !formData.bookingID
-                          ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
-                          : "border-gray-300 focus:ring-2 focus:ring-blue-700"
-                      }`}
+                    className={`w-full px-3 py-2 border rounded-xl shadow-sm transition outline-none ${
+                      formData.errors.bookingID && !formData.bookingID
+                        ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
+                        : "border-gray-300 focus:ring-2 focus:ring-blue-700"
+                    }`}
                   />
                   {formData.errors.bookingID && (
                     <p className="text-[#FF3B30] text-sm mt-1 font-semibold">
@@ -384,12 +362,33 @@ export default function LeasesTab() {
                   </motion.button>
                   <motion.button
                     type="submit"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
+                    disabled={createLeaseMutation.isPending}
+                    whileHover={
+                      !createLeaseMutation.isPending ? { scale: 1.1 } : {}
+                    }
+                    whileTap={
+                      !createLeaseMutation.isPending ? { scale: 0.95 } : {}
+                    }
                     transition={buttonHoverTransition}
-                    className="px-5 py-2 rounded-lg font-semibold bg-blue-700 text-white shadow-md"
+                    className={`px-5 py-2 rounded-lg font-semibold shadow-md text-white flex items-center justify-center gap-2 ${
+                      createLeaseMutation.isPending
+                        ? "bg-blue-400 cursor-not-allowed"
+                        : "bg-blue-700 hover:bg-blue-800"
+                    }`}
                   >
-                    Add Lease
+                    {createLeaseMutation.isPending ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 1,
+                          ease: "linear",
+                        }}
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      />
+                    ) : (
+                      "Add Lease"
+                    )}
                   </motion.button>
                 </div>
               </form>

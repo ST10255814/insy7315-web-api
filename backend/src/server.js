@@ -67,7 +67,7 @@ app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPass
 
 //lease routes
 app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
-app.post('/api/leases/create', checkAuth, arcjetMiddleware, leaseController.createLease);
+app.post('/api/leases/create', checkAuth, leaseController.createLease);
 
 // Start server
 app.listen(PORT, () => {
