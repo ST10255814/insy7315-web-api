@@ -66,9 +66,11 @@ async function createLease(bookingID, adminId) {
         address: booking.listingDetail.address
     }
 
+    const bookingIDGenerated = await generateBookingId();
+
     //create booking details object with startDate, endDate and rentAmount
     const bookingDetails = {
-        bookingId: booking._id,
+        bookingId: bookingIDGenerated,
         startDate: booking.newBooking.checkInDate,
         endDate: booking.newBooking.checkOutDate,
         rentAmount: booking.newBooking.totalPrice
@@ -76,6 +78,7 @@ async function createLease(bookingID, adminId) {
 
     // Generate the lease ID
     const leaseId = await generateLeaseId();
+    
 
     const lease = {
         adminId: toObjectId(adminId),
@@ -102,6 +105,58 @@ async function generateLeaseId() {
     const leasesCollection = db.collection("Leases");
 
     // Find the lease with the highest leaseId number
+    const lastLease = await leasesCollection
+      .findOne(
+        { leaseId: { $exists: true } },
+        { sort: { leaseId: -1 } }
+      );
+
+    let nextNumber = 1;
+    
+    if (lastLease && lastLease.leaseId) {
+      // Extract the number from the lease ID (e.g., "L-0001" -> 1)
+      const lastNumber = parseInt(lastLease.leaseId.split('-')[1]);
+      nextNumber = lastNumber + 1;
+    }
+
+    // Format the number with leading zeros (4 digits)
+    const formattedNumber = nextNumber.toString().padStart(4, '0');
+    return `L-${formattedNumber}`;
+  } catch (err) {
+    throw new Error("Error generating lease ID: " + err.message);
+  }
+}
+
+//auto ID generation for bookings
+//ID format example B-0001, B-0002, etc.
+async function generateBookingId() {
+  try {
+    const db = client.db("RentWise");
+    const bookingsCollection = db.collection("Bookings");
+
+    // Find the booking with the highest bookingId number
+    const lastBooking = await bookingsCollection
+      .findOne(
+        { bookingId: { $exists: true } },
+        { sort: { bookingId: -1 } }
+      );
+
+    let nextNumber = 1;
+
+    if (lastBooking && lastBooking.bookingId) {
+      // Extract the number from the booking ID (e.g., "B-0001" -> 1)
+      const lastNumber = parseInt(lastBooking.bookingId.split('-')[1]);
+      nextNumber = lastNumber + 1;
+    }
+
+    // Format the number with leading zeros (4 digits)
+    const formattedNumber = nextNumber.toString().padStart(4, '0');
+    return `B-${formattedNumber}`;
+  } catch (err) {
+    throw new Error("Error generating booking ID: " + err.message);
+  }
+}
+
     const lastLease = await leasesCollection
       .findOne(
         { leaseId: { $exists: true } },
