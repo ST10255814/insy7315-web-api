@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
 import leaseService from './Services/leaseService.js';
+import invoiceService from './Services/invoiceService.js';
 
 dotenv.config();
 
@@ -75,16 +76,24 @@ app.post('/api/leases/create', checkAuth, leaseController.createLease);
 //invoice routes
 app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);
 app.get('/api/invoices', checkAuth, invoiceController.getInvoicesByAdminId);
+app.get('/api/invoices/stats', checkAuth, invoiceController.getInvoiceStats);
+app.patch('/api/invoices/:invoiceId/pay', checkAuth, invoiceController.markInvoiceAsPaid);
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   
-  // Start the lease status scheduler - runs daily at midnight
-  cron.schedule('0 0 * * *', () => {
-    console.log('Running scheduled lease status update...');
-    leaseService.updateAllLeaseStatuses();
+  // Start the status schedulers - runs daily at midnight
+  cron.schedule('0 0 * * *', async () => {
+    console.log('Running scheduled status updates...');
+    try {
+      await leaseService.updateAllLeaseStatuses();
+      await invoiceService.updateAllInvoiceStatuses();
+      console.log('Daily status updates completed successfully');
+    } catch (error) {
+      console.error('Error during daily status updates:', error);
+    }
   });
   
-  console.log('Lease status scheduler started - Daily updates at midnight');
+  console.log('Status schedulers started - Daily updates at midnight for leases and invoices');
 });
