@@ -3,10 +3,18 @@ import leaseService from '../Services/leaseService.js';
 export const getAdminLeases = async (req, res) => {
     try {
         const adminId = req.user.userId;
+        console.log(`Fetching leases for admin: ${adminId}`);
+        
+        if (!adminId) {
+            return res.status(400).json({ error: "Admin ID not found in request" });
+        }
+        
         const leases = await leaseService.getLeasesByAdminId(adminId);
+        console.log(`Successfully fetched ${leases.length} leases for admin ${adminId}`);
         res.status(200).json(leases);
     }
     catch (err) {
+        console.error("Error in getAdminLeases controller:", err);
         res.status(500).json({ error: err.message });
     }
 }

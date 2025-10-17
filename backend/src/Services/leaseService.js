@@ -16,36 +16,54 @@ async function getLeasesByAdminId(adminId) {
       .find({ adminId: toObjectId(adminId) })
       .toArray();
 
+    console.log(`Found ${leases.length} leases for admin ${adminId}`);
+
     // Update lease statuses in real-time
     const updatedLeases = await Promise.all(
-      leases.map(async (lease) => {
-        const currentStatus = lease.status;
-        const newStatus = await validateDate(
-          lease.bookingDetails.startDate,
-          lease.bookingDetails.endDate
-        );
+      leases.map(async (lease, index) => {
+        try {
+          const currentStatus = lease.status;
+          
+          // Check if bookingDetails and dates exist
+          if (!lease.bookingDetails || !lease.bookingDetails.startDate || !lease.bookingDetails.endDate) {
+            console.warn(`Lease ${lease._id} missing booking details or dates`);
+            return lease; // Return lease as-is if dates are missing
+          }
 
-        // If status changed, update in database
-        if (currentStatus !== newStatus) {
-          await leasesCollection.updateOne(
-            { _id: lease._id },
-            { 
-              $set: { 
-                status: newStatus,
-                lastStatusUpdate: new Date()
-              }
-            }
+          const newStatus = await validateDate(
+            lease.bookingDetails.startDate,
+            lease.bookingDetails.endDate
           );
-          lease.status = newStatus;
-          lease.lastStatusUpdate = new Date();
-        }
 
-        return lease;
+          // If status changed, update in database
+          if (currentStatus !== newStatus) {
+            console.log(`Updating lease ${lease._id} status from ${currentStatus} to ${newStatus}`);
+            await leasesCollection.updateOne(
+              { _id: lease._id },
+              { 
+                $set: { 
+                  status: newStatus,
+                  lastStatusUpdate: new Date()
+                }
+              }
+            );
+            lease.status = newStatus;
+            lease.lastStatusUpdate = new Date();
+          }
+
+          return lease;
+        } catch (leaseError) {
+          console.error(`Error processing lease ${lease._id}:`, leaseError);
+          // Return the lease as-is if there's an error processing it
+          return lease;
+        }
       })
     );
 
+    console.log(`Successfully processed ${updatedLeases.length} leases`);
     return updatedLeases;
   } catch (err) {
+    console.error("Error in getLeasesByAdminId:", err);
     throw new Error("Error fetching leases: " + err.message);
   }
 }
@@ -188,14 +206,47 @@ async function validateDate(startDate, endDate) {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
     
-    // Parse dates from DD-MM-YYYY format
-    const parseDate = (dateStr) => {
-      const [day, month, year] = dateStr.split('-');
-      return new Date(year, month - 1, day); // month is 0-based in JS Date
+    // Helper function to parse dates flexibly
+    const parseDate = (dateInput) => {
+      // If already a Date object, return it
+      if (dateInput instanceof Date) {
+        return new Date(dateInput);
+      }
+      
+      // If it's a string, try different parsing methods
+      if (typeof dateInput === 'string') {
+        // Try DD-MM-YYYY format first
+        if (dateInput.includes('-') && dateInput.split('-').length === 3) {
+          const parts = dateInput.split('-');
+          // Check if it's DD-MM-YYYY or YYYY-MM-DD
+          if (parts[0].length === 4) {
+            // YYYY-MM-DD format
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+          } else {
+            // DD-MM-YYYY format
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+          }
+        }
+        // Fall back to native Date parsing
+        return new Date(dateInput);
+      }
+      
+      // If it's a number (timestamp), create Date object
+      if (typeof dateInput === 'number') {
+        return new Date(dateInput);
+      }
+      
+      throw new Error(`Unable to parse date: ${dateInput}`);
     };
     
     const start = parseDate(startDate);
     const end = parseDate(endDate);
+    
+    // Validate that dates are valid
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      console.error(`Invalid date values: start=${startDate}, end=${endDate}`);
+      return "Pending"; // Return safe default
+    }
     
     // Set times to start of day for accurate comparison
     start.setHours(0, 0, 0, 0);
@@ -209,11 +260,9 @@ async function validateDate(startDate, endDate) {
       return "Pending";
     }
   } catch (error) {
-    console.error('Error parsing dates:', error);
-    // Fallback to original behavior if parsing fails
-    const today = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    console.error('Error parsing dates:', error, 'startDate:', startDate, 'endDate:', endDate);
+    // Return a safe default status instead of throwing
+    return "Pending";
     
     if (start <= today && end >= today) {
       return "Active";
