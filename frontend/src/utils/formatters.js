@@ -29,7 +29,7 @@ export const formatDate = (dateStr) => {
   const day = String(d.getDate()).padStart(2, "0");
   const month = monthsShort[d.getMonth()];
   const year = d.getFullYear();
-  return `${day}-${month}-${year}`;
+  return `${day} ${month} ${year}`;
 };
 
 /**
