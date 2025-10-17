@@ -4,7 +4,10 @@ import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast.js";
 import InvoiceCard from "../pages/InvoiceCard.js";
 import AddInvoiceModal from "../models/AddInvoiceModel.js";
-import { useInvoicesQuery, useCreateInvoiceMutation } from "../utils/queries.js";
+import {
+  useInvoicesQuery,
+  useCreateInvoiceMutation,
+} from "../utils/queries.js";
 import LoadingSkeleton from "../pages/LoadingSkeleton.js";
 import { useParams } from "react-router-dom";
 
@@ -13,7 +16,7 @@ export default function InvoicesTab() {
   // React Query to get invoices
   const { data, isLoading, isError } = useInvoicesQuery(adminId);
   // Normalize the data shape so `invoices` is always an array
-  const invoices = Array.isArray(data) ? data : (data?.invoices ?? []);
+  const invoices = Array.isArray(data) ? data : data?.invoices ?? [];
 
   const createInvoiceMutation = useCreateInvoiceMutation();
 
@@ -39,10 +42,10 @@ export default function InvoicesTab() {
     console.log("Adding Invoice:", invoiceData);
     createInvoiceMutation.mutate(invoiceData, {
       onSuccess: () => {
-        setShowAddModal(false)
+        setShowAddModal(false);
       },
     });
-  }
+  };
 
   return (
     <motion.div
@@ -54,12 +57,28 @@ export default function InvoicesTab() {
       {/* Add Invoice Button */}
       <motion.button
         onClick={() => setShowAddModal(true)}
-        whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{
+          scale: 1.07,
+          boxShadow: "0 8px 25px rgba(59,130,246,0.45)",
+        }}
+        whileTap={{ scale: 0.96 }}
+        transition={{
+          type: "spring",
+          stiffness: 220,
+          damping: 18,
+          mass: 0.8,
+        }}
         disabled={isLoading}
-        className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl shadow-lg font-semibold text-md hover:from-blue-600 hover:to-blue-700 transition-all"
+        className="flex items-center justify-center gap-2 
+             bg-gradient-to-r from-blue-500 to-blue-600 
+             text-white px-6 py-3 rounded-2xl shadow-md 
+             font-semibold text-md 
+             hover:from-blue-600 hover:to-blue-700 
+             transition-all duration-300 ease-out
+             focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
-        <FaPlusCircle /> Add Invoice
+        <FaPlusCircle className="text-lg" />
+        Add Invoice
       </motion.button>
 
       {/* Lease Cards / Loading / Error */}

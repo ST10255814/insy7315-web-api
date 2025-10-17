@@ -35,7 +35,7 @@ export default function InvoiceCard({ invoice, onAction }) {
     >
       {/* Card Info */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">
+        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant:{" "}
           {invoice.lease.tenant}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
@@ -66,29 +66,51 @@ export default function InvoiceCard({ invoice, onAction }) {
         </span>
       </div>
 
-      {/* Hover Overlay */}
+      {/* Hover Overlay with labels under each action button */}
       <motion.div
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
         className="absolute inset-0 z-20 bg-black/25 rounded-2xl flex items-center justify-center gap-4 pointer-events-none group-hover:pointer-events-auto"
       >
-        {["Edit", "Delete", "View"].map((action) => (
+        <div className="relative">
           <motion.button
-            key={action}
-            onClick={() => onAction(action, invoice)}
+            onClick={(e) => { e.currentTarget.blur(); onAction("Edit", invoice); }}
             whileHover={{ scale: 1.2 }}
-            className={`bg-white p-3 rounded-full shadow ${
-              action === "Edit"
-                ? "text-blue-600 hover:bg-blue-50"
-                : action === "Delete"
-                ? "text-red-600 hover:bg-red-50"
-                : "text-yellow-600 hover:bg-yellow-50"
-            }`}
+            className="peer bg-white p-3 rounded-full shadow text-blue-600 hover:bg-blue-50"
           >
-            {action === "Edit" ? <FaEdit /> : action === "Delete" ? <FaTrash /> : <FaEye />}
+            <FaEdit />
           </motion.button>
-        ))}
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+            Edit
+          </div>
+        </div>
+
+        <div className="relative">
+          <motion.button
+            onClick={(e) => { e.currentTarget.blur(); onAction("Delete", invoice); }}
+            whileHover={{ scale: 1.2 }}
+            className="peer bg-white p-3 rounded-full shadow text-red-600 hover:bg-red-50"
+          >
+            <FaTrash />
+          </motion.button>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+            Delete
+          </div>
+        </div>
+
+        <div className="relative">
+          <motion.button
+            onClick={(e) => { e.currentTarget.blur(); onAction("View", invoice); }}
+            whileHover={{ scale: 1.2 }}
+            className="peer bg-white p-3 rounded-full shadow text-yellow-600 hover:bg-yellow-50"
+          >
+            <FaEye />
+          </motion.button>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+            View
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );

@@ -7,6 +7,7 @@ import LeaseCard from "../pages/LeaseCard.js";
 import LoadingSkeleton from "../pages/LoadingSkeleton.js";
 import AddLeaseModal from "../models/AddLeaseModel.js";
 import EditLeaseModal from "../models/EditLeaseModel.js";
+import Toast from "../lib/toast.js";
 
 export default function LeasesTab() {
   const { userId: adminId } = useParams();
@@ -14,7 +15,10 @@ export default function LeasesTab() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedLease, setSelectedLease] = useState(null);
-  const [formData, setFormData] = useState({ bookingID: "", errors: { isBookingId: false } });
+  const [formData, setFormData] = useState({
+    bookingID: "",
+    errors: { isBookingId: false },
+  });
 
   const { status, data: leases } = useLeasesQuery(adminId);
   const createLeaseMutation = useCreateLeaseMutation();
@@ -31,18 +35,20 @@ export default function LeasesTab() {
         setShowAddModal(false);
         setFormData({
           bookingID: "",
-          errors: { isBookingId: false}
-        })
+          errors: { isBookingId: false },
+        });
       },
-      onError: () => setFormData((prev) => ({ ...prev, errors: { isBookingId: true } })),
+      onError: () =>
+        setFormData((prev) => ({ ...prev, errors: { isBookingId: true } })),
     });
   };
 
   // Edit Lease Submit
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
+  const handleEditSubmit = () => {
     if (!selectedLease) return;
-    console.log(selectedLease)
+    Toast.info(`Updating lease ${selectedLease.leaseId}...`);
+    setShowEditModal(false);
+    setSelectedLease(null);
   };
 
   // Handle Lease Actions
@@ -80,12 +86,28 @@ export default function LeasesTab() {
       {/* Add Lease Button */}
       <motion.button
         onClick={() => setShowAddModal(true)}
-        whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}
-        whileTap={{ scale: 0.95 }}
-        disabled={status === 'pending'}
-        className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl shadow-lg font-semibold text-md hover:from-blue-600 hover:to-blue-700 transition-all"
+        whileHover={{
+          scale: 1.07,
+          boxShadow: "0 8px 25px rgba(59,130,246,0.45)",
+        }}
+        whileTap={{ scale: 0.96 }}
+        transition={{
+          type: "spring",
+          stiffness: 220,
+          damping: 18,
+          mass: 0.8,
+        }}
+        disabled={status === "pending"}
+        className="flex items-center justify-center gap-2 
+             bg-gradient-to-r from-blue-500 to-blue-600 
+             text-white px-6 py-3 rounded-2xl shadow-md 
+             font-semibold text-md 
+             hover:from-blue-600 hover:to-blue-700 
+             transition-all duration-300 ease-out
+             focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
-        <FaPlusCircle /> Add Lease
+        <FaPlusCircle className="text-lg" />
+        Add Lease
       </motion.button>
 
       {/* Lease Cards / Loading / Error */}
@@ -113,7 +135,11 @@ export default function LeasesTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
             {leases.map((lease) => (
-              <LeaseCard key={lease._id} lease={lease} onAction={handleLeaseAction} />
+              <LeaseCard
+                key={lease._id}
+                lease={lease}
+                onAction={handleLeaseAction}
+              />
             ))}
           </AnimatePresence>
         </div>

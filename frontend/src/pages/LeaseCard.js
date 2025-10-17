@@ -59,7 +59,7 @@ export default function LeaseCard({ lease, onAction }) {
     <div className="relative bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between overflow-hidden cursor-pointer group">
       {/* Card Content */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">{lease.tenant.fullname}</h4>
+        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant: {" "}{lease.tenant.fullname}</h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaIdBadge className="text-gray-400" />
           Lease ID: <span className="font-medium">{lease.leaseId}</span>
@@ -99,32 +99,47 @@ export default function LeaseCard({ lease, onAction }) {
         transition={{ duration: 0.2 }}
         className="absolute inset-0 z-20 bg-black/25 rounded-2xl flex items-center justify-center gap-4 pointer-events-none group-hover:pointer-events-auto"
       >
-        {/* Common Buttons */}
-        <motion.button
-          onClick={() => onAction("Edit", lease)}
-          whileHover={{ scale: 1.2 }}
-          className="bg-white p-3 rounded-full text-blue-600 shadow hover:bg-blue-50"
-        >
-          <FaEdit size={18} />
-        </motion.button>
-        <motion.button
-          onClick={() => onAction("Delete", lease)}
-          whileHover={{ scale: 1.2 }}
-          className="bg-white p-3 rounded-full text-red-600 shadow hover:bg-red-50"
-        >
-          <FaTrash size={18} />
-        </motion.button>
-
-        {/* Status-specific Buttons */}
-        {statusActions[lease.status]?.map((btn, idx) => (
+        {/* Common Buttons (each uses `peer` so label appears only when that button is hovered) */}
+        <div className="relative">
           <motion.button
-            key={idx}
-            onClick={() => onAction(btn.action, lease)}
+            onClick={() => onAction("Edit", lease)}
             whileHover={{ scale: 1.2 }}
-            className={`bg-white p-3 rounded-full shadow ${btn.color} ${btn.hover}`}
+            className="peer bg-white p-3 rounded-full text-blue-600 shadow hover:bg-blue-50"
           >
-            {btn.icon}
+            <FaEdit size={18} />
           </motion.button>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+            Edit
+          </div>
+        </div>
+
+        <div className="relative">
+          <motion.button
+            onClick={() => onAction("Delete", lease)}
+            whileHover={{ scale: 1.2 }}
+            className="peer bg-white p-3 rounded-full text-red-600 shadow hover:bg-red-50"
+          >
+            <FaTrash size={18} />
+          </motion.button>
+          <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+            Delete
+          </div>
+        </div>
+
+        {/* Status-specific Buttons with hover labels */}
+        {statusActions[lease.status]?.map((btn, idx) => (
+          <div className="relative" key={idx}>
+            <motion.button
+              onClick={() => onAction(btn.action, lease)}
+              whileHover={{ scale: 1.2 }}
+              className={`peer bg-white p-3 rounded-full shadow ${btn.color} ${btn.hover}`}
+            >
+              {btn.icon}
+            </motion.button>
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 peer-hover:opacity-100 transition-opacity text-xs bg-white text-gray-800 px-2 py-1 rounded shadow pointer-events-none whitespace-nowrap">
+              {btn.label}
+            </div>
+          </div>
         ))}
       </motion.div>
     </div>
