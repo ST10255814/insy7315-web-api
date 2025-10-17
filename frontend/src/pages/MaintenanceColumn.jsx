@@ -1,11 +1,6 @@
 import { motion } from "framer-motion";
 import MaintenanceCard from "./MaintenanceCard.jsx";
-
-const statusMap = {
-  Pending: { label: "Unassigned", color: "text-red-600" },
-  "In Progress": { label: "In Progress", color: "text-yellow-600" },
-  Completed: { label: "Completed", color: "text-green-600" },
-};
+import { maintenanceStatusMap } from "../constants/status.js";
 
 const columnVariants = {
   hidden: {},
@@ -24,14 +19,14 @@ export default function MaintenanceColumn({ status, requests }) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className={`text-lg font-bold flex items-center gap-3 ${statusMap[status].color}`}
+        className={`text-lg font-bold flex items-center gap-3 ${maintenanceStatusMap[status].color}`}
       >
-        {statusMap[status].label} ({requests.length})
+        {maintenanceStatusMap[status].label} ({requests.length})
       </motion.h2>
 
       <div className="space-y-4">
         {requests.length === 0 ? (
-          <p className="text-gray-400 italic">No requests</p>
+          <p className="text-gray-400 italic">No {maintenanceStatusMap[status].label} requests</p>
         ) : (
           requests.map((req, i) => <MaintenanceCard key={i} request={req} />)
         )}
