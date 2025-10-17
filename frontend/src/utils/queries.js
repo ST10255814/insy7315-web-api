@@ -4,16 +4,18 @@ import { getLeasesByAdminId, createLeaseForBookingID } from "./leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
+import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries } from "./cacheUtils.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
 export const useLeasesQuery = (adminId) => {
   return useQuery({
-    queryKey: ["leases", adminId],
+    queryKey: createQueryKey("leases", { adminId }),
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getLeasesByAdminId();
     },
     enabled: !!adminId,
+    ...CACHE_CONFIGS.MEDIUM, // Use medium frequency caching config
   }, queryClient);
 };
 
@@ -31,7 +33,8 @@ export const useCreateLeaseMutation = () => {
       Toast.success(
         `Lease created successfully: Lease ID: ${leaseID}`
       );
-      queryClient.invalidateQueries(["leases"]);
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "leases");
     },
     onError: (error) => {
       const msg =
@@ -45,12 +48,13 @@ export const useCreateLeaseMutation = () => {
 
 export const useInvoicesQuery = (adminId) => {
   return useQuery({
-    queryKey: ["invoices", adminId],
+    queryKey: createQueryKey("invoices", { adminId }),
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getInvoicesByAdminId();
     },
     enabled: !!adminId,
+    ...CACHE_CONFIGS.DYNAMIC, // Invoices change more frequently
   }, queryClient);
 };
 
@@ -64,7 +68,8 @@ export const useCreateInvoiceMutation = () => {
     onSuccess: (response) => {
       const invoiceID = response?.invoiceId || response;
       Toast.success(`Invoice created successfully: Invoice ID: ${invoiceID}`);
-      queryClient.invalidateQueries(["invoices"]);
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "invoices");
     },
     onError: (error) => {
       const msg =
