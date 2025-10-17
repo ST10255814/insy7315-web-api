@@ -15,7 +15,7 @@
  * @returns {string} Generated description
  */
 export function generateInvoiceDescription(invoiceData) {
-  const { tenantName, propertyAddress, amount, date, status } = invoiceData;
+  const { propertyAddress, date, status } = invoiceData;
   
   // Parse the date to get month/year for description
   let formattedDate;
@@ -49,7 +49,7 @@ export function generateInvoiceDescription(invoiceData) {
   // Add tenant and property info
   const shortAddress = truncateText(propertyAddress, 50);
 
-  return `${baseDescription} | Tenant: ${tenantName} | Property: ${shortAddress} | Amount: ${formatCurrency(amount)}`;
+  return `${baseDescription} }`;
 }
 
 /**
