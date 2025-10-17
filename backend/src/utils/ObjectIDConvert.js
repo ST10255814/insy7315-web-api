@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 function toObjectId(id) {
   if (id instanceof ObjectId) return id;
   if (typeof id === "string" && ObjectId.isValid(id)) return new ObjectId(id);
