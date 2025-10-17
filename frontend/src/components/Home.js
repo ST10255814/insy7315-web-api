@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaCreditCard,
   FaShieldAlt,
@@ -12,12 +12,18 @@ import { motion } from "framer-motion";
 export default function Home() {
   const [offsetY, setOffsetY] = useState(0);
   const user = JSON.parse(localStorage.getItem("user"));
+  const userId = JSON.parse(localStorage.getItem("userId"))
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setOffsetY(window.pageYOffset);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleGoToDashboard = () => {
+    navigate(`/dashboard/${userId}`); 
+  };
 
   const cardAnimation = {
     hidden: { opacity: 0, y: 30 },
@@ -69,13 +75,13 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex gap-4 flex-wrap justify-center"
           >
-            {user ? (
-              <Link
-                to="/dashboard"
+            {user && userId ? (
+              <button
+                onClick={handleGoToDashboard}
                 className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-full shadow-md hover:bg-white hover:text-blue-700 hover:shadow-lg transition transform hover:scale-105"
               >
                 Go to Dashboard
-              </Link>
+              </button>
             ) : (
               <>
                 <Link
