@@ -48,19 +48,24 @@ async function createInvoice(adminId, data){
             throw new Error("All fields are required");
         }
 
+        // NOTE TO GERHARD: Adjust validation :)
         validation.sanitizeInput(description);
-        validation.validateDate(date);
-        validation.validateAmount(amount);
+        validation.validateStartDate(date);
+        validation.validateRentAmount(amount);
 
-        validation.validateEndDate(date);
-        validation.validateAmount(amount);
+        //validation.validateEndDate(date);
+        //validation.validateAmount(amount);
 
         //find lease by leaseId
-        const lease = await leaseCollection.findOne({leaseId: toObjectId(leaseId)});
+        const lease = await leaseCollection.findOne({leaseId: leaseId});
+
+        if(!lease){
+            throw new Error("Lease not found with the provided Lease ID");
+        }
 
         //create lease object
         const leaseObject = {
-            tenant: lease.tenant.fullName,
+            tenant: lease.tenant.fullname,
             email: lease.tenant.email,
             propertyAddress: lease.listing.address,
         }
@@ -73,12 +78,13 @@ async function createInvoice(adminId, data){
             lease: leaseObject,
             description,
             amount,
-            date
+            date, 
+            status: "Pending",
         }
 
         //insert invoice into collection
         const result = await invoicesCollection.insertOne(invoice);
-        return result.insertedId;
+        return invoiceId;
     } catch (err) {
         throw new Error("Error creating invoice: " + err.message);
     }

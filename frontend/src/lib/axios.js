@@ -10,7 +10,7 @@ const api = axios.create({
 
 api.interceptors.response.use(
   (response) => {
-    console.log("Axios log: ", "Status code: " + response.status, response.data)
+    console.log('Axios response: ', response)
     return response;
   },
   async (error) => {

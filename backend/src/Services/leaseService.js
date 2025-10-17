@@ -120,7 +120,6 @@ async function createLease(bookingID, adminId) {
     // Generate the lease ID
     const leaseId = await generateLeaseId();
     
-
     const lease = {
         adminId: toObjectId(adminId),
         leaseId: leaseId,
@@ -132,7 +131,7 @@ async function createLease(bookingID, adminId) {
     };
 
     const result = await leasesCollection.insertOne(lease);
-    return result.insertedId;
+    return leaseId;
   } catch (err) {
     throw new Error("Error creating lease: " + err.message);
   }

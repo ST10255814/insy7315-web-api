@@ -8,7 +8,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
 
   const [formData, setFormData] = useState({
     amount: "",
-    dueDate: "",
+    date: "",
     leaseId: "",
     description: "",
   });
@@ -25,7 +25,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
     e.preventDefault();
     const newErrors = {};
     if (!formData.amount || formData.amount <= 0) newErrors.amount = "Amount is required and must be greater than 0";
-    if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
+    if (!formData.date) newErrors.date = "Date is required";
     if (!formData.leaseId) newErrors.leaseId = "Lease ID is required";
 
     if (Object.keys(newErrors).length > 0) {
@@ -35,10 +35,6 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
     }
 
     if (onSubmit) onSubmit(formData);
-
-    setFormData({ amount: "", dueDate: "", leaseId: "", description: "" });
-    setErrors({});
-    onClose();
   };
 
   return (
@@ -86,14 +82,14 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
                 <label className="block text-sm font-semibold text-blue-700 mb-2">Due Date</label>
                 <input
                   type="date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  name="date"
+                  value={formData.date}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
-                    errors.dueDate ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
+                    errors.date ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
                   }`}
                 />
-                {errors.dueDate && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.dueDate}</p>}
+                {errors.date && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.date}</p>}
               </div>
 
               {/* Lease ID */}

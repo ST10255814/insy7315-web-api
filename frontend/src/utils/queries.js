@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Toast from "../lib/toast.js";
 import { getLeasesByAdminId, createLeaseForBookingID } from "./leases.api.js";
-import { getInvoicesByAdminId } from "./invoice.api.js";
+import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
 
@@ -52,4 +52,26 @@ export const useInvoicesQuery = (adminId) => {
     },
     enabled: !!adminId,
   }, queryClient);
+};
+
+export const useCreateInvoiceMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (invoiceData) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return createInvoice(invoiceData);
+    },
+    onSuccess: (response) => {
+      const invoiceID = response?.invoiceId || response;
+      Toast.success(`Invoice created successfully: Invoice ID: ${invoiceID}`);
+      queryClient.invalidateQueries(["invoices"]);
+    },
+    onError: (error) => {
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to create invoice";
+      Toast.error(msg);
+    },
+  });
 };

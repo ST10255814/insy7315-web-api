@@ -9,3 +9,12 @@ export async function getInvoicesByAdminId() {
         throw error;
     }
 }
+
+export async function createInvoice(invoiceData) {
+    try {
+        const response = await api.post('/api/invoices/create', invoiceData, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }  
+};

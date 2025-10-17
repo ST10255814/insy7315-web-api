@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast.js";
 import InvoiceCard from "../pages/InvoiceCard.js";
 import AddInvoiceModal from "../models/AddInvoiceModel.js";
-import { useInvoicesQuery } from "../utils/queries.js";
+import { useInvoicesQuery, useCreateInvoiceMutation } from "../utils/queries.js";
 import LoadingSkeleton from "../pages/LoadingSkeleton.js";
 import { useParams } from "react-router-dom";
 
@@ -15,23 +15,34 @@ export default function InvoicesTab() {
   // Normalize the data shape so `invoices` is always an array
   const invoices = Array.isArray(data) ? data : (data?.invoices ?? []);
 
+  const createInvoiceMutation = useCreateInvoiceMutation();
+
   const [showAddModal, setShowAddModal] = useState(false);
 
   const handleInvoiceAction = (action, invoice) => {
     switch (action) {
       case "Edit":
-        Toast.info(`Editing ${invoice.invoiceNumber}`);
+        Toast.info(`Editing ${invoice.invoiceId}`);
         break;
       case "Delete":
-        Toast.info(`Deleting ${invoice.invoiceNumber}`);
+        Toast.info(`Deleting ${invoice.invoiceId}`);
         break;
       case "View":
-        Toast.info(`Viewing details for ${invoice.invoiceNumber}`);
+        Toast.info(`Viewing details for ${invoice.invoiceId}`);
         break;
       default:
         break;
     }
   };
+
+  const handleAddInvoiceSubmit = (invoiceData) => {
+    console.log("Adding Invoice:", invoiceData);
+    createInvoiceMutation.mutate(invoiceData, {
+      onSuccess: () => {
+        setShowAddModal(false)
+      },
+    });
+  }
 
   return (
     <motion.div
@@ -45,6 +56,7 @@ export default function InvoicesTab() {
         onClick={() => setShowAddModal(true)}
         whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}
         whileTap={{ scale: 0.95 }}
+        disabled={isLoading}
         className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl shadow-lg font-semibold text-md hover:from-blue-600 hover:to-blue-700 transition-all"
       >
         <FaPlusCircle /> Add Invoice
@@ -76,7 +88,7 @@ export default function InvoicesTab() {
           <AnimatePresence>
             {invoices.map((invoice) => (
               <InvoiceCard
-                key={invoice.invoiceNumber}
+                key={invoice.invoiceId}
                 invoice={invoice}
                 onAction={handleInvoiceAction}
               />
@@ -89,7 +101,8 @@ export default function InvoicesTab() {
       <AddInvoiceModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
-        // onSubmit={handleAddInvoiceSubmit} -> to add later
+        onSubmit={handleAddInvoiceSubmit}
+        isPending={createInvoiceMutation.isPending}
       />
     </motion.div>
   );

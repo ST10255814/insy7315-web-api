@@ -36,26 +36,26 @@ export default function InvoiceCard({ invoice, onAction }) {
       {/* Card Info */}
       <div className="space-y-2">
         <h4 className="font-bold text-blue-800 text-lg truncate">
-          {invoice.tenant}
+          {invoice.lease.tenant}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaEnvelope className="text-gray-400" /> Invoice #:{" "}
-          <span className="font-medium">{invoice.invoiceNumber}</span>
+          <span className="font-medium">{invoice.invoiceId}</span>
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaHome className="text-gray-400" /> Property:{" "}
-          <span className="font-medium">{invoice.property}</span>
+          <span className="font-medium">{invoice.lease.propertyAddress}</span>
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaCalendarAlt className="text-gray-400" /> Due:{" "}
-          <span className="font-medium">{formatDate(invoice.due)}</span>
+          <span className="font-medium">{formatDate(invoice.date)}</span>
         </div>
         <div className="flex items-center text-blue-700 text-md font-bold gap-2 mt-1">
           <FaMoneyBillWave className="text-green-500" /> R
           {invoice.amount.toLocaleString()}
         </div>
         {invoice.notes && (
-          <p className="text-gray-500 text-sm italic mt-1">{invoice.notes}</p>
+          <p className="text-gray-500 text-sm italic mt-1">{invoice.description}</p>
         )}
         <span
           className={`inline-block font-semibold px-3 py-1 rounded-full text-xs mt-2 ${
