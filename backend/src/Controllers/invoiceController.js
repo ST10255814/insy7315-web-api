@@ -1,4 +1,4 @@
-import invoiceService from "../Services/invoiceService";
+import invoiceService from "../Services/invoiceService.js";
 
 // Controller to handle invoice creation
 async function createInvoice(req, res) {
