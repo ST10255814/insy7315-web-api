@@ -52,6 +52,7 @@ mongoConnection();
 //controller declarations
 import userController from './Controllers/userController.js';
 import leaseController from './Controllers/leaseController.js';
+import invoiceController from './Controllers/invoiceController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -70,6 +71,10 @@ app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPass
 //lease routes
 app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
 app.post('/api/leases/create', checkAuth, leaseController.createLease);
+
+//invoice routes
+app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);
+app.get('/api/invoices', checkAuth, invoiceController.getInvoicesByAdminId);
 
 // Start server
 app.listen(PORT, () => {

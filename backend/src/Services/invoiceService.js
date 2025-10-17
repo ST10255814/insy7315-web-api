@@ -35,7 +35,7 @@ async function generateInvoiceId() {
 }
 
 //create invoice
-async function createInvoice(adminId){
+async function createInvoice(adminId, data){
     try{
         const db = client.db("RentWise");
         const invoicesCollection = db.collection("Invoices");
@@ -83,3 +83,21 @@ async function createInvoice(adminId){
         throw new Error("Error creating invoice: " + err.message);
     }
 }
+
+async function getInvoicesByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const invoicesCollection = db.collection("Invoices");
+    const invoices = await invoicesCollection
+      .find({ adminId: toObjectId(adminId) })
+      .toArray();
+    return invoices;
+  } catch (err) {
+    throw new Error("Error fetching invoices: " + err.message);
+  }
+}
+
+export default {
+    createInvoice,
+    getInvoicesByAdminId
+};
