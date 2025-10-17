@@ -46,9 +46,6 @@ async function createInvoice(adminId, data){
 
         // Generate automatic description if not provided
         const autoDescription = description || generateInvoiceDescription({
-            tenantName: lease.tenant.fullname,
-            propertyAddress: lease.listing.address,
-            amount: amount,
             date: date,
             status: "Pending"
         });
