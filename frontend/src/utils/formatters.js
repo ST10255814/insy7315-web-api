@@ -1,0 +1,63 @@
+/**
+ * Date and number formatting utilities
+ */
+
+const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * Format date string to DD-MMM-YYYY format
+ * Handles multiple input formats including DD-MM-YYYY and ISO dates
+ */
+export const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  
+  // Check if the date is in DD-MM-YYYY format
+  const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
+  
+  let d;
+  if (ddmmyyyyPattern.test(dateStr)) {
+    // Parse DD-MM-YYYY format manually
+    const [day, month, year] = dateStr.split('-').map(Number);
+    d = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+  } else {
+    // Use default Date parsing for other formats
+    d = new Date(dateStr);
+  }
+  
+  if (isNaN(d)) return "";
+  
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = monthsShort[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+/**
+ * Format date for US locale (used in InvoiceCard)
+ */
+export const formatDateUS = (dateStr) => {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+/**
+ * Format amount with thousands separators
+ * Handles both string and number inputs
+ */
+export const formatAmount = (value, locale = "en-US") => {
+  const raw = value ?? 0;
+  const num = typeof raw === "number" ? raw : Number(String(raw).replace(/[^0-9.-]+/g, ""));
+  return Number.isFinite(num) ? num.toLocaleString(locale) : String(raw);
+};
+
+/**
+ * Parse amount from string to number
+ */
+export const parseAmount = (value) => {
+  if (typeof value === "number") return value;
+  return Number(String(value).replace(/[^0-9.-]+/g, ""));
+};

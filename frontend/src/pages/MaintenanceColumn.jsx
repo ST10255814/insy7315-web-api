@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import MaintenanceCard from "./MaintenanceCard.js";
+import MaintenanceCard from "./MaintenanceCard.jsx";
 
 const statusMap = {
   Pending: { label: "Unassigned", color: "text-red-600" },
