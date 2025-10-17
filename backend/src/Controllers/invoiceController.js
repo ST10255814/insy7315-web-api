@@ -55,9 +55,24 @@ async function getInvoiceStats(req, res) {
   }
 }
 
+// Controller to regenerate invoice descriptions
+async function regenerateInvoiceDescriptions(req, res) {
+  try {
+    const adminId = req.user.userId; // Get admin ID from the authenticated user
+    const updatedCount = await invoiceService.regenerateAllInvoiceDescriptions(adminId);
+    res.status(200).json({ 
+      message: "Invoice descriptions regenerated successfully",
+      updatedCount 
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 export default {
   createInvoice,
   getInvoicesByAdminId,
   markInvoiceAsPaid,
-  getInvoiceStats
+  getInvoiceStats,
+  regenerateInvoiceDescriptions
 };
