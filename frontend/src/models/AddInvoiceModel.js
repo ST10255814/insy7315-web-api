@@ -109,7 +109,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
               </div>
 
               {/* Description */}
-              <div>
+              {/*<div>
                 <label className="block text-sm font-semibold text-blue-700 mb-2">Description</label>
                 <textarea
                   name="description"
@@ -119,7 +119,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
                   placeholder="Optional notes..."
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-700 sm:text-sm outline-none transition"
                 />
-              </div>
+              </div>*/}
 
               {/* Buttons */}
               <div className="flex justify-end gap-4 mt-2">

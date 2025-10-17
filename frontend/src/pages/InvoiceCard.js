@@ -11,7 +11,7 @@ import {
 
 const statusClasses = {
   Paid: "bg-green-200 text-green-800",
-  Unpaid: "bg-red-200 text-red-800",
+  Overdue: "bg-red-200 text-red-800",
   Pending: "bg-amber-200 text-amber-800",
 };
 
@@ -25,6 +25,16 @@ const formatDate = (dateStr) => {
 };
 
 export default function InvoiceCard({ invoice, onAction }) {
+  // Normalize amount to a number and format with thousands separators
+  const rawAmount = invoice?.amount ?? 0;
+  const numberAmount =
+    typeof rawAmount === "number"
+      ? rawAmount
+      : Number(String(rawAmount).replace(/[^0-9.-]+/g, ""));
+  const formattedAmount = Number.isFinite(numberAmount)
+    ? numberAmount.toLocaleString("en-US")
+    : String(rawAmount);
+
   return (
     <motion.div
       className="relative bg-white rounded-2xl shadow-lg p-5 flex flex-col justify-between overflow-hidden group cursor-pointer"
@@ -51,11 +61,10 @@ export default function InvoiceCard({ invoice, onAction }) {
           <span className="font-medium">{formatDate(invoice.date)}</span>
         </div>
         <div className="flex items-center text-blue-700 text-md font-bold gap-2 mt-1">
-          <FaMoneyBillWave className="text-green-500" /> R
-          {invoice.amount.toLocaleString()}
+          <FaMoneyBillWave className="text-green-500" /> R{formattedAmount}
         </div>
-        {invoice.notes && (
-          <p className="text-gray-500 text-sm italic mt-1">{invoice.description}</p>
+        {invoice.description && (
+          <p className="text-gray-500 text-sm italic mt-1">Notes: {invoice.description}</p>
         )}
         <span
           className={`inline-block font-semibold px-3 py-1 rounded-full text-xs mt-2 ${
