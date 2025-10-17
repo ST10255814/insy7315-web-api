@@ -1,19 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast";
 
+// Initial form state - defined outside component to avoid re-creation
+const INITIAL_FORM_STATE = {
+  amount: "",
+  date: "",
+  leaseId: "",
+};
+
 export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) {
   const buttonHoverTransition = { type: "spring", stiffness: 300, damping: 20 };
 
-  const [formData, setFormData] = useState({
-    amount: "",
-    date: "",
-    leaseId: "",
-    description: "",
-  });
-
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [errors, setErrors] = useState({});
+
+  // Reset form function - memoized to prevent unnecessary re-renders
+  const resetForm = useCallback(() => {
+    setFormData(INITIAL_FORM_STATE);
+    setErrors({});
+  }, []);
+
+  // Reset form when modal is closed
+  useEffect(() => {
+    if (!show) {
+      resetForm();
+    }
+  }, [show, resetForm]);
+
+  // Handle close action
+  const handleClose = () => {
+    onClose();
+  };
+  // Reset form when submission completes
+  const [wasPending, setWasPending] = useState(false);
+  useEffect(() => {
+    if (wasPending && !isPending) {
+      // Submission finished, reset form
+      resetForm();
+    }
+    setWasPending(isPending);
+  }, [isPending, wasPending, resetForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +62,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
       return;
     }
 
+    // Submit the form - reset will be handled automatically when isPending changes
     if (onSubmit) onSubmit(formData);
   };
 
@@ -55,7 +84,7 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
           >
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-blue-800">Add New Invoice</h3>
-              <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors">
                 <FaTimes />
               </button>
             </div>
@@ -108,28 +137,15 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
                 {errors.leaseId && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.leaseId}</p>}
               </div>
 
-              {/* Description */}
-              {/*<div>
-                <label className="block text-sm font-semibold text-blue-700 mb-2">Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={3}
-                  placeholder="Optional notes..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-700 sm:text-sm outline-none transition"
-                />
-              </div>*/}
-
               {/* Buttons */}
               <div className="flex justify-end gap-4 mt-2">
                 <motion.button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   transition={buttonHoverTransition}
-                  className="px-5 py-2 rounded-xl font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 shadow"
+                  className="px-5 py-2 rounded-xl font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 shadow transition-colors"
                 >
                   Cancel
                 </motion.button>
