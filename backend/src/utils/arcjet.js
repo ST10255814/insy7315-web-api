@@ -25,7 +25,7 @@ const aj = arcjet({
     slidingWindow({
       mode: "LIVE", // Blocks requests. Use "DRY_RUN" to log only
       max: 10, // Max 5 requests in the window
-      interval: 10 * 60, // 10 minutes
+      interval: 0.5 * 60, // 30 seconds
     }),
     validateEmail({
       mode: "LIVE", // will block requests. Use "DRY_RUN" to log only
