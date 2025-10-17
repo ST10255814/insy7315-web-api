@@ -5,6 +5,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import cron from 'node-cron';
+import leaseService from './Services/leaseService.js';
 
 dotenv.config();
 
@@ -72,4 +74,12 @@ app.post('/api/leases/create', checkAuth, leaseController.createLease);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  
+  // Start the lease status scheduler - runs daily at midnight
+  cron.schedule('0 0 * * *', () => {
+    console.log('Running scheduled lease status update...');
+    leaseService.updateAllLeaseStatuses();
+  });
+  
+  console.log('Lease status scheduler started - Daily updates at midnight');
 });

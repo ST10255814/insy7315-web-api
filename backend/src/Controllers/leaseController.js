@@ -23,9 +23,38 @@ export const createLease = async (req, res) => {
     }
 }
 
+export const updateLeaseStatuses = async (req, res) => {
+    try {
+        const adminId = req.user.userId;
+        const updatedCount = await leaseService.updateLeaseStatusesByAdmin(adminId);
+        res.status(200).json({ 
+            message: `Updated ${updatedCount} lease statuses`,
+            updatedCount 
+        });
+    } catch (error) {
+        console.error("Error updating lease statuses:", error);
+        res.status(500).json({ error: "Error updating lease statuses" });
+    }
+}
+
+export const triggerGlobalStatusUpdate = async (req, res) => {
+    try {
+        const updatedCount = await leaseService.updateAllLeaseStatuses();
+        res.status(200).json({ 
+            message: `Global status update completed. Updated ${updatedCount} leases`,
+            updatedCount 
+        });
+    } catch (error) {
+        console.error("Error triggering global status update:", error);
+        res.status(500).json({ error: "Error triggering global status update" });
+    }
+}
+
 const leaseController = {
     getAdminLeases,
-    createLease
+    createLease,
+    updateLeaseStatuses,
+    triggerGlobalStatusUpdate
 };
 
 export default leaseController;
