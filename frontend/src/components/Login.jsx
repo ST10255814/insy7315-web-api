@@ -99,6 +99,10 @@ export default function Login() {
         "user",
         JSON.stringify(response.data.user.fullname)
       );
+      localStorage.setItem(
+        "userId",
+        JSON.stringify(response.data.user._id)
+      );
       Toast.success(response.data.message);
 
       // Reset form and loading state
