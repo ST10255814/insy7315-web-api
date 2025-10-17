@@ -74,8 +74,12 @@ async function createLease(bookingID, adminId) {
         rentAmount: booking.newBooking.totalPrice
     }
 
+    // Generate the lease ID
+    const leaseId = await generateLeaseId();
+
     const lease = {
         adminId: toObjectId(adminId),
+        leaseId: leaseId,
         bookingDetails,
         tenant,
         listing,
@@ -90,9 +94,41 @@ async function createLease(bookingID, adminId) {
   }
 }
 
+//auto ID generation for leases
+//ID format example L-0001, L-0002, etc.
+async function generateLeaseId() {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+
+    // Find the lease with the highest leaseId number
+    const lastLease = await leasesCollection
+      .findOne(
+        { leaseId: { $exists: true } },
+        { sort: { leaseId: -1 } }
+      );
+
+    let nextNumber = 1;
+    
+    if (lastLease && lastLease.leaseId) {
+      // Extract the number from the lease ID (e.g., "L-0001" -> 1)
+      const lastNumber = parseInt(lastLease.leaseId.split('-')[1]);
+      nextNumber = lastNumber + 1;
+    }
+
+    // Format the number with leading zeros (4 digits)
+    const formattedNumber = nextNumber.toString().padStart(4, '0');
+    return `L-${formattedNumber}`;
+  } catch (err) {
+    throw new Error("Error generating lease ID: " + err.message);
+  }
+}
+
+
 const leaseService = {
     getLeasesByAdminId,
-    createLease
+    createLease,
+    generateLeaseId
 };
 
 export default leaseService;
