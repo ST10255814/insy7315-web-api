@@ -57,20 +57,6 @@ function startLeaseStatusScheduler() {
     console.log('Running daily lease status update...');
     updateAllLeaseStatuses();
   });
-
-  // OPTIONAL: Uncomment for more frequent updates during business hours
-  // Run every 2 hours from 8 AM to 8 PM
-  // cron.schedule('0 8-20/2 * * *', () => {
-  //   console.log('Running business hours lease status update...');
-  //   updateAllLeaseStatuses();
-  // });
-
-  // OPTIONAL: For testing - run every 5 minutes (comment out for production)
-  // cron.schedule('*/5 * * * *', () => {
-  //   console.log('Running test lease status update...');
-  //   updateAllLeaseStatuses();
-  // });
-
   console.log('Lease status scheduler started - Daily updates at midnight');
 }
 

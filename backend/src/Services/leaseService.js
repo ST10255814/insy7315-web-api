@@ -1,12 +1,7 @@
 import { ObjectId } from "mongodb";
 import { client } from "../utils/db.js";
-import * as scheduleTasks from '../Schedule_Updates/scheduledTasks.js'
-
-function toObjectId(id) {
-  if (id instanceof ObjectId) return id;
-  if (typeof id === "string" && ObjectId.isValid(id)) return new ObjectId(id);
-  throw new Error("Invalid id format");
-}
+import Object from '../utils/ObjectIDConvert.js';
+const { toObjectId } = Object;
 
 async function getLeasesByAdminId(adminId) {
   try {

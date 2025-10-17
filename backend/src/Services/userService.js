@@ -7,12 +7,6 @@ dotenv.config();
 import * as validation from '../utils/validation.js';
 import { sendResetPasswordEmail } from '../emails/emailHandler.js';
 
-function toObjectId(id) {
-  if (id instanceof ObjectId) return id;
-  if (typeof id === 'string' && ObjectId.isValid(id)) return new ObjectId(id);
-  throw new Error("Invalid id format");
-}
-
 //Service to handle user registration
 async function register(data){
     try{
