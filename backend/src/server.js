@@ -78,6 +78,7 @@ app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);
 app.get('/api/invoices', checkAuth, invoiceController.getInvoicesByAdminId);
 app.get('/api/invoices/stats', checkAuth, invoiceController.getInvoiceStats);
 app.patch('/api/invoices/:invoiceId/pay', checkAuth, invoiceController.markInvoiceAsPaid);
+app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.regenerateInvoiceDescriptions);
 
 // Start server
 app.listen(PORT, () => {

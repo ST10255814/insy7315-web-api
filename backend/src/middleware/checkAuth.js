@@ -1,15 +1,10 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { client } from '../utils/db.js';
-import { ObjectId } from 'mongodb';
 import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
+import Object from '../utils/ObjectIDConvert.js';
+const { toObjectId } = Object;
 dotenv.config();
-
-function toObjectId(id) {
-  if (id instanceof ObjectId) return id;
-  if (typeof id === 'string' && ObjectId.isValid(id)) return new ObjectId(id);
-  throw new Error("Invalid id format");
-}
 
 /**
  * Middleware to authenticate and authorize requests using JWT tokens.

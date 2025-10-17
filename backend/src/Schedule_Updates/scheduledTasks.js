@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { client } from '../utils/db.js';
 import leaseService from '../Services/leaseService.js';
 import invoiceService from '../Services/invoiceService.js';
+import { determineLeaseStatus } from '../utils/statusManager.js';
 
 // Function to update all lease statuses
 async function updateAllLeaseStatuses() {
@@ -22,7 +23,7 @@ async function updateAllLeaseStatuses() {
 
     for (const lease of leases) {
       const currentStatus = lease.status;
-      const newStatus = await leaseService.validateDate(
+      const newStatus = determineLeaseStatus(
         lease.bookingDetails.startDate,
         lease.bookingDetails.endDate
       );

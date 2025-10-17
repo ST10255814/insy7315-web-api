@@ -1,5 +1,8 @@
 import { client } from "../utils/db.js";
 import Object from '../utils/ObjectIDConvert.js';
+import { generateLeaseId, generateBookingId } from '../utils/idGenerator.js';
+import { determineLeaseStatus } from '../utils/statusManager.js';
+import dbOperations from '../utils/dbOperations.js';
 const { toObjectId } = Object;
 
 async function getLeasesByAdminId(adminId) {
@@ -137,139 +140,13 @@ async function createLease(bookingID, adminId) {
   }
 }
 
-//auto ID generation for leases
-//ID format example L-0001, L-0002, etc.
-async function generateLeaseId() {
-  try {
-    const db = client.db("RentWise");
-    const leasesCollection = db.collection("Leases");
-
-    // Find the lease with the highest leaseId number
-    const lastLease = await leasesCollection
-      .findOne(
-        { leaseId: { $exists: true } },
-        { sort: { leaseId: -1 } }
-      );
-
-    let nextNumber = 1;
-    
-    if (lastLease && lastLease.leaseId) {
-      // Extract the number from the lease ID (e.g., "L-0001" -> 1)
-      const lastNumber = parseInt(lastLease.leaseId.split('-')[1]);
-      nextNumber = lastNumber + 1;
-    }
-
-    // Format the number with leading zeros (4 digits)
-    const formattedNumber = nextNumber.toString().padStart(4, '0');
-    return `L-${formattedNumber}`;
-  } catch (err) {
-    throw new Error("Error generating lease ID: " + err.message);
-  }
-}
-
-//auto ID generation for bookings
-//ID format example B-0001, B-0002, etc.
-async function generateBookingId() {
-  try {
-    const db = client.db("RentWise");
-    const bookingsCollection = db.collection("Bookings");
-
-    // Find the booking with the highest bookingId number
-    const lastBooking = await bookingsCollection
-      .findOne(
-        { bookingId: { $exists: true } },
-        { sort: { bookingId: -1 } }
-      );
-
-    let nextNumber = 1;
-
-    if (lastBooking && lastBooking.bookingId) {
-      // Extract the number from the booking ID (e.g., "B-0001" -> 1)
-      const lastNumber = parseInt(lastBooking.bookingId.split('-')[1]);
-      nextNumber = lastNumber + 1;
-    }
-
-    // Format the number with leading zeros (4 digits)
-    const formattedNumber = nextNumber.toString().padStart(4, '0');
-    return `B-${formattedNumber}`;
-  } catch (err) {
-    throw new Error("Error generating booking ID: " + err.message);
-  }
-}
+// ID generation functions now imported from utils/idGenerator.js
 
 //compare startDate and endDate to today's date
 //if startDate has passed today's date, and endDate is still before today's date, set status to "Active"
 async function validateDate(startDate, endDate) {
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
-    
-    // Helper function to parse dates flexibly
-    const parseDate = (dateInput) => {
-      // If already a Date object, return it
-      if (dateInput instanceof Date) {
-        return new Date(dateInput);
-      }
-      
-      // If it's a string, try different parsing methods
-      if (typeof dateInput === 'string') {
-        // Try DD-MM-YYYY format first
-        if (dateInput.includes('-') && dateInput.split('-').length === 3) {
-          const parts = dateInput.split('-');
-          // Check if it's DD-MM-YYYY or YYYY-MM-DD
-          if (parts[0].length === 4) {
-            // YYYY-MM-DD format
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-          } else {
-            // DD-MM-YYYY format
-            return new Date(parts[2], parts[1] - 1, parts[0]);
-          }
-        }
-        // Fall back to native Date parsing
-        return new Date(dateInput);
-      }
-      
-      // If it's a number (timestamp), create Date object
-      if (typeof dateInput === 'number') {
-        return new Date(dateInput);
-      }
-      
-      throw new Error(`Unable to parse date: ${dateInput}`);
-    };
-    
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
-    
-    // Validate that dates are valid
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      console.error(`Invalid date values: start=${startDate}, end=${endDate}`);
-      return "Pending"; // Return safe default
-    }
-    
-    // Set times to start of day for accurate comparison
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999); // End date should include the full day
-    
-    if (start <= today && end >= today) {
-      return "Active";
-    } else if (end < today) {
-      return "Expired";
-    } else {
-      return "Pending";
-    }
-  } catch (error) {
-    console.error('Error parsing dates:', error, 'startDate:', startDate, 'endDate:', endDate);
-    // Return a safe default status instead of throwing
-    return "Pending";
-    
-    if (start <= today && end >= today) {
-      return "Active";
-    } else if (end < today) {
-      return "Expired";
-    } else {
-      return "Pending";
-    }
-  }
+  // Use the centralized status determination logic
+  return determineLeaseStatus(startDate, endDate);
 }
 
 // Function to update all lease statuses for a specific admin
