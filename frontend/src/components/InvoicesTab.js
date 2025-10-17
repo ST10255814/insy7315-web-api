@@ -4,38 +4,16 @@ import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast.js";
 import InvoiceCard from "../pages/InvoiceCard.js";
 import AddInvoiceModal from "../models/AddInvoiceModel.js";
+import { useInvoicesQuery } from "../utils/queries.js";
+import LoadingSkeleton from "../pages/LoadingSkeleton.js";
+import { useParams } from "react-router-dom";
 
 export default function InvoicesTab() {
-  // Mock data - replace with query later
-  const [invoices, setInvoices] = useState([
-    {
-      invoiceNumber: "INV-001",
-      tenant: "John Smith",
-      property: "Unit 4A",
-      amount: 22500,
-      due: "2025-02-28",
-      status: "Paid",
-      notes: "Paid via EFT",
-    },
-    {
-      invoiceNumber: "INV-002",
-      tenant: "Mike Davis",
-      property: "Unit 12B",
-      amount: 33800,
-      due: "2025-02-28",
-      status: "Unpaid",
-      notes: "Reminder sent",
-    },
-    {
-      invoiceNumber: "INV-003",
-      tenant: "Mike Davis",
-      property: "Unit 12B",
-      amount: 33800,
-      due: "2025-02-28",
-      status: "Pending",
-      notes: "Reminder sent",
-    },
-  ]);
+  const { userId: adminId } = useParams();
+  // React Query to get invoices
+  const { data, isLoading, isError } = useInvoicesQuery(adminId);
+  // Normalize the data shape so `invoices` is always an array
+  const invoices = Array.isArray(data) ? data : (data?.invoices ?? []);
 
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -45,11 +23,7 @@ export default function InvoicesTab() {
         Toast.info(`Editing ${invoice.invoiceNumber}`);
         break;
       case "Delete":
-        if (window.confirm(`Delete ${invoice.invoiceNumber}?`)) {
-          setInvoices((prev) =>
-            prev.filter((i) => i.invoiceNumber !== invoice.invoiceNumber)
-          );
-        }
+        Toast.info(`Deleting ${invoice.invoiceNumber}`);
         break;
       case "View":
         Toast.info(`Viewing details for ${invoice.invoiceNumber}`);
@@ -76,18 +50,40 @@ export default function InvoicesTab() {
         <FaPlusCircle /> Add Invoice
       </motion.button>
 
-      {/* Invoice Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {invoices.map((invoice) => (
-            <InvoiceCard
-              key={invoice.invoiceNumber}
-              invoice={invoice}
-              onAction={handleInvoiceAction}
-            />
+      {/* Lease Cards / Loading / Error */}
+      {isLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <LoadingSkeleton key={i} />
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
+      )}
+
+      {isError && (
+        <div className="text-red-600 font-semibold text-center mt-10">
+          Failed to load invoices. Please try again.
+        </div>
+      )}
+
+      {!isLoading && !isError && invoices.length === 0 && (
+        <div className="text-gray-500 text-center mt-10 font-medium">
+          No invoices found. Add a new invoice to get started.
+        </div>
+      )}
+
+      {!isLoading && invoices.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {invoices.map((invoice) => (
+              <InvoiceCard
+                key={invoice.invoiceNumber}
+                invoice={invoice}
+                onAction={handleInvoiceAction}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* Add Invoice Modal */}
       <AddInvoiceModal

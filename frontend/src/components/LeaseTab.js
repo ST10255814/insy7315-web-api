@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useLeasesQuery, useCreateLeaseMutation } from "../utils/queries";
 import { FaPlusCircle } from "react-icons/fa";
-import Toast from "../lib/toast";
-import { logoutUser } from "../utils/user.api.js";
 import LeaseCard from "../pages/LeaseCard.js";
 import LoadingSkeleton from "../pages/LoadingSkeleton.js";
 import AddLeaseModal from "../models/AddLeaseModel.js";
@@ -12,26 +10,14 @@ import EditLeaseModal from "../models/EditLeaseModel.js";
 
 export default function LeasesTab() {
   const { userId: adminId } = useParams();
-  const navigate = useNavigate();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedLease, setSelectedLease] = useState(null);
   const [formData, setFormData] = useState({ bookingID: "", errors: { isBookingId: false } });
 
-  const { status, error: leaseError, data: leases } = useLeasesQuery(adminId);
+  const { status, data: leases } = useLeasesQuery(adminId);
   const createLeaseMutation = useCreateLeaseMutation();
-
-  // Handle session expiry
-  useEffect(() => {
-    if (leaseError?.response?.status === 401) {
-      Toast.error(leaseError.response?.data?.error || "Session expired");
-      setTimeout(async () => {
-        await logoutUser();
-        navigate("/login");
-      }, 3000);
-    }
-  }, [leaseError, navigate]);
 
   // Add Lease Submit
   const handleAddSubmit = (e) => {

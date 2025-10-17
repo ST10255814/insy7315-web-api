@@ -12,11 +12,13 @@ import { motion } from "framer-motion";
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short", 
-    year: "numeric",
-  });
+  const d = new Date(dateStr);
+  if (isNaN(d)) return "";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
 };
 
 const statusClasses = {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaSave, FaPlusCircle } from "react-icons/fa";
+import { FaTimes, FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast";
 
 export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) {
