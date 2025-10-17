@@ -46,7 +46,7 @@ export function generateInvoiceDescription(invoiceData) {
       baseDescription = `Monthly Rent Invoice - ${formattedDate}`;
   }
 
-  return `${baseDescription} }`;
+  return `${baseDescription}`;
 }
 
 /**
