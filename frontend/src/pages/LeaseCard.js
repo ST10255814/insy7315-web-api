@@ -12,8 +12,22 @@ import { motion } from "framer-motion";
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
-  const d = new Date(dateStr);
+  
+  // Check if the date is in DD-MM-YYYY format
+  const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
+  
+  let d;
+  if (ddmmyyyyPattern.test(dateStr)) {
+    // Parse DD-MM-YYYY format manually
+    const [day, month, year] = dateStr.split('-').map(Number);
+    d = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+  } else {
+    // Use default Date parsing for other formats
+    d = new Date(dateStr);
+  }
+  
   if (isNaN(d)) return "";
+  
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const day = String(d.getDate()).padStart(2, "0");
   const month = months[d.getMonth()];
