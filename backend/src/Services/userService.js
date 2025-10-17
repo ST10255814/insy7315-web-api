@@ -2,7 +2,6 @@ import { client } from '../utils/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { ObjectId } from 'mongodb';
 dotenv.config();
 import * as validation from '../utils/validation.js';
 import { sendResetPasswordEmail } from '../emails/emailHandler.js';
