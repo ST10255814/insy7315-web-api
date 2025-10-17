@@ -9,7 +9,8 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { logoutUser } from "../utils/login.api.js";
+import { logoutUser } from "../utils/user.api.js";
+import Toast from "../lib/toast.js";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -19,17 +20,33 @@ export default function Navbar() {
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
 
   const handleLogout = async () => {
-    const response = await logoutUser()
-    if(response){
-      navigate('/login')
-      localStorage.removeItem('user')
+    try {
+      const response = await logoutUser();
+      if (response) {
+        const msg = response.message;
+        Toast.success(msg);
+        navigate("/login");
+      }
+    } catch (error) {
+      if (error.response) {
+        const msg = error.response.data.error;
+        Toast.error(msg);
+      }
     }
   };
 
   const menuVariants = {
     hidden: { opacity: 0, scaleY: 0, transformOrigin: "top" },
-    visible: { opacity: 1, scaleY: 1, transition: { duration: 0.25, ease: "easeOut" } },
-    exit: { opacity: 0, scaleY: 0, transition: { duration: 0.2, ease: "easeIn" } },
+    visible: {
+      opacity: 1,
+      scaleY: 1,
+      transition: { duration: 0.25, ease: "easeOut" },
+    },
+    exit: {
+      opacity: 0,
+      scaleY: 0,
+      transition: { duration: 0.2, ease: "easeIn" },
+    },
   };
 
   return (
@@ -51,8 +68,10 @@ export default function Navbar() {
                 <FaUserCircle className="text-blue-700 text-2xl" />
                 <span>Welcome, {user}</span>
               </span>
-              <button className="flex items-center space-x-2 px-5 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-transform transform hover:scale-105"
-                onClick={handleLogout}>
+              <button
+                className="flex items-center space-x-2 px-5 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-transform transform hover:scale-105"
+                onClick={handleLogout}
+              >
                 <FaSignOutAlt />
                 <span>Logout</span>
               </button>
@@ -118,8 +137,10 @@ export default function Navbar() {
                     <FaUserCircle className="text-blue-700 text-2xl" />
                     <span>Welcome, {user}</span>
                   </span>
-                  <button className="flex items-center space-x-3 px-4 py-4 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition"
-                    onClick={handleLogout}>
+                  <button
+                    className="flex items-center space-x-3 px-4 py-4 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition"
+                    onClick={handleLogout}
+                  >
                     <FaSignOutAlt />
                     <span>Logout</span>
                   </button>

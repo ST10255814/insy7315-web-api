@@ -1,4 +1,6 @@
 import axios from "axios"
+import Toast from "./toast";
+import { logoutUser } from "../utils/user.api";
 
 const api = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -8,12 +10,18 @@ const api = axios.create({
 
 api.interceptors.response.use(
   (response) => {
-    console.log("Axios response:", response);
+    console.log("Axios log: ", "Status code: " + response.status, response.data)
     return response;
   },
-  (error) => {
-    console.log("Axios intercepted error:", error.response?.status, error.response?.data);
-    throw error; 
+  async (error) => {
+    console.log('Axios error: ', error)
+    if (error.response?.status === 401) {
+      Toast.error(error.response.data?.error || "Session expired");
+      // Clear local token / session
+      await logoutUser();
+      window.location.href = "/login"; // force reload to login page
+    }
+    return Promise.reject(error);
   }
 );
 

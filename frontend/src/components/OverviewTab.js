@@ -20,7 +20,7 @@ import {
   FaClipboardList,
   FaWrench,
 } from "react-icons/fa";
-import StatsCard from "./StatsCard.js";
+import StatsCard from "../pages/StatsCard";
 
 // Register ChartJS components
 ChartJS.register(
