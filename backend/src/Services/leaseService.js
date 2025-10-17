@@ -157,33 +157,13 @@ async function generateBookingId() {
   }
 }
 
-    const lastLease = await leasesCollection
-      .findOne(
-        { leaseId: { $exists: true } },
-        { sort: { leaseId: -1 } }
-      );
-
-    let nextNumber = 1;
-    
-    if (lastLease && lastLease.leaseId) {
-      // Extract the number from the lease ID (e.g., "L-0001" -> 1)
-      const lastNumber = parseInt(lastLease.leaseId.split('-')[1]);
-      nextNumber = lastNumber + 1;
-    }
-
-    // Format the number with leading zeros (4 digits)
-    const formattedNumber = nextNumber.toString().padStart(4, '0');
-    return `L-${formattedNumber}`;
-  } catch (err) {
-    throw new Error("Error generating lease ID: " + err.message);
-  }
-}
 
 
 const leaseService = {
     getLeasesByAdminId,
     createLease,
-    generateLeaseId
+    generateLeaseId,
+    generateBookingId
 };
 
 export default leaseService;
