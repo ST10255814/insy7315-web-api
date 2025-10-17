@@ -1,11 +1,11 @@
 import React from "react";
 import { useParams, useLocation, NavLink, Routes, Route, Navigate } from "react-router-dom";
-import OverviewTab from "./OverviewTab.js";
-import PropertiesTab from "./PropertiesTab.js";
-import LeasesTab from "./LeaseTab.js";
-import InvoicesTab from "./InvoicesTab.js";
-import MaintenanceTab from "./MaintenanceTab.js";
-import Home from "./Home.js";
+import OverviewTab from "./OverviewTab.jsx";
+import PropertiesTab from "./PropertiesTab.jsx";
+import LeasesTab from "./LeaseTab.jsx";
+import InvoicesTab from "./InvoicesTab.jsx";
+import MaintenanceTab from "./MaintenanceTab.jsx";
+import Home from "./Home.jsx";
 
 export default function Dashboard() {
   const { userId } = useParams();

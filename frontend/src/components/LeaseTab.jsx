@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useLeasesQuery, useCreateLeaseMutation } from "../utils/queries";
 import { FaPlusCircle } from "react-icons/fa";
-import LeaseCard from "../pages/LeaseCard.js";
-import LoadingSkeleton from "../pages/LoadingSkeleton.js";
-import AddLeaseModal from "../models/AddLeaseModel.js";
-import EditLeaseModal from "../models/EditLeaseModel.js";
+import LeaseCard from "../pages/LeaseCard.jsx";
+import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
+import AddLeaseModal from "../models/AddLeaseModel.jsx";
+import EditLeaseModal from "../models/EditLeaseModel.jsx";
 import Toast from "../lib/toast.js";
 
 export default function LeasesTab() {

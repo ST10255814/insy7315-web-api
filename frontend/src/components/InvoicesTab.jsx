@@ -1,14 +1,14 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast.js";
-import InvoiceCard from "../pages/InvoiceCard.js";
-import AddInvoiceModal from "../models/AddInvoiceModel.js";
+import InvoiceCard from "../pages/InvoiceCard.jsx";
+import AddInvoiceModal from "../models/AddInvoiceModel.jsx";
 import {
   useInvoicesQuery,
   useCreateInvoiceMutation,
 } from "../utils/queries.js";
-import LoadingSkeleton from "../pages/LoadingSkeleton.js";
+import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
 import { useParams } from "react-router-dom";
 
 export default function InvoicesTab() {
