@@ -97,7 +97,7 @@ export default function Login() {
       });
       localStorage.setItem(
         "user",
-        JSON.stringify(response.data.user.fullname)
+        JSON.stringify(response.data.user.firstName + " " + response.data.user.surname)
       );
       localStorage.setItem(
         "userId",
