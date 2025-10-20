@@ -26,7 +26,7 @@ async function getLeasesByAdminId(adminId) {
         try {
           const currentStatus = lease.status;
           
-          // Check if bookingDetails and dates exist
+          // Check if bookingDetails and dates  exist
           if (!lease.bookingDetails || !lease.bookingDetails.startDate || !lease.bookingDetails.endDate) {
             console.warn(`Lease ${lease._id} missing booking details or dates`);
             return lease; // Return lease as-is if dates are missing
@@ -83,7 +83,7 @@ async function createLease(bookingID, adminId) {
     const leasesCollection = db.collection("Leases");
 
     // Verify booking exists
-    const booking = await bookingsCollection.findOne({ _id: toObjectId(bookingID) });
+    const booking = await bookingsCollection.findOne({ "newBookings.bookingId": bookingID });
     if (!booking) {
       throw new Error("Booking not found");
     }
@@ -98,9 +98,8 @@ async function createLease(bookingID, adminId) {
     //create tenant Object
     const tenant = {
         userId: userID._id,
-        //firstName: userID.firstName,
-        //surname: userID.surname,
-        fullname: userID.name,
+        firstName: userID.firstName,
+        surname: userID.surname,
         email: userID.email
     }
 
@@ -110,11 +109,9 @@ async function createLease(bookingID, adminId) {
         address: booking.listingDetail.address
     }
 
-    const bookingIDGenerated = await generateBookingId();
-
     //create booking details object with startDate, endDate and rentAmount
     const bookingDetails = {
-        bookingId: bookingIDGenerated,
+        bookingId: booking.newBooking.bookingId,
         startDate: booking.newBooking.checkInDate,
         endDate: booking.newBooking.checkOutDate,
         rentAmount: booking.newBooking.totalPrice
