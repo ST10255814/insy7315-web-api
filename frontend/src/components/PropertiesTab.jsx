@@ -2,9 +2,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import PropertyCard from "../pages/PropertyCard";
-import AddPropertyModal from "../models/AddPropertyModel";
-import LoadingSkeleton from "../pages/LoadingSkeleton";
+import PropertyCard from "../pages/PropertyCard.jsx";
+import AddPropertyModal from "../models/AddPropertyModel.jsx";
+import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
+import { propertyStatusMap } from "../constants/status.js";
 import {
   useListingsQuery,
   useCreateListingMutation,
@@ -14,6 +15,11 @@ export default function PropertiesTab() {
   const { userId: adminId } = useParams();
   const { data: properties = [], isLoading, isError } = useListingsQuery(adminId);
   const createPropertyMutation = useCreateListingMutation();
+
+  // Create a function that uses the propertyStatusMap object
+  const getStatusClasses = (status) => {
+    return propertyStatusMap[status] || "bg-gray-100 text-gray-700";
+  };
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,19 +39,6 @@ export default function PropertiesTab() {
         setShowAddModal(false);
       },
     });
-  };
-
-  const getStatusClasses = (status) => {
-    switch (status) {
-      case "Available":
-        return "bg-green-100 text-green-700";
-      case "Occupied":
-        return "bg-blue-100 text-blue-700";
-      case "Under Maintenance":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
   };
 
   return (
