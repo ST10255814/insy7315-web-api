@@ -90,6 +90,22 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              {/* Lease ID */}
+              <div>
+                <label className="block text-sm font-semibold text-blue-700 mb-2">Lease ID</label>
+                <input
+                  type="text"
+                  name="leaseId"
+                  value={formData.leaseId}
+                  onChange={handleChange}
+                  placeholder="Enter Lease ID"
+                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
+                    errors.leaseId ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
+                  }`}
+                />
+                {errors.leaseId && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.leaseId}</p>}
+              </div>
+              
               {/* Amount */}
               <div>
                 <label className="block text-sm font-semibold text-blue-700 mb-2">Amount (R)</label>
@@ -119,22 +135,6 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
                   }`}
                 />
                 {errors.date && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.date}</p>}
-              </div>
-
-              {/* Lease ID */}
-              <div>
-                <label className="block text-sm font-semibold text-blue-700 mb-2">Lease ID</label>
-                <input
-                  type="text"
-                  name="leaseId"
-                  value={formData.leaseId}
-                  onChange={handleChange}
-                  placeholder="Enter Lease ID"
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
-                    errors.leaseId ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
-                  }`}
-                />
-                {errors.leaseId && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.leaseId}</p>}
               </div>
 
               {/* Buttons */}
