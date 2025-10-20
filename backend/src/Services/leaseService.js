@@ -83,7 +83,7 @@ async function createLease(bookingID, adminId) {
     const leasesCollection = db.collection("Leases");
 
     // Verify booking exists
-    const booking = await bookingsCollection.findOne({ "newBookings.bookingId": bookingID });
+    const booking = await bookingsCollection.findOne({ "newBooking.bookingId": bookingID });
     if (!booking) {
       throw new Error("Booking not found");
     }
