@@ -2,15 +2,15 @@ import { client } from "../utils/db.js";
 import Object from '../utils/ObjectIDConvert.js';
 const { toObjectId } = Object;
 
-async function createListing(listingData, adminId) {
+async function createListing(data, adminId) {
      try {
         const db = client.db('RentWise');
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
 
-        const { title, address, description, imagesURL = [], price, isFavourited, status } = listingData;
+        const { title, address, description, imagesURL = [], price, isFavourited, status } = data;
 
-        let amenities = listingData.amenities || [];
+        let amenities = data.amenities || [];
         if (!title || !address || !description || !price) {
         throw new Error('Title, address, description, and price are required');
         }
