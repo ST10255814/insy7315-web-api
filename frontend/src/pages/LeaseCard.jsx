@@ -16,7 +16,7 @@ export default function LeaseCard({ lease, onAction }) {
     <div className="relative bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between overflow-hidden cursor-pointer group">
       {/* Card Content */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant: {" "}{lease.tenant.fullname}</h4>
+        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant: {" "}{lease.tenant.firstName} {" "}{lease.tenant.surname}</h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaIdBadge className="text-gray-400" />
           Lease ID: <span className="font-medium">{lease.leaseId}</span>
