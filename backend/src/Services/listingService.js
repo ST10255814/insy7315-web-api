@@ -8,9 +8,9 @@ async function createListing(listingData, adminId) {
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
 
-        const { title, address, description, imagesURL = [], price, isFavourited, status } = data;
+        const { title, address, description, imagesURL = [], price, isFavourited, status } = listingData;
 
-        let amenities = data.amenities || [];
+        let amenities = listingData.amenities || [];
         if (!title || !address || !description || !price) {
         throw new Error('Title, address, description, and price are required');
         }
