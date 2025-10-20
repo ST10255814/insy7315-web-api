@@ -30,7 +30,7 @@ export default function InvoiceCard({ invoice, onAction }) {
           {invoice.lease.tenant}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaEnvelope className="text-gray-400" /> Invoice #:{" "}
+          <FaEnvelope className="text-gray-400" /> Invoice ID:{" "}
           <span className="font-medium">{invoice.invoiceId}</span>
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
