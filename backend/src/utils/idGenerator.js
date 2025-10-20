@@ -62,6 +62,10 @@ export async function generateBookingId() {
   return generateEntityId('booking', 'B', 'Bookings', 'bookingId');
 }
 
+export async function generateListingId() {
+  return generateEntityId('listing', 'LS', 'Listings', 'listingId');
+}
+
 // Export all functions for backwards compatibility
 const idGenerator = {
   generateInvoiceId,

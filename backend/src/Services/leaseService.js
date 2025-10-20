@@ -2,7 +2,6 @@ import { client } from "../utils/db.js";
 import Object from '../utils/ObjectIDConvert.js';
 import { generateLeaseId, generateBookingId } from '../utils/idGenerator.js';
 import { determineLeaseStatus } from '../utils/statusManager.js';
-import dbOperations from '../utils/dbOperations.js';
 const { toObjectId } = Object;
 
 async function getLeasesByAdminId(adminId) {

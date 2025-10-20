@@ -8,6 +8,8 @@ import dotenv from 'dotenv';
 import cron from 'node-cron';
 import leaseService from './Services/leaseService.js';
 import invoiceService from './Services/invoiceService.js';
+import listingService from './Services/listingService.js';
+import { upload } from './utils/cloudinary.js';
 
 dotenv.config();
 
@@ -54,6 +56,7 @@ mongoConnection();
 import userController from './Controllers/userController.js';
 import leaseController from './Controllers/leaseController.js';
 import invoiceController from './Controllers/invoiceController.js';
+import listingController from './Controllers/listingController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -79,6 +82,8 @@ app.get('/api/invoices', checkAuth, invoiceController.getInvoicesByAdminId);
 app.get('/api/invoices/stats', checkAuth, invoiceController.getInvoiceStats);
 app.patch('/api/invoices/:invoiceId/pay', checkAuth, invoiceController.markInvoiceAsPaid);
 app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.regenerateInvoiceDescriptions);
+
+app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
 
 // Start server
 app.listen(PORT, () => {
