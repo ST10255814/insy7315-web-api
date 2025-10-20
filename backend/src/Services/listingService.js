@@ -8,7 +8,7 @@ async function createListing(data, adminId) {
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
 
-        const { title, address, description, imagesURL = [], price, isFavourited, status } = data;
+        const { title, address, description, imagesURL = [], price} = data;
 
         let amenities = data.amenities || [];
         if (!title || !address || !description || !price) {
@@ -42,6 +42,9 @@ async function createListing(data, adminId) {
 
         const listingId = await generateListingId();
 
+        const isFavourited = fakse; // Default value
+        const status = 'Vacant'; // Default value
+
         const newListing = {
             listingId,
             title,
@@ -50,8 +53,8 @@ async function createListing(data, adminId) {
             amenities,
             imagesURL,
             parsedPrice,
-            isFavourited: isFavourited || false,
-            status: status || 'Vacant',
+            isFavourited: isFavourited,
+            status: status,
             landlordInfo,
             createdAt: new Date()
         };
