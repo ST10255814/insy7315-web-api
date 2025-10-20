@@ -55,8 +55,15 @@ export default function MaintenanceCard({ request }) {
         </div>
       )}
 
-      {/* Updated */}
+      {/* Updated/Created at */}
       <p className="text-gray-400 text-sm mt-3">Updated: {request.updatedAt}</p>
+
+      <p className="text-gray-400 text-sm mt-1">Created: {request.createdAt}</p>
+
+      {/* Attached Documents */}
+      <a href={`${request.imageURL}`} className="text-blue-700 text-sm mt-2">
+        <span className="sr-only">View Attached Docs</span>
+      </a>
 
       {/* Buttons */}
       <div className="mt-3 flex gap-2">
