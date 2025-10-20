@@ -79,6 +79,7 @@ async function createLease(bookingID, adminId) {
 
     const db = client.db("RentWise");
     const bookingsCollection = db.collection("Bookings");
+    const listingCollection = db.collection("Listings");
     const userCollection = db.collection('System-Users');
     const leasesCollection = db.collection("Leases");
 
@@ -103,10 +104,17 @@ async function createLease(bookingID, adminId) {
         email: userID.email
     }
 
+    //using listing ID pull address from listingCollection
+    const listingData = await listingCollection.findOne({ _id: toObjectId(booking.listingDetail.listingID) });
+  
+    if(!listingData){
+      throw new Error("Listing not found");
+    }
+
     //create listing object with address 
     const listing = {
-        listingId : booking.listingDetail.listingID,
-        address: booking.listingDetail.address
+        listingId : listingData._id,
+        address: listingData.address
     }
 
     //create booking details object with startDate, endDate and rentAmount
