@@ -9,7 +9,8 @@ const INITIAL_FORM_STATE = {
   address: "",
   description: "",
   amenities: [],
-  imageURL: [],
+  imageURL: [], // For preview URLs
+  imageFiles: [], // For actual file objects
   price: "",
 };
 
@@ -24,9 +25,15 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
   // Reset form when modal closes
   useEffect(() => {
     if (!show) {
+      // Clean up object URLs before resetting
+      formData.imageURL.forEach(url => {
+        if (url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
       resetForm();
     }
-  }, [show, resetForm]);
+  }, [show, resetForm, formData.imageURL]);
 
   // Handle close with unsaved changes confirmation
   const handleClose = () => {
@@ -42,13 +49,22 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
     setFormData({
       ...formData,
       imageURL: [...formData.imageURL, ...newImages],
+      imageFiles: [...formData.imageFiles, ...files],
     });
   };
 
   // --- Remove Image ---
   const handleRemoveImage = (index) => {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(formData.imageURL[index]);
+    
     const updatedImages = formData.imageURL.filter((_, i) => i !== index);
-    setFormData({ ...formData, imageURL: updatedImages });
+    const updatedFiles = formData.imageFiles.filter((_, i) => i !== index);
+    setFormData({ 
+      ...formData, 
+      imageURL: updatedImages,
+      imageFiles: updatedFiles
+    });
   };
 
   // --- Handle Amenities ---
@@ -70,6 +86,18 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
   // --- Submit Form ---
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!formData.title.trim() || !formData.address.trim() || !formData.description.trim() || !formData.price) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    if (formData.imageFiles.length === 0) {
+      alert('Please add at least one image');
+      return;
+    }
+    
     onSubmit(e);
   };
 
@@ -115,7 +143,7 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
                 <input
                   type="number"
                   placeholder="Rent Amount"
-                  value={formData.rent}
+                  value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                   required

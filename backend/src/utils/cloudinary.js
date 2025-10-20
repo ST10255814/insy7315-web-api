@@ -25,9 +25,50 @@ const storage = new CloudinaryStorage({
   },
 });
 
+//configure Multer storage for Cloudinary
+const pfpStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'profilePicture', // folder in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 800, height: 800, crop: "limit" }], // optional
+  },
+});
+
+// Configure dynamic Multer storage for Cloudinary
+const dynamicStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const isImage = file.mimetype.startsWith("image/");
+    return {
+      folder: isImage ? "BookingImages" : "bookingFiles",
+      resource_type: isImage ? "image" : "raw",
+      allowed_formats: isImage 
+        ? ["jpg", "png", "jpeg"]
+        : ["pdf", "docx", "doc"],
+    };
+  },
+});
+
+// configure cloudinary storage
+const maintenanceStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'Maintenance', // folder in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 800, height: 800, crop: "limit" }], // optional
+  },
+});
+
+const uploadFiles = multer({ storage: dynamicStorage });
+const maintenanceUpload = multer({ storage: maintenanceStorage })
 const upload = multer({ storage });
+const pfpUpload = multer({storage: pfpStorage});
 
 export {
    cloudinary, 
-   upload
+   upload,
+   uploadFiles,
+   maintenanceUpload,
+   pfpUpload
 };

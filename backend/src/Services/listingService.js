@@ -1,5 +1,6 @@
 import { client } from "../utils/db.js";
 import Object from '../utils/ObjectIDConvert.js';
+import { generateListingId } from '../utils/idGenerator.js';
 const { toObjectId } = Object;
 
 async function createListing(data, adminId) {
@@ -42,7 +43,7 @@ async function createListing(data, adminId) {
 
         const listingId = await generateListingId();
 
-        const isFavourited = fakse; // Default value
+        const isFavourited = false; // Default value
         const status = 'Vacant'; // Default value
 
         const newListing = {
@@ -52,7 +53,7 @@ async function createListing(data, adminId) {
             description,
             amenities,
             imagesURL,
-            parsedPrice,
+            price: parsedPrice,
             isFavourited: isFavourited,
             status: status,
             landlordInfo,

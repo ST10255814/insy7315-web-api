@@ -105,14 +105,16 @@ export const useCreateListingMutation = () => {
     },
     onSuccess: (response) => {
       const listingID = response?.listingId || response;
-      Toast.success(`Listing created successfully: Listing ID: ${listingID}`);
+      Toast.success(`Property created successfully!${listingID ? ` Listing ID: ${listingID}` : ''}`);
       invalidateEntityQueries(queryClient, "listings");
     },
     onError: (error) => {
+      console.error('Create listing mutation error:', error);
       const msg =
         error?.response?.data?.error ||
+        error?.error ||
         error?.message ||
-        "Failed to create listing";
+        "Failed to create property";
       Toast.error(msg);
     },
   });

@@ -22,6 +22,7 @@ export default function PropertiesTab() {
     description: "",
     amenities: [],
     imageURL: [],
+    imageFiles: [],
     price: "",
   });
 

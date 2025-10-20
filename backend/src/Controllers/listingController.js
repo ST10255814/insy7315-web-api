@@ -13,7 +13,7 @@ async function createListing(req, res) {
     const imageUrls = files.map(file => file.path);
     const data = { ...req.body, imagesURL: imageUrls };
 
-    const newListing = await listingService.createListing(id, data);
+    const newListing = await listingService.createListing(data, id);
     console.log(`[createListing] Exit: Listing created with id="${newListing?.listingId}"`);
     res.status(201).json(newListing);
   } catch (error) {

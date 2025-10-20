@@ -11,10 +11,37 @@ export async function getListingsByAdminId() {
 
 export async function createListing(listingData) {
   try {
+    const formData = new FormData();
+    
+    // Append text fields
+    formData.append('title', listingData.title);
+    formData.append('address', listingData.address);
+    formData.append('description', listingData.description);
+    formData.append('price', listingData.price);
+    
+    // Append amenities
+    if (listingData.amenities && listingData.amenities.length > 0) {
+      listingData.amenities.forEach((amenity) => {
+        formData.append('amenities', amenity);
+      });
+    }
+    
+    // Append image files
+    if (listingData.imageFiles && listingData.imageFiles.length > 0) {
+      listingData.imageFiles.forEach((file) => {
+        formData.append('imageURL', file);
+      });
+    }
+
     const response = await api.post(
       "/api/listings/create",
-      { listingData },
-      { withCredentials: true }
+      formData,
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
     return response.data;
   } catch (error) {
