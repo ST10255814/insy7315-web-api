@@ -39,7 +39,7 @@ async function createInvoice(adminId, data){
 
         //create lease object
         const leaseObject = {
-            tenant: lease.tenant.fullname,
+            tenant: lease.tenant.firstName + " " + lease.tenant.lastName,
             email: lease.tenant.email,
             propertyAddress: lease.listing.address,
         }
