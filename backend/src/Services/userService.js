@@ -19,10 +19,27 @@ async function register(data){
             throw new Error("Please provide all required fields");
         }
 
+        // Split fullname into firstName and surname
+        const nameParts = fullname.trim().split(/\s+/);
+        let firstName, surname;
+        
+        if (nameParts.length === 1) {
+            // If only one name provided, use it as firstName and set surname as empty
+            firstName = nameParts[0];
+            surname = "";
+        } else if (nameParts.length >= 2) {
+            // If multiple names, first is firstName, rest combined as surname
+            firstName = nameParts[0];
+            surname = nameParts.slice(1).join(" ");
+        } else {
+            throw new Error("Please provide a valid name");
+        }
+
         validation.sanitizeInput(email);
         validation.sanitizeInput(password);
         validation.sanitizeInput(username);
-        validation.sanitizeInput(fullname);
+        validation.sanitizeInput(firstName);
+        validation.sanitizeInput(surname);
 
         // Validate inputs and throw errors if validation fails
         if (!validation.validateEmail(email.toLowerCase())) {
@@ -35,10 +52,6 @@ async function register(data){
         
         if (!validation.validateUsername(username.toLowerCase())) {
             throw new Error("Username contains inappropriate content or invalid format");
-        }
-        
-        if (!validation.validateFullname(fullname.toLowerCase())) {
-            throw new Error("Full name contains inappropriate content");
         }
 
         //check if username already exists
@@ -65,7 +78,8 @@ async function register(data){
             email: email,
             password: hashedPassword,
             username: username,
-            fullname: fullname,
+            firstName: firstName,
+            surname: surname,
             role: role, //default value when registering on the website
             createdAt: new Date(),
             updatedAt: new Date()
@@ -74,7 +88,10 @@ async function register(data){
         //insert new user into database
         await systemUsers.insertOne(newUser);
 
-        return { fullname: newUser.fullname, email: newUser.email, createdAt: newUser.createdAt };
+        // Create fullname for response
+        const fullnameResponse = `${firstName} ${surname}`.trim();
+
+        return { fullname: fullnameResponse, email: newUser.email, createdAt: newUser.createdAt };
     }
     catch(err){
         throw new Error("Registration failed: " + err.message);
@@ -128,13 +145,23 @@ async function login(data){
             throw new Error("Invalid email or password");
         }
 
+        // Create fullname from firstName and surname for JWT token
+        const fullname = `${user.firstName || ''} ${user.surname || ''}`.trim();
+
         //create and sign JWT token
         const token = jwt.sign(
-            { userId: user._id, fullname: user.fullname, role: user.role },
+            { userId: user._id, fullname: fullname, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
-        return { token, user };
+        
+        // Add fullname to user object for response
+        const userResponse = {
+            ...user,
+            fullname: fullname
+        };
+        
+        return { token, user: userResponse };
 
     }
     catch(err){
