@@ -22,6 +22,20 @@ async function createListing(req, res) {
   }
 }
 
+async function getListingsByAdminId(req, res) {
+    const id = req.user.userId;
+  console.log(`[getListingsByAdminId] Entry: adminId="${id}"`);
+    try {
+        const listings = await listingService.getListingsByAdminId(id);
+        console.log(`[getListingsByAdminId] Exit: Retrieved ${listings.length} listings`);
+        res.status(200).json(listings);
+    } catch (error) {
+        console.error(`[getListingsByAdminId] Error: ${error.message}`);
+        res.status(400).json({ error: error.message });
+    }
+}
+
 export default {
-    createListing
+    createListing,
+    getListingsByAdminId
 };

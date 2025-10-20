@@ -63,5 +63,20 @@ async function createListing(listingData, adminId) {
   }
 }
 
-const listingService = { createListing };
+async function getListingsByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const listings = await listingsCollection
+      .find({ "landlordInfo.userId": toObjectId(adminId) })
+      .toArray();
+
+    return listings;
+  } catch (error) {
+    throw new Error(`Error fetching listings: ${error.message}`);
+  }
+}
+
+const listingService = { createListing, getListingsByAdminId };
 export default listingService;

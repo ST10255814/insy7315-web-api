@@ -83,7 +83,9 @@ app.get('/api/invoices/stats', checkAuth, invoiceController.getInvoiceStats);
 app.patch('/api/invoices/:invoiceId/pay', checkAuth, invoiceController.markInvoiceAsPaid);
 app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.regenerateInvoiceDescriptions);
 
+//listing routes
 app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
+app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
 
 // Start server
 app.listen(PORT, () => {
