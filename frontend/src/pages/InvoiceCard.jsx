@@ -9,7 +9,7 @@ import {
   FaMoneyBillWave,
 } from "react-icons/fa";
 import { formatDateUS, formatAmount } from "../utils/formatters";
-import { statusClasses } from "../constants/status";
+import { statusClasses } from "../constants/constants.js";
 import HoverActionButton from "../components/ui/HoverActionButton.jsx";
 
 export default function InvoiceCard({ invoice, onAction }) {

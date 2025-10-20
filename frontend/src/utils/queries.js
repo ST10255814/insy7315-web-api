@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Toast from "../lib/toast.js";
 import { getLeasesByAdminId, createLeaseForBookingID } from "./leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
+import { getListingsByAdminId, createListing } from "./listings.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
 import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries } from "./cacheUtils.js";
@@ -46,6 +47,7 @@ export const useCreateLeaseMutation = () => {
   });
 };
 
+// Invoices Queries and Mutations
 export const useInvoicesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("invoices", { adminId }),
@@ -76,6 +78,41 @@ export const useCreateInvoiceMutation = () => {
         error?.response?.data?.error ||
         error?.message ||
         "Failed to create invoice";
+      Toast.error(msg);
+    },
+  });
+};
+
+// Listing Queries and Mutations
+export const useListingsQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("listings", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getListingsByAdminId();
+    },
+    enabled: !!adminId,
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+}
+
+export const useCreateListingMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (listingData) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return createListing(listingData);
+    },
+    onSuccess: (response) => {
+      const listingID = response?.listingId || response;
+      Toast.success(`Listing created successfully: Listing ID: ${listingID}`);
+      invalidateEntityQueries(queryClient, "listings");
+    },
+    onError: (error) => {
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to create listing";
       Toast.error(msg);
     },
   });
