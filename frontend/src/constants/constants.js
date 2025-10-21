@@ -16,10 +16,16 @@ export const statusClasses = {
   Overdue: "bg-red-200 text-red-800",
   Unpaid: "bg-red-200 text-red-800",
 
-  // Property statuses 
+  // Property statuses
   Vacant: "bg-green-100 text-green-700",
   Occupied: "bg-blue-100 text-blue-700",
   Maintenance: "bg-yellow-100 text-yellow-700",
+
+  // Booking statuses
+  confirmed: "bg-green-100 text-green-700",
+  pending: "bg-yellow-100 text-yellow-700",
+  cancelled: "bg-red-100 text-red-700",
+  completed: "bg-blue-100 text-blue-700",
 };
 
 /**

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import MaintenanceCard from "./MaintenanceCard.jsx";
-import { maintenanceStatusMap } from "../constants/status.js";
+import { maintenanceStatusMap } from "../constants/constants.js";
 
 const columnVariants = {
   hidden: {},
