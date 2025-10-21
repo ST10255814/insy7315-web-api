@@ -32,3 +32,8 @@ async function getBookings(adminId){
         throw new Error("Failed to fetch bookings");
     }
 }
+
+const bookingService = {
+    getBookings
+};
+export default bookingService;

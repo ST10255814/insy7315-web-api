@@ -57,6 +57,7 @@ import userController from './Controllers/userController.js';
 import leaseController from './Controllers/leaseController.js';
 import invoiceController from './Controllers/invoiceController.js';
 import listingController from './Controllers/listingController.js';
+import bookingController from './Controllers/bookingController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -86,6 +87,9 @@ app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.r
 //listing routes
 app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
 app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
+
+//booking routes
+app.get('/api/bookings', checkAuth, bookingController.getBookings);
 
 // Start server
 app.listen(PORT, () => {
