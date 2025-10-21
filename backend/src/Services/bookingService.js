@@ -9,7 +9,7 @@ async function getBookings(adminId){
         const db = client.db('RentWise');
         const bookingsCollection = db.collection('Bookings');
         const listingCollection = db.collection("Listings");
-        const userCollection = db.collection("Users");
+        const userCollection = db.collection("System-Users");
 
         //Get all bookings
         const bookings = await bookingsCollection.find().toArray();
@@ -27,11 +27,20 @@ async function getBookings(adminId){
                     const bookingDetails = {
                         bookingID: book.newBooking.bookingId,
                         listingAddress: listing.address,
+                        listingTitle: listing.title,
                         checkIn: book.newBooking.checkInDate,
                         checkOut: book.newBooking.checkOutDate,
                         guests: book.newBooking.numberOfGuests,
                         price: book.newBooking.totalPrice,
                         status: book.newBooking.status,
+                        createdAt: book.createdAt,
+                        tenantInfo: tenant ? {
+                            name: `${tenant.firstName} ${tenant.surname}`,
+                            userId: tenant._id
+                        } : {
+                            name: "Unknown User",
+                            userId: book.userId
+                        }
                     }
                     return bookingDetails;
                 }
