@@ -21,7 +21,16 @@ async function getBookings(adminId){
             //using the listing ID we search for a listing that contains the adminID
             if(listing.landlordInfo.landlord.toString() === adminId){
                 //Grab the booking that this listing is associated with
-                return {...book, listingDetail: listing};
+                const bookingDetails = {
+                    bookingID: book.newBooking.BookingId,
+                    listingAddress: listing.address,
+                    checkIn: book.newBooking.checkInDate,
+                    checkOut: book.newBooking.checkOutDate,
+                    guests: book.newBooking.numberOfGuests,
+                    price: book.newBooking.totalPrice,
+                    status: book.newBooking.status
+                }
+                return bookingDetails;
             }
 
         }));
