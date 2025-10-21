@@ -10,10 +10,9 @@ async function getBookings(adminId){
         const db = client.db('RentWise');
         const bookingsCollection = db.collection('Bookings');
         const listingCollection = db.collection("Listings");
-        const userCollection = db.collection('System-Users');
 
         //Get all bookings without the admin ID
-        const booking = await bookingsCollection.find.toArray();
+        const booking = await bookingsCollection.find().toArray();
 
         //go through each booking and grab the listing ID
         const detailedBookings = await Promise.all(booking.map(async (book) => {
