@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast.js";
 import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
 import BookingCard from "../pages/BookingCard.jsx";
-import AddBookingModal from "../models/AddBookingModel.jsx";
 // import { useParams } from "react-router-dom"; // TODO: Uncomment when integrating queries
 
 export default function BookingsTab() {
@@ -12,7 +10,6 @@ export default function BookingsTab() {
   
   // Temporary state to simulate loading and data
   const [isLoading, setIsLoading] = useState(true); // TODO: Replace with actual query loading state
-  const [showAddModal, setShowAddModal] = useState(false);
   
   // Temporary bookings data - replace with actual query later
   const tempBookings = [
@@ -99,18 +96,6 @@ export default function BookingsTab() {
     }
   };
 
-  const handleAddBookingSubmit = (bookingData) => {
-    console.log("Adding Booking:", bookingData);
-    // TODO: Replace with actual mutation
-    // createBookingMutation.mutate(bookingData, {
-    //   onSuccess: () => {
-    //     setShowAddModal(false);
-    //   },
-    // });
-    setShowAddModal(false);
-    Toast.success("Booking added successfully!");
-  };
-
   return (
     <motion.div
       className="max-w-7xl mx-auto space-y-6 p-2 sm:p-6"
@@ -152,14 +137,6 @@ export default function BookingsTab() {
           </AnimatePresence>
         </div>
       )}
-
-      {/* Add Booking Modal */}
-      <AddBookingModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddBookingSubmit}
-        isPending={false} // TODO: Replace with actual mutation pending state
-      />
     </motion.div>
   );
 }
