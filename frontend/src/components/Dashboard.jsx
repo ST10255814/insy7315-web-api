@@ -6,7 +6,6 @@ import LeasesTab from "./LeaseTab.jsx";
 import InvoicesTab from "./InvoicesTab.jsx";
 import MaintenanceTab from "./MaintenanceTab.jsx";
 import BookingsTab from "./BookingsTab.jsx";
-import Home from "./Home.jsx";
 
 export default function Dashboard() {
   const { userId } = useParams();
@@ -18,7 +17,7 @@ export default function Dashboard() {
     { key: "leases", label: "Leases", description: "View, add, and manage all active and past leases." },
     { key: "invoices", label: "Invoices", description: "Track payments, generate invoices, and manage billing." },
     { key: "maintenance", label: "Maintenance", description: "Monitor and schedule maintenance requests and tasks." },
-    { Key: "bookings", label: "Bookings", description: "Manage property bookings and reservations." },
+    { key: "bookings", label: "Bookings", description: "Manage property bookings and reservations." },
   ];
 
   const pathParts = location.pathname.split("/");
@@ -53,10 +52,10 @@ export default function Dashboard() {
 
       {/* Tab Content */}
       <Routes>
+        <Route index element={<Navigate to="overview" replace />} />
         <Route path="overview" element={<OverviewTab />} />
         <Route path="properties" element={<PropertiesTab />} />
         <Route path="leases" element={<LeasesTab />} />
-        <Route path="leases/:leaseId/edit" element={<Home />} />
         <Route path="invoices" element={<InvoicesTab />} />
         <Route path="maintenance" element={<MaintenanceTab />} />
         <Route path="bookings" element={<BookingsTab />} />
