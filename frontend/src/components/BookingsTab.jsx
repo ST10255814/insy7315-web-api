@@ -118,33 +118,6 @@ export default function BookingsTab() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Add Booking Button */}
-      <motion.button
-        onClick={() => setShowAddModal(true)}
-        whileHover={{
-          scale: 1.07,
-          boxShadow: "0 8px 25px rgba(59,130,246,0.45)",
-        }}
-        whileTap={{ scale: 0.96 }}
-        transition={{
-          type: "spring",
-          stiffness: 220,
-          damping: 18,
-          mass: 0.8,
-        }}
-        disabled={isLoading}
-        className="flex items-center justify-center gap-2 
-             bg-gradient-to-r from-blue-500 to-blue-600 
-             text-white px-6 py-3 rounded-2xl shadow-md 
-             font-semibold text-md 
-             hover:from-blue-600 hover:to-blue-700 
-             transition-all duration-300 ease-out
-             focus:outline-none focus:ring-4 focus:ring-blue-300"
-      >
-        <FaPlusCircle className="text-lg" />
-        Add Booking
-      </motion.button>
-
       {/* Booking Cards / Loading / Error */}
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
