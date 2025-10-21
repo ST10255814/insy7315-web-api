@@ -27,7 +27,6 @@ async function getBookings(adminId){
                     const bookingDetails = {
                         bookingID: book.newBooking.bookingId,
                         listingAddress: listing.address,
-                        listingTitle: listing.title,
                         checkIn: book.newBooking.checkInDate,
                         checkOut: book.newBooking.checkOutDate,
                         guests: book.newBooking.numberOfGuests,
