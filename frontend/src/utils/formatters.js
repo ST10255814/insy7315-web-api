@@ -33,11 +33,28 @@ export const formatDate = (dateStr) => {
 };
 
 /**
- * Format date for US locale (used in InvoiceCard)
+ * Format date for US locale (used in InvoiceCard and BookingCard)
+ * Handles multiple input formats including DD-MM-YYYY and ISO dates
  */
 export const formatDateUS = (dateStr) => {
   if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  
+  // Check if the date is in DD-MM-YYYY format
+  const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
+  
+  let d;
+  if (ddmmyyyyPattern.test(dateStr)) {
+    // Parse DD-MM-YYYY format manually
+    const [day, month, year] = dateStr.split('-').map(Number);
+    d = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+  } else {
+    // Use default Date parsing for other formats
+    d = new Date(dateStr);
+  }
+  
+  if (isNaN(d)) return "";
+  
+  return d.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",

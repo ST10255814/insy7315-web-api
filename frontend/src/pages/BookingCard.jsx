@@ -17,12 +17,7 @@ import HoverActionButton from "../components/ui/HoverActionButton.jsx";
 
 export default function BookingCard({ booking, onAction }) {
   // Use the utility function to format amount
-  const formattedAmount = formatAmount(booking?.totalAmount);
-
-  // Calculate number of nights
-  const checkInDate = new Date(booking.checkIn);
-  const checkOutDate = new Date(booking.checkOut);
-  const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)); // milliseconds in a day
+  const formattedAmount = formatAmount(booking?.price);
 
   return (
     <motion.div
@@ -35,15 +30,15 @@ export default function BookingCard({ booking, onAction }) {
       {/* Card Info */}
       <div className="space-y-2">
         <h4 className="font-bold text-blue-800 text-lg truncate">Tenant:{" "}
-          {booking.guestName}
+          {booking.tenantInfo.name}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaEnvelope className="text-gray-400" /> Booking ID:{" "}
-          <span className="font-medium">{booking.bookingId}</span>
+          <span className="font-medium">{booking.bookingID}</span>
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaHome className="text-gray-400" /> Property:{" "}
-          <span className="font-medium">{booking.property.name}</span>
+          <span className="font-medium">{booking.listingAddress}</span>
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaCalendarAlt className="text-gray-400" /> Check-in:{" "}
@@ -55,7 +50,7 @@ export default function BookingCard({ booking, onAction }) {
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaUsers className="text-gray-400" /> Guests:{" "}
-          <span className="font-medium">{booking.guests} • {nights} night{nights !== 1 ? 's' : ''}</span>
+          <span className="font-medium">{booking.guests} • {booking.nights} night{booking.nights !== 1 ? 's' : ''}</span>
         </div>
         <div className="flex items-center text-blue-700 text-md font-bold gap-2 mt-1">
           <FaMoneyBillWave className="text-green-500" /> R{formattedAmount}
