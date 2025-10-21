@@ -17,7 +17,7 @@ async function getBookings(adminId){
 
         //go through each booking and grab the listing ID
         const detailedBookings = await Promise.all(booking.map(async (book) => {
-            const listing = await listiingCollection.findOne({ _id: "listingDetail.listingID" });
+            const listing = await listingCollection.findOne({ _id: book.listingDetail.listingID });
 
             //using the listing ID we search for a listing that contains the adminID
             if(listing.landlordInfo.landlord.toString() === adminId){
