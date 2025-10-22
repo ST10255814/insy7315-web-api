@@ -14,10 +14,46 @@ import {
 import { formatDateUS, formatAmount } from "../utils/formatters";
 import { statusClasses } from "../constants/constants.js";
 import HoverActionButton from "../components/ui/HoverActionButton.jsx";
+import Toast from "../lib/toast.js";
 
 export default function BookingCard({ booking, onAction }) {
   // Use the utility function to format amount
   const formattedAmount = formatAmount(booking?.price);
+
+  const handleDownloadDocs = async (files) => {
+    if (!files || files.length === 0){
+      Toast.info("No attached documents to download.");
+      return;
+    };
+    for (const file of files) {
+      try {
+        // Handle both string URLs and file objects
+        const fileUrl = typeof file === 'string' ? file : (file.url || file.path || file.src);
+        const fileName = typeof file === 'string' 
+          ? fileUrl.split("/").pop() 
+          : (file.name || file.filename || fileUrl.split("/").pop());
+        
+        if (!fileUrl) {
+          Toast.error("Invalid file URL");
+          continue;
+        }
+
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading file:", error);
+        Toast.error("Failed to download file");
+      }
+    }
+  }
 
   return (
     <motion.div
@@ -114,6 +150,17 @@ export default function BookingCard({ booking, onAction }) {
           </>
         )}
       </motion.div>
+
+      {/* Bottom Right Corner Button */}
+      <motion.button
+        className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => handleDownloadDocs(booking.supportDocuments)}
+      >
+        <FaEye size={12} />
+        <span className="text-xs font-medium">Download Attached Docs</span>
+      </motion.button>
     </motion.div>
   );
 }
