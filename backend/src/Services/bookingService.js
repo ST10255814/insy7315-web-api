@@ -51,7 +51,11 @@ async function getBookings(adminId){
                     
                     // Calculate number of nights
                     const nights = calculateNights(book.newBooking.checkInDate, book.newBooking.checkOutDate);
-                    
+
+                    //check if the supporting documents array is populated within the newBookings object
+                    const hasSupportingDocuments = Array.isArray(book.newBooking.supportDocuments) && book.newBooking.supportDocuments.length > 0;
+
+                    //if supportDocuments exist, include them in the response
                     const bookingDetails = {
                         bookingID: book.newBooking.bookingId,
                         listingAddress: listing.address,
@@ -62,6 +66,7 @@ async function getBookings(adminId){
                         guests: book.newBooking.numberOfGuests,
                         price: book.newBooking.totalPrice,
                         status: book.newBooking.status,
+                        supportDocuments: hasSupportingDocuments ? book.newBooking.supportDocuments : [],
                         createdAt: book.createdAt,
                         tenantInfo: tenant ? {
                             name: `${tenant.firstName} ${tenant.surname}`,
@@ -71,7 +76,7 @@ async function getBookings(adminId){
                             userId: book.userId
                         }
                     }
-                    
+
                     return bookingDetails;
                 }
             } catch (listingError) {
