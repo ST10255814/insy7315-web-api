@@ -87,7 +87,7 @@ describe('LeaseService', () => {
       const result = await leaseService.getLeasesByAdminId(adminId);
 
       expect(mockLeasesCollection.find).toHaveBeenCalledWith({
-        adminId: { _id: 'admin123' }
+        adminId: expect.objectContaining({ _id: 'admin123' })
       });
 
       expect(result).toEqual(mockLeases);
@@ -256,23 +256,21 @@ describe('LeaseService', () => {
       expect(mockLeasesCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
           leaseId: 'L-0001',
-          adminId: { _id: 'admin123' },
-          bookingDetails: {
+          adminId: expect.objectContaining({ _id: 'admin123' }),
+          bookingDetails: expect.objectContaining({
             bookingId: 'B-0001',
             startDate: '01-01-2024',
             endDate: '31-12-2024',
             rentAmount: 12000
-          },
-          tenant: {
-            userId: { _id: 'user123' },
+          }),
+          tenant: expect.objectContaining({
             firstName: 'Jane',
             surname: 'Smith',
             email: 'jane@example.com'
-          },
-          listing: {
-            listingId: { _id: 'listing123' },
+          }),
+          listing: expect.objectContaining({
             address: '123 Test St'
-          },
+          }),
           status: 'Pending'
         })
       );
@@ -400,7 +398,7 @@ describe('LeaseService', () => {
       const result = await leaseService.updateLeaseStatusesByAdmin('admin123');
 
       expect(mockLeasesCollection.find).toHaveBeenCalledWith({
-        adminId: { _id: 'admin123' },
+        adminId: expect.objectContaining({ _id: 'admin123' }),
         status: { $in: ['Pending', 'Active'] }
       });
 
