@@ -21,18 +21,20 @@ export default function BookingCard({ booking, onAction }) {
   const formattedAmount = formatAmount(booking?.price);
 
   const handleDownloadDocs = async (files) => {
-    if (!files || files.length === 0){
+    if (!files || files.length === 0) {
       Toast.info("No attached documents to download.");
       return;
-    };
+    }
     for (const file of files) {
       try {
         // Handle both string URLs and file objects
-        const fileUrl = typeof file === 'string' ? file : (file.url || file.path || file.src);
-        const fileName = typeof file === 'string' 
-          ? fileUrl.split("/").pop() 
-          : (file.name || file.filename || fileUrl.split("/").pop());
-        
+        const fileUrl =
+          typeof file === "string" ? file : file.url || file.path || file.src;
+        const fileName =
+          typeof file === "string"
+            ? fileUrl.split("/").pop()
+            : file.name || file.filename || fileUrl.split("/").pop();
+
         if (!fileUrl) {
           Toast.error("Invalid file URL");
           continue;
@@ -53,7 +55,7 @@ export default function BookingCard({ booking, onAction }) {
         Toast.error("Failed to download file");
       }
     }
-  }
+  };
 
   return (
     <motion.div
@@ -65,8 +67,8 @@ export default function BookingCard({ booking, onAction }) {
     >
       {/* Card Info */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant:{" "}
-          {booking.tenantInfo.name}
+        <h4 className="font-bold text-blue-800 text-lg truncate">
+          Tenant: {booking.tenantInfo.name}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaEnvelope className="text-gray-400" /> Booking ID:{" "}
@@ -86,13 +88,18 @@ export default function BookingCard({ booking, onAction }) {
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaUsers className="text-gray-400" /> Guests:{" "}
-          <span className="font-medium">{booking.guests} • {booking.nights} night{booking.nights !== 1 ? 's' : ''}</span>
+          <span className="font-medium">
+            {booking.guests} • {booking.nights} night
+            {booking.nights !== 1 ? "s" : ""}
+          </span>
         </div>
         <div className="flex items-center text-blue-700 text-md font-bold gap-2 mt-1">
           <FaMoneyBillWave className="text-green-500" /> R{formattedAmount}
         </div>
         {booking.specialRequests && (
-          <p className="text-gray-500 text-sm italic mt-1">Notes: {booking.specialRequests}</p>
+          <p className="text-gray-500 text-sm italic mt-1">
+            Notes: {booking.specialRequests}
+          </p>
         )}
         <span
           className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
@@ -152,15 +159,17 @@ export default function BookingCard({ booking, onAction }) {
       </motion.div>
 
       {/* Bottom Right Corner Button */}
-      <motion.button
-        className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => handleDownloadDocs(booking.supportDocuments)}
-      >
-        <FaEye size={12} />
-        <span className="text-xs font-medium">Download Attached Docs</span>
-      </motion.button>
+      {booking.supportDocuments.length > 0 && (
+        <motion.button
+          className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleDownloadDocs(booking.supportDocuments)}
+        >
+          <FaEye size={12} />
+          <span className="text-xs font-medium">Download Attached Docs</span>
+        </motion.button>
+      )}
     </motion.div>
   );
 }
