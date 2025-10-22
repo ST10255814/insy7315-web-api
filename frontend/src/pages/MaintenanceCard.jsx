@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { priorityColor } from "../constants/status.js";
+import { FaEye } from "react-icons/fa";
+import { downloadFiles } from "../utils/fileDownload.js";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -38,7 +40,8 @@ export default function MaintenanceCard({ request }) {
           <span className="font-semibold">Property:</span> {request.property}
         </p>
         <p className="text-green-700 italic">
-          <span className="font-semibold">Caretaker:</span> {request.caretaker || "Unassigned"}
+          <span className="font-semibold">Caretaker:</span>{" "}
+          {request.caretaker || "Unassigned"}
         </p>
       </div>
 
@@ -50,7 +53,9 @@ export default function MaintenanceCard({ request }) {
       {/* Notes */}
       {request.notes && (
         <div className="mt-3 p-3 bg-green-50 border-l-4 border-green-500 rounded-md shadow-sm">
-          <p className="font-semibold text-green-800 text-sm mb-1">Caretaker Notes</p>
+          <p className="font-semibold text-green-800 text-sm mb-1">
+            Caretaker Notes
+          </p>
           <p className="text-green-900 text-sm">{request.notes}</p>
         </div>
       )}
@@ -96,6 +101,21 @@ export default function MaintenanceCard({ request }) {
             Update Maintenance Request
           </motion.button>
         )}
+
+        {request.supportingDocuments &&
+          request.supportingDocuments.length > 0 && (
+            <motion.button
+              className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => downloadFiles(request.supportDocuments)}
+            >
+              <FaEye size={12} />
+              <span className="text-xs font-medium">
+                Download Attached Docs
+              </span>
+            </motion.button>
+          )}
       </div>
     </motion.div>
   );
