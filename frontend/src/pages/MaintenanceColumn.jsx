@@ -20,13 +20,13 @@ export default function MaintenanceColumn({ status, requests }) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className={`text-lg font-bold flex items-center gap-3 mb-3 flex-shrink-0 ${maintenanceStatusMap[status].color}`}
+        className={`text-lg font-bold flex items-center gap-3 mb-1 flex-shrink-0 ${maintenanceStatusMap[status].color}`}
       >
         {maintenanceStatusMap[status].label} ({requests.length})
       </motion.h2>
 
       {/* Content - Mobile: no scroll, Desktop: scrollable */}
-      <div className="md:flex-1 md:overflow-y-auto md:pr-2 space-y-4">
+      <div className="md:flex-1 md:overflow-y-auto md:pr-2 space-y-3">
         {requests.length === 0 ? (
           <div className="flex items-center justify-center h-32">
             <p className="text-gray-400 italic text-center">

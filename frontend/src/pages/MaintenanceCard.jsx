@@ -104,10 +104,6 @@ export default function MaintenanceCard({ request }) {
           <span className="font-medium">Follow-ups:</span>
           <span className="font-bold text-blue-800">{request.followUps || 0}</span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <FaCalendarAlt className="text-sm flex-shrink-0" />
-          <span className="font-medium truncate">{formatDateUS(request.updatedAt) || "No Follow-Up Date"}</span>
-        </div>
       </div>
 
       {/* Caretaker Notes */}
@@ -123,6 +119,22 @@ export default function MaintenanceCard({ request }) {
             {request.notes}
           </p>
         </div>
+      )}
+
+      {/* Follow-Up Date */}
+      <div className="flex items-center gap-2 mb-3 text-xs sm:text-sm flex-wrap">
+        <FaCalendarAlt className="text-blue-500 text-xs flex-shrink-0" />
+        <span className="font-medium text-gray-700">Created At:</span>
+        <i className="font-mono text-gray-500 py-1 rounded text-xs sm:text-sm">
+          {formatDateUS(request.createdAt) || "No Created At Date"}
+        </i>
+      </div>
+
+      {/* Updated Time */}
+      {request.updatedAt && (
+        <p className="text-gray-400 text-xs mb-4 text-center truncate">
+          Last updated: {request.updatedAt}
+        </p>
       )}
 
       {/* Action Buttons */}
