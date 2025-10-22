@@ -1,9 +1,5 @@
 # 🏠 RentWise - Property Management System
 
-<div align="center">
-
-![RentWise Logo](https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80)
-
 ### *Streamline Your Property Management Journey*
 
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
