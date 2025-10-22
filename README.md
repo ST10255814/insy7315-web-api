@@ -1,6 +1,9 @@
 # 🏠 RentWise - Property Management System
+<div align="center">
+  
+![RentWise_Splash](https://github.com/user-attachments/assets/d67a9b06-5cda-48ac-b196-86d0c29e99c2)
 
-![Banner](https://via.placeholder.com/1200x400?text=RentWise+-+Property+Management+System)
+</div>
 
 ### *Streamline Your Property Management Journey*
 
