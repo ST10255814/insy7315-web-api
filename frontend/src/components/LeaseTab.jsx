@@ -55,19 +55,24 @@ export default function LeasesTab() {
   const handleLeaseAction = (action, lease) => {
     switch (action) {
       case "Edit":
+        //TODO: Implement edit functionality
         setSelectedLease(lease);
         setShowEditModal(true);
         break;
       case "Delete":
+        //TODO: Implement delete functionality
         Toast.warning(`Deleting lease ${lease.leaseId}`);
         break;
       case "Activate":
+        //TODO: Implement activate functionality
         Toast.info(`Activating lease ${lease.leaseId}`);
         break;
       case "Cancel":
+        //TODO: Implement cancel functionality
         Toast.warning(`Cancelling lease ${lease.leaseId}`);
         break;
       case "Renew":
+        //TODO: Implement renew functionality
         Toast.info(`Renewing lease ${lease.leaseId}`);
         break;
       default:

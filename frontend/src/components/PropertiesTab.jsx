@@ -25,12 +25,15 @@ export default function PropertiesTab() {
   const handlePropertyAction = (action, property) => {
     switch (action) {
       case "edit":
+        //TODO: Implement edit functionality
         Toast.info(`Editing property ${property.listingId}`);
         break;
       case "delete":
+        //TODO: Implement delete functionality
         Toast.warning(`Deleting property ${property.listingId}`);
         break;
       case "view":
+        //TODO: Implement view functionality
         Toast.info(`Viewing details for ${property.listingId}`);
         break;
       default:

@@ -12,18 +12,23 @@ export default function BookingsTab() {
   const handleBookingAction = (action, booking) => {
     switch (action) {
       case "Edit":
+        //TODO: Implement edit functionality
         Toast.info(`Editing booking ${booking.bookingId}`);
         break;
       case "Delete":
+        //TODO: Implement delete functionality
         Toast.warning(`Deleting booking ${booking.bookingId}`);
         break;
       case "View":
+        //TODO: Implement view functionality
         Toast.info(`Viewing details for ${booking.bookingId}`);
         break;
       case "Confirm":
+        //TODO: Implement confirm functionality
         Toast.success(`Confirmed booking ${booking.bookingId}`);
         break;
       case "Cancel":
+        //TODO: Implement cancel functionality
         Toast.warning(`Cancelled booking ${booking.bookingId}`);
         break;
       default:

@@ -25,12 +25,15 @@ export default function InvoicesTab() {
   const handleInvoiceAction = (action, invoice) => {
     switch (action) {
       case "Edit":
+        //TODO: Implement edit functionality
         Toast.info(`Editing ${invoice.invoiceId}`);
         break;
       case "Delete":
+        //TODO: Implement delete functionality
         Toast.warning(`Deleting ${invoice.invoiceId}`);
         break;
       case "View":
+        //TODO: Implement view functionality
         Toast.info(`Viewing details for ${invoice.invoiceId}`);
         break;
       default:

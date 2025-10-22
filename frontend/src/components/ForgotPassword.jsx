@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 
+//FIXME: Change from sending email with link to sending email with code for MFA reset
 export default function ForgotPassword() {
   const location = useLocation();
   const email = location.state?.email || "your@email.com"; // fallback if none passed

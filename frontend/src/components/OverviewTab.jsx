@@ -35,6 +35,7 @@ ChartJS.register(
   Filler
 );
 
+//FIXME: Replace hardcoded data with dynamic data from API
 export default function OverviewTab() {
   // Revenue Line Chart
   const revenueData = React.useMemo(
