@@ -12,7 +12,7 @@ import {
   FaFileAlt,
 } from "react-icons/fa";
 import { downloadFiles } from "../utils/fileDownload.js";
-import { formatDateUS } from "../utils/formatters.js";
+import { formatDateTimeUS } from "../utils/formatters.js";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -125,15 +125,15 @@ export default function MaintenanceCard({ request }) {
       <div className="flex items-center gap-2 mb-3 text-xs sm:text-sm flex-wrap">
         <FaCalendarAlt className="text-blue-500 text-xs flex-shrink-0" />
         <span className="font-medium text-gray-700">Created At:</span>
-        <i className="font-mono text-gray-500 py-1 rounded text-xs sm:text-sm">
-          {formatDateUS(request.createdAt) || "No Created At Date"}
+        <i className="text-gray-500 py-1 rounded text-xs sm:text-sm">
+          {formatDateTimeUS(request.createdAt) || "No Created At Date"}
         </i>
       </div>
 
       {/* Updated Time */}
       {request.updatedAt && (
         <p className="text-gray-400 text-xs mb-4 text-center truncate">
-          Last updated: {request.updatedAt}
+          Last updated: {formatDateTimeUS(request.updatedAt)}
         </p>
       )}
 

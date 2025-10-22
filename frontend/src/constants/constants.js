@@ -81,3 +81,12 @@ export const maintenanceStatusMap = {
 
 // Maintenance request statuses
 export const statuses = ["Pending", "In Progress", "Completed"];
+
+/**
+ * Date and number formatting utilities
+ */
+
+export const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Regex pattern to match DD-MM-YYYY format
+export const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
