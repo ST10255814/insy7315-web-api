@@ -8,7 +8,6 @@ import dotenv from 'dotenv';
 import cron from 'node-cron';
 import leaseService from './Services/leaseService.js';
 import invoiceService from './Services/invoiceService.js';
-import listingService from './Services/listingService.js';
 import { upload } from './utils/cloudinary.js';
 
 dotenv.config();
