@@ -122,7 +122,7 @@ export default function BookingCard({ booking, onAction }) {
       </motion.div>
 
       {/* Bottom Right Corner Button */}
-      {booking.supportDocuments.length > 0 && (
+      {booking.supportDocuments && booking.supportDocuments.length > 0 && (
         <motion.button
           className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
