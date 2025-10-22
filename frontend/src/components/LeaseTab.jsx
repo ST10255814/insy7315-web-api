@@ -20,7 +20,7 @@ export default function LeasesTab() {
     errors: { isBookingId: false },
   });
 
-  const { status, data: leases } = useLeasesQuery(adminId);
+  const { isLoading, isError, data: leases } = useLeasesQuery(adminId);
   const createLeaseMutation = useCreateLeaseMutation();
 
   // Add Lease Submit
@@ -59,17 +59,16 @@ export default function LeasesTab() {
         setShowEditModal(true);
         break;
       case "Delete":
-        if (window.confirm("Are you sure you want to delete this lease?"))
-          console.log("Deleting", lease._id);
+        Toast.warning(`Deleting lease ${lease.leaseId}`);
         break;
       case "Activate":
-        console.log("Activating", lease._id);
+        Toast.info(`Activating lease ${lease.leaseId}`);
         break;
       case "Cancel":
-        console.log("Cancelling", lease._id);
+        Toast.warning(`Cancelling lease ${lease.leaseId}`);
         break;
       case "Renew":
-        console.log("Renewing", lease._id);
+        Toast.info(`Renewing lease ${lease.leaseId}`);
         break;
       default:
         break;
@@ -97,21 +96,21 @@ export default function LeasesTab() {
           damping: 18,
           mass: 0.8,
         }}
-        disabled={status === "pending"}
-        className="flex items-center justify-center gap-2 
-             bg-gradient-to-r from-blue-500 to-blue-600 
-             text-white px-6 py-3 rounded-2xl shadow-md 
-             font-semibold text-md 
-             hover:from-blue-600 hover:to-blue-700 
-             transition-all duration-300 ease-out
-             focus:outline-none focus:ring-4 focus:ring-blue-300"
+        disabled={isLoading}
+        className="flex items-center justify-center gap-2
+            bg-gradient-to-r from-blue-500 to-blue-600
+          text-white px-6 py-3 rounded-2xl shadow-md
+            font-semibold text-md
+          hover:from-blue-600 hover:to-blue-700
+            transition-all duration-300 ease-out
+            focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         <FaPlusCircle className="text-lg" />
         Add Lease
       </motion.button>
 
       {/* Lease Cards / Loading / Error */}
-      {status === "pending" && (
+      {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <LoadingSkeleton key={i} />
@@ -119,19 +118,19 @@ export default function LeasesTab() {
         </div>
       )}
 
-      {status === "error" && (
+      {isError && (
         <div className="text-red-600 font-semibold text-center mt-10">
           Failed to load leases. Please try again.
         </div>
       )}
 
-      {status === "success" && leases?.length === 0 && (
+      {leases && leases?.length === 0 && (
         <div className="text-gray-500 text-center mt-10 font-medium">
           No leases found. Add a new lease to get started.
         </div>
       )}
 
-      {status === "success" && leases?.length > 0 && (
+      {leases && leases?.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
             {leases.map((lease) => (
@@ -164,7 +163,6 @@ export default function LeasesTab() {
         }}
         lease={selectedLease}
         onSubmit={handleEditSubmit}
-        //isPending={updateLeaseMutation.isPending}
         setSelectedLease={setSelectedLease}
       />
     </motion.div>

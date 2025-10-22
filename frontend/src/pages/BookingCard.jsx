@@ -90,17 +90,17 @@ export default function BookingCard({ booking, onAction }) {
         />
 
         <HoverActionButton
-          icon={<FaTrash size={18} />}
-          label="Delete"
-          onClick={() => onAction("Delete", booking)}
-          className="text-red-600 hover:bg-red-50"
-        />
-
-        <HoverActionButton
           icon={<FaEye size={18} />}
           label="View"
           onClick={() => onAction("View", booking)}
           className="text-yellow-600 hover:bg-yellow-50"
+        />
+
+        <HoverActionButton
+          icon={<FaTrash size={18} />}
+          label="Delete"
+          onClick={() => onAction("Delete", booking)}
+          className="text-red-600 hover:bg-red-50"
         />
 
         {/* Status-specific Buttons */}

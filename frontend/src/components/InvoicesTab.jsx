@@ -28,7 +28,7 @@ export default function InvoicesTab() {
         Toast.info(`Editing ${invoice.invoiceId}`);
         break;
       case "Delete":
-        Toast.info(`Deleting ${invoice.invoiceId}`);
+        Toast.warning(`Deleting ${invoice.invoiceId}`);
         break;
       case "View":
         Toast.info(`Viewing details for ${invoice.invoiceId}`);

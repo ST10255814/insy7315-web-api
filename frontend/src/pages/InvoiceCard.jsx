@@ -71,17 +71,17 @@ export default function InvoiceCard({ invoice, onAction }) {
         />
 
         <HoverActionButton
-          icon={<FaTrash />}
-          label="Delete"
-          onClick={() => onAction("Delete", invoice)}
-          className="text-red-600 hover:bg-red-50"
-        />
-
-        <HoverActionButton
           icon={<FaEye />}
           label="View"
           onClick={() => onAction("View", invoice)}
           className="text-yellow-600 hover:bg-yellow-50"
+        />
+
+        <HoverActionButton
+          icon={<FaTrash />}
+          label="Delete"
+          onClick={() => onAction("Delete", invoice)}
+          className="text-red-600 hover:bg-red-50"
         />
       </motion.div>
     </motion.div>

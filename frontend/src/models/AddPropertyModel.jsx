@@ -109,8 +109,6 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
     });
   };
 
-
-
   // --- Handle Amenities ---
   const handleAmenitySelect = (amenity) => {
     if (!formData.amenities.includes(amenity)) {
@@ -130,9 +128,6 @@ export default function AddPropertyModal({ show, onClose, onSubmit, formData, se
   const handleRemoveAmenity = (index) => {
     const updatedAmenities = formData.amenities.filter((_, i) => i !== index);
     setFormData({ ...formData, amenities: updatedAmenities });
-    
-    // If removing the last amenity and there's no error yet, don't add one here
-    // The error will show on form submission if needed
   };
 
   // --- Submit Form ---

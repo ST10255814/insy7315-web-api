@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import MaintenanceColumn from "../pages/MaintenanceColumn.jsx";
-import LoadingSkeleton from "../pages/MaintenanceSkeletonLoading";
+import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
 import { useState, useEffect } from "react";
 
 export default function MaintenanceTab() {

@@ -23,7 +23,7 @@ export default function EditLeaseModal({
   useEffect(() => {
     if (lease) {
       setEditData({
-        tenantName: lease.tenant.fullname || "",
+        tenantName: lease.tenant.firstName + " " + lease.tenant.surname || "",
         rent: lease.bookingDetails.rentAmount || "",
         property: lease.listing.address || "",
         startDate: lease.bookingDetails?.startDate?.slice(0, 10) || "",
@@ -95,7 +95,7 @@ export default function EditLeaseModal({
             {/* Header */}
             <div className="mb-6 text-center">
               <h3 className="text-2xl font-bold text-blue-800">
-                {lease.tenant.fullname}
+                Editing:
               </h3>
               <p className="text-sm text-gray-500 mt-1">
                 Lease ID: <span className="font-mono">{lease.leaseId}</span>
@@ -122,6 +122,7 @@ export default function EditLeaseModal({
                     name="tenantName"
                     value={editData.tenantName}
                     onChange={handleChange}
+                    disabled={true}
                     className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
                   />
                 </div>
@@ -135,6 +136,7 @@ export default function EditLeaseModal({
                     type="text"
                     name="property"
                     value={editData.property}
+                    disabled={true}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
                   />

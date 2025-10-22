@@ -15,7 +15,7 @@ export default function BookingsTab() {
         Toast.info(`Editing booking ${booking.bookingId}`);
         break;
       case "Delete":
-        Toast.info(`Deleting booking ${booking.bookingId}`);
+        Toast.warning(`Deleting booking ${booking.bookingId}`);
         break;
       case "View":
         Toast.info(`Viewing details for ${booking.bookingId}`);
