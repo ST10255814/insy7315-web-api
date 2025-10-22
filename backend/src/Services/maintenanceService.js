@@ -25,7 +25,7 @@ async function getAllMaintenanceRequests(adminId) {
 
     //create requests object
     const maintenanceRequests = {
-      maintenanceID: requests.newMaintenanceRequest.maintenanceID,
+      maintenanceID: requests.newMaintenanceRequest.maintenanceId,
       issue: requests.newMaintenanceRequest.issue,
       description: requests.newMaintenanceRequest.description,
       priority: requests.newMaintenanceRequest.priority,
