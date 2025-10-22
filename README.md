@@ -80,6 +80,7 @@
 ![Helmet](https://img.shields.io/badge/Helmet-8.1.0-000000?style=flat-square)
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-1.41.3-3448C5?style=flat-square)
 ![Jest](https://img.shields.io/badge/Jest-29.6.1-C21325?style=flat-square&logo=jest)
+![CORS](https://img.shields.io/badge/CORS-2.8.5-C21325?style=flat-square&logo=sqaure)
 
 </div>
 
@@ -90,16 +91,16 @@
 <div align="center">
 
 ### 🏠 Landing Page
-![Landing Page](https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80)
+![Landing Page](<img width="1919" height="863" alt="landing_page" src="https://github.com/user-attachments/assets/6fe77631-5321-4c8b-9a24-02f5d09900c8" />)
 
 ### 📊 Dashboard Overview
-![Dashboard](https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80)
+![Dashboard](<img width="1919" height="843" alt="dashboard" src="https://github.com/user-attachments/assets/489c43d9-8b34-4741-a832-6a37ce01e75e" />)
 
 ### 🏘️ Property Management
-![Properties](https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80)
+![Properties](<img width="1919" height="857" alt="property" src="https://github.com/user-attachments/assets/71fc465f-287a-458c-a6d3-7945c4c67d1d" />)
 
 ### 🔧 Maintenance Tracking
-![Maintenance](https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80)
+![Maintenance](<img width="1919" height="932" alt="maintenance" src="https://github.com/user-attachments/assets/e8e1dc54-87b4-4758-832e-9630501a4226" />)
 
 </div>
 
