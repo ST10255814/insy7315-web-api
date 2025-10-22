@@ -73,6 +73,7 @@ export default function OverviewTab() {
   const revenueOptions = React.useMemo(
     () => ({
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: { mode: "index", intersect: false },
@@ -86,6 +87,14 @@ export default function OverviewTab() {
         x: {
           grid: { drawBorder: false, color: "rgba(0,0,0,0.05)" },
         },
+      },
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
       },
     }),
     []
@@ -224,15 +233,15 @@ export default function OverviewTab() {
       >
         {/* Revenue Trend */}
         <motion.div
-          className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg border border-white/20 relative overflow-hidden"
+          className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 relative overflow-hidden"
           whileHover={{ scale: 1.03, boxShadow: "0 15px 35px rgba(0,0,0,0.15)" }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-2xl"></div>
-          <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
+          <h3 className="text-xl font-bold text-blue-600 mb-4 px-6 pt-6 relative z-10">
             Revenue Trend
           </h3>
-          <div className="h-64 relative z-10">
+          <div className="h-80 relative z-10 pl-6 pr-6 pb-6">
             <Line data={revenueData} options={revenueOptions} />
           </div>
         </motion.div>
@@ -247,7 +256,7 @@ export default function OverviewTab() {
           <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
             Property Distribution
           </h3>
-          <div className="h-64 flex items-center justify-center relative z-10">
+          <div className="h-80 flex items-center justify-center relative z-10">
             <Pie data={propertyData} options={propertyOptions} />
           </div>
         </motion.div>

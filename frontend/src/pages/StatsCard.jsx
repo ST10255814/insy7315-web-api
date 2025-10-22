@@ -40,7 +40,7 @@ export default function StatsCard({ title, value, subtitle, color, icon }) {
           </motion.p>
           <p
             className="text-sm font-medium mt-2"
-            style={{ color: colorMap[color] ? `${colorMap[color]}99` : "#3B82F699" }} // lighter opacity
+            style={{ color: colorMap[color] ? `${colorMap[color]}` : "#3B82F699" }} // lighter opacity
           >
             {subtitle}
           </p>
