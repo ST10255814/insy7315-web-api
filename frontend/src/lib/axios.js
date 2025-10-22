@@ -1,5 +1,6 @@
 import axios from "axios"
 import Toast from "./toast";
+import { navigateTo } from "../utils/navigation";
 
 // Avoid circular dependency by defining logout logic here
 const clearUserSession = () => {
@@ -49,7 +50,8 @@ api.interceptors.response.use(
       
       // Force redirect to login page
       if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+        // Use React Router navigation to preserve toast messages
+        navigateTo("/login");
       }
     }
     return Promise.reject(error);
