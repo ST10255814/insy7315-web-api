@@ -3,6 +3,7 @@ import Toast from "../lib/toast.js";
 import { getLeasesByAdminId, createLeaseForBookingID } from "./leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
 import { getListingsByAdminId, createListing } from "./listings.api.js";
+import { getMaintenanceRequestsByAdminId } from "./maintenance.api.js";
 import { getBookingsByAdminId } from "./bookings.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
@@ -128,6 +129,19 @@ export const useBookingsQuery = (adminId) => {
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getBookingsByAdminId();
+    },
+    enabled: !!adminId,
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+}
+
+// Maintenance queries and mutations
+export const useMaintenanceRequestsQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("maintenanceRequests", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getMaintenanceRequestsByAdminId();
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,

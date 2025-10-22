@@ -19,21 +19,48 @@ async function getAllMaintenanceRequests(adminId) {
       "listingDetail.landlordID": toObjectId(adminId),
     }).toArray();
 
-    const user = await userCollection.findOne({
-      _id: requests.userId,
-    });
+    console.log("Maintenance requests fetched:", requests);
+    console.log("Number of requests:", requests.length);
 
-    //create requests object
-    const maintenanceRequests = {
-      maintenanceID: requests.newMaintenanceRequest.maintenanceId,
-      issue: requests.newMaintenanceRequest.issue,
-      description: requests.newMaintenanceRequest.description,
-      priority: requests.newMaintenanceRequest.priority,
-      documentURL: requests.newMaintenanceRequest.documentURL,
-      createdAt: requests.newMaintenanceRequest.createdAt,
-      property: requests.listingDetail.address,
-      tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",
-    };
+    if(!requests || requests.length === 0){
+      return []; // Return empty array instead of throwing error
+    }
+
+    // Process each maintenance request in the array
+    const maintenanceRequests = [];
+    
+    for (const request of requests) {
+      try {
+        console.log("Processing request:", request);
+        
+        // Get user information for this specific request
+        let user = null;
+        if (request.userId) {
+          user = await userCollection.findOne({
+            _id: toObjectId(request.userId),
+          });
+        }
+
+        console.log("User fetched for request:", user);
+
+        // Create formatted maintenance request object
+        const formattedRequest = {
+          maintenanceID: request.newMaintenanceRequest?.maintenanceId || request._id,
+          issue: request.newMaintenanceRequest?.issue,
+          description: request.newMaintenanceRequest?.description,
+          priority: request.newMaintenanceRequest?.priority || "medium",
+          status: request.newMaintenanceRequest?.status || "pending",
+          documentURL: request.newMaintenanceRequest?.documentURL,
+          createdAt: request.newMaintenanceRequest?.createdAt || request.createdAt,
+          property: request.listingDetail?.address,
+          tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",
+        };
+
+        maintenanceRequests.push(formattedRequest);
+      } catch (requestError) {
+        console.error(`Error processing individual request:`, requestError);
+      }
+    }
 
     return maintenanceRequests;
   } catch (error) {

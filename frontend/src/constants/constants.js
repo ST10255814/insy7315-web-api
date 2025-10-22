@@ -1,4 +1,3 @@
-import React from "react";
 import { FaPlay, FaTimes } from "react-icons/fa";
 
 /**
@@ -79,3 +78,6 @@ export const maintenanceStatusMap = {
   "In Progress": { label: "In Progress", color: "text-yellow-600" },
   Completed: { label: "Completed", color: "text-green-600" },
 };
+
+// Maintenance request statuses
+export const statuses = ["Pending", "In Progress", "Completed"];
