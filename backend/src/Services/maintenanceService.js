@@ -20,7 +20,7 @@ async function getAllMaintenanceRequests(adminId) {
     }).toArray();
 
     const user = await userCollection.findOne({
-      _id: toObjectId(requests.userId),
+      _id: requests.userId,
     });
 
     //create requests object
