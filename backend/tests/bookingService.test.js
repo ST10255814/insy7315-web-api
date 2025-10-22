@@ -1,0 +1,312 @@
+import bookingService from '../src/Services/bookingService.js';
+
+// Mock the database client
+jest.mock('../src/utils/db.js', () => ({
+  client: {
+    db: jest.fn(() => ({
+      collection: jest.fn(() => ({
+        find: jest.fn(() => ({
+          toArray: jest.fn()
+        })),
+        findOne: jest.fn()
+      }))
+    }))
+  }
+}));
+
+// Mock ObjectIDConvert
+jest.mock('../src/utils/ObjectIDConvert.js', () => ({
+  toObjectId: jest.fn((id) => ({ _id: id, toString: () => id }))
+}));
+
+describe('BookingService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('Service Import', () => {
+    test('should import bookingService successfully', () => {
+      expect(bookingService).toBeDefined();
+      expect(typeof bookingService.getBookings).toBe('function');
+    });
+  });
+
+  describe('getBookings', () => {
+    test('should fetch bookings for admin successfully', async () => {
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          userId: 'user123',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-12-2024',
+            checkOutDate: '20-12-2024',
+            numberOfGuests: 2,
+            totalPrice: 750,
+            status: 'Confirmed'
+          },
+          createdAt: new Date('2024-12-01')
+        }
+      ];
+
+      const mockListing = {
+        _id: 'listing123',
+        address: '123 Test St',
+        title: 'Test Property',
+        landlordInfo: { userId: { toString: () => 'admin123' } }
+      };
+
+      const mockTenant = {
+        _id: 'user123',
+        firstName: 'Jane',
+        surname: 'Smith'
+      };
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        findOne: jest.fn().mockResolvedValue(mockListing)
+      };
+
+      const mockUserCollection = {
+        findOne: jest.fn().mockResolvedValue(mockTenant)
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+          if (collectionName === 'System-Users') return mockUserCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const adminId = 'admin123';
+      const result = await bookingService.getBookings(adminId);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          bookingID: 'B-0001',
+          listingAddress: '123 Test St',
+          listingTitle: 'Test Property',
+          checkIn: '15-12-2024',
+          checkOut: '20-12-2024',
+          nights: 5,
+          guests: 2,
+          price: 750,
+          status: 'Confirmed',
+          tenantInfo: {
+            name: 'Jane Smith',
+            userId: { _id: 'user123' }
+          }
+        })
+      );
+    });
+
+    test('should filter out bookings not belonging to admin', async () => {
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          userId: 'user123',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-12-2024',
+            checkOutDate: '20-12-2024',
+            numberOfGuests: 2,
+            totalPrice: 750,
+            status: 'Confirmed'
+          }
+        }
+      ];
+
+      const mockListing = {
+        _id: 'listing123',
+        address: '123 Test St',
+        title: 'Test Property',
+        landlordInfo: { userId: { toString: () => 'different-admin' } } // Different admin
+      };
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        findOne: jest.fn().mockResolvedValue(mockListing)
+      };
+
+      const mockUserCollection = {
+        findOne: jest.fn()
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+          if (collectionName === 'System-Users') return mockUserCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const adminId = 'admin123';
+      const result = await bookingService.getBookings(adminId);
+
+      expect(result).toHaveLength(0); // Should filter out bookings not belonging to this admin
+    });
+
+    test('should handle missing tenant information gracefully', async () => {
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          userId: 'user123',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-12-2024',
+            checkOutDate: '20-12-2024',
+            numberOfGuests: 2,
+            totalPrice: 750,
+            status: 'Confirmed'
+          },
+          createdAt: new Date('2024-12-01')
+        }
+      ];
+
+      const mockListing = {
+        _id: 'listing123',
+        address: '123 Test St',
+        title: 'Test Property',
+        landlordInfo: { userId: { toString: () => 'admin123' } }
+      };
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        findOne: jest.fn().mockResolvedValue(mockListing)
+      };
+
+      const mockUserCollection = {
+        findOne: jest.fn().mockResolvedValue(null) // No tenant found
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+          if (collectionName === 'System-Users') return mockUserCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const adminId = 'admin123';
+      const result = await bookingService.getBookings(adminId);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].tenantInfo).toEqual({
+        name: 'Unknown User',
+        userId: 'user123'
+      });
+    });
+
+    test('should calculate nights correctly', async () => {
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          userId: 'user123',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '01-01-2024', // Jan 1
+            checkOutDate: '05-01-2024', // Jan 5
+            numberOfGuests: 2,
+            totalPrice: 800,
+            status: 'Confirmed'
+          },
+          createdAt: new Date('2024-12-01')
+        }
+      ];
+
+      const mockListing = {
+        _id: 'listing123',
+        address: '123 Test St',
+        title: 'Test Property',
+        landlordInfo: { userId: { toString: () => 'admin123' } }
+      };
+
+      const mockTenant = {
+        _id: 'user123',
+        firstName: 'Jane',
+        surname: 'Smith'
+      };
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        findOne: jest.fn().mockResolvedValue(mockListing)
+      };
+
+      const mockUserCollection = {
+        findOne: jest.fn().mockResolvedValue(mockTenant)
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+          if (collectionName === 'System-Users') return mockUserCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const adminId = 'admin123';
+      const result = await bookingService.getBookings(adminId);
+
+      expect(result[0].nights).toBe(4); // Jan 5 - Jan 1 = 4 nights
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockRejectedValue(new Error('Database connection failed'))
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockBookingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const adminId = 'admin123';
+
+      await expect(bookingService.getBookings(adminId))
+        .rejects
+        .toThrow('Failed to fetch bookings');
+    });
+  });
+});
