@@ -80,6 +80,7 @@ import leaseController from './Controllers/leaseController.js';
 import invoiceController from './Controllers/invoiceController.js';
 import listingController from './Controllers/listingController.js';
 import bookingController from './Controllers/bookingController.js';
+import maintenanceController from './Controllers/maintenanceController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -112,6 +113,9 @@ app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
 
 //booking routes
 app.get('/api/bookings', checkAuth, bookingController.getBookings);
+
+//maintenance routes
+app.get('/api/maintenance', checkAuth, maintenanceController.getAllMaintenanceRequests);
 
 // Start server
 app.listen(PORT, () => {
