@@ -171,10 +171,20 @@ export default function OverviewTab() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="space-y-8"
+      className="space-y-8 relative"
     >
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-1/4 w-40 h-40 bg-gradient-to-br from-blue-100/40 to-purple-100/30 rounded-full blur-3xl -z-10 animate-float"></div>
+      <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-green-100/30 to-blue-100/20 rounded-full blur-2xl -z-10" style={{animationDelay: '2s'}}></div>
+      <div className="absolute bottom-1/4 right-1/3 w-28 h-28 bg-gradient-to-br from-orange-100/25 to-pink-100/20 rounded-full blur-2xl -z-10 animate-float" style={{animationDelay: '4s'}}></div>
+      
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
         <StatsCard
           title="Total Properties"
           value="24"
@@ -203,57 +213,68 @@ export default function OverviewTab() {
           color="orange"
           icon={<FaWrench />}
         />
-      </div>
+      </motion.div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div 
+        className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6"
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
         {/* Revenue Trend */}
         <motion.div
-          className="bg-white p-6 rounded-3xl shadow-lg"
-          whileHover={{ scale: 1.03, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+          className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg border border-white/20 relative overflow-hidden"
+          whileHover={{ scale: 1.03, boxShadow: "0 15px 35px rgba(0,0,0,0.15)" }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
-          <h3 className="text-xl font-bold text-blue-600 mb-4">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-100/30 to-transparent rounded-full blur-2xl"></div>
+          <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
             Revenue Trend
           </h3>
-          <div className="h-64">
+          <div className="h-64 relative z-10">
             <Line data={revenueData} options={revenueOptions} />
           </div>
         </motion.div>
 
         {/* Property Distribution */}
         <motion.div
-          className="bg-white p-6 rounded-3xl shadow-lg"
-          whileHover={{ scale: 1.03, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+          className="bg-white/80 backdrop-blur-sm p-6 rounded-3xl shadow-lg border border-white/20 relative overflow-hidden"
+          whileHover={{ scale: 1.03, boxShadow: "0 15px 35px rgba(0,0,0,0.15)" }}
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
-          <h3 className="text-xl font-bold text-blue-600 mb-4">
+          <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-purple-100/30 to-transparent rounded-full blur-2xl"></div>
+          <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
             Property Distribution
           </h3>
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-64 flex items-center justify-center relative z-10">
             <Pie data={propertyData} options={propertyOptions} />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Recent Activity */}
       <motion.div
-        className="bg-white rounded-3xl shadow-lg p-6"
+        className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 border border-white/20 relative overflow-hidden"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
       >
-        <h3 className="text-xl font-bold text-blue-600 mb-4">
+        <div className="absolute top-0 left-1/2 w-24 h-24 bg-gradient-to-br from-green-100/20 to-transparent rounded-full blur-2xl"></div>
+        <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
           Recent Activity
         </h3>
-        <div className="space-y-4">
+        <div className="space-y-4 relative z-10">
           {recentActivity.map((item, i) => (
             <motion.div
               key={i}
-              className="flex items-center space-x-4 p-4 rounded-2xl cursor-pointer hover:shadow-md"
+              className="flex items-center space-x-4 p-4 rounded-2xl cursor-pointer hover:shadow-md backdrop-blur-sm border border-white/10"
               style={{ backgroundColor: item.bgColor }}
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              whileInView={{ transition: { delay: i * 0.1 } }}
             >
               <div
                 className="w-3 h-3 rounded-full"

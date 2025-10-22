@@ -82,13 +82,18 @@ export default function LeasesTab() {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto space-y-6 p-2 sm:p-6"
+      className="w-full space-y-6 relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-1/4 w-36 h-36 bg-gradient-to-br from-green-100/30 to-blue-100/20 rounded-full blur-3xl -z-10 animate-float"></div>
+      <div className="absolute bottom-1/4 right-1/3 w-28 h-28 bg-gradient-to-br from-purple-100/25 to-pink-100/15 rounded-full blur-2xl -z-10" style={{animationDelay: '3s'}}></div>
+      
       {/* Add Lease Button */}
-      <motion.button
+      <div className="flex justify-start">
+        <motion.button
         onClick={() => setShowAddModal(true)}
         whileHover={{
           scale: 1.07,
@@ -113,6 +118,7 @@ export default function LeasesTab() {
         <FaPlusCircle className="text-lg" />
         Add Lease
       </motion.button>
+      </div>
 
       {/* Lease Cards / Loading / Error */}
       {isLoading && (
@@ -136,17 +142,29 @@ export default function LeasesTab() {
       )}
 
       {leases && leases?.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <AnimatePresence>
-            {leases.map((lease) => (
-              <LeaseCard
+            {leases.map((lease, index) => (
+              <motion.div
                 key={lease._id}
-                lease={lease}
-                onAction={handleLeaseAction}
-              />
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <LeaseCard
+                  lease={lease}
+                  onAction={handleLeaseAction}
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
 
       {/* Add Lease Modal */}

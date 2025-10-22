@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -137,15 +137,20 @@ export default function Register() {
   };
 
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center bg-[#EFF6FF] overflow-auto"
-      style={{
-        backgroundImage: `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('https://images.unsplash.com/photo-1601597114581-42f0b6e1a7f8?auto=format&fit=crop&w=1950&q=80')`,
-        backgroundAttachment: "fixed",
-        backgroundSize: "cover",
-        backgroundPositionY: offsetY * 0.5,
-      }}
-    >
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 overflow-auto py-8">
+      {/* Background decorative elements */}
+      <div 
+        className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-200/30 to-purple-200/20 rounded-full blur-3xl animate-float"
+        style={{ transform: `translateY(${offsetY * 0.3}px)` }}
+      ></div>
+      <div 
+        className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-blue-100/40 to-cyan-100/30 rounded-full blur-3xl"
+        style={{ transform: `translateY(-${offsetY * 0.2}px)` }}
+      ></div>
+      <div 
+        className="absolute top-1/3 right-1/3 w-36 h-36 bg-gradient-to-br from-green-100/25 to-purple-100/15 rounded-full blur-2xl animate-float"
+        style={{ animationDelay: '3s', transform: `translateY(${offsetY * 0.15}px)` }}
+      ></div>
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.95 }}
         animate={
@@ -154,9 +159,12 @@ export default function Register() {
             : { opacity: 1, y: 0, scale: 1 }
         }
         transition={{ duration: 1 }}
-        className="backdrop-blur-md bg-white/70 rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-4 text-center"
+        className="backdrop-blur-lg bg-white/85 rounded-3xl shadow-2xl border border-white/30 p-6 sm:p-8 w-full max-w-md mx-4 text-center relative z-10"
       >
-        <div className="mb-6">
+        {/* Subtle card background gradient */}
+        <div className="absolute top-0 left-0 w-28 h-28 bg-gradient-to-br from-blue-100/20 to-transparent rounded-full blur-2xl"></div>
+        <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-100/15 to-transparent rounded-full blur-xl"></div>
+        <div className="mb-6 relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -175,7 +183,7 @@ export default function Register() {
           </motion.p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left relative z-10">
           {/* Name and Username Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Full Name */}

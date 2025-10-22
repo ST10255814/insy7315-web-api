@@ -13,10 +13,10 @@ export default function MaintenanceTab() {
     isError,
   } = useMaintenanceRequestsQuery(adminId);
   return (
-    <motion.div className="flex flex-col h-full md:h-full max-w-7xl mx-auto px-4 overflow-y-auto md:overflow-hidden">
+    <motion.div className="flex flex-col h-full w-full overflow-y-auto md:overflow-hidden">
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:overflow-hidden px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:overflow-hidden">
           {Array(6)
             .fill(0)
             .map((_, i) => <LoadingSkeleton key={i} />)}
@@ -43,7 +43,7 @@ export default function MaintenanceTab() {
 
       {/* Content State - Mobile: scrollable page, Desktop: scrollable columns */}
       {!isLoading && !isError && maintenanceData.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:min-h-0 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:min-h-0">
           {statuses.map((status) => (
             <MaintenanceColumn
               key={status}

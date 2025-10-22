@@ -21,11 +21,16 @@ export default function PropertyCard({ property, getStatusClasses, onAction }) {
 
   return (
     <motion.div
-      className="relative bg-white rounded-2xl shadow-lg p-4 flex flex-col justify-between overflow-hidden group cursor-pointer"
+      className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl p-4 flex flex-col justify-between overflow-hidden group cursor-pointer border border-white/20"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
+      whileHover={{ 
+        scale: 1.02, 
+        boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+        backgroundColor: "rgba(255,255,255,0.95)"
+      }}
     >
       {/* Image Section */}
       <div className="relative overflow-hidden rounded-xl mb-3">
