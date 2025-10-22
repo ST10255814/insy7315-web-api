@@ -131,7 +131,7 @@ export default function BookingCard({ booking, onAction }) {
           onClick={() => downloadFiles(booking.supportDocuments)}
         >
           <FaDownload size={12} />
-          <span className="text-xs font-medium">Download Attached Docs</span>
+          <span className="text-xs font-medium">Download Attached Docs ({booking.supportDocuments.length})</span>
         </motion.button>
       )}
     </motion.div>
