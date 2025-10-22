@@ -71,6 +71,7 @@ async function getBookings(adminId){
                             userId: book.userId
                         }
                     }
+                    
                     return bookingDetails;
                 }
             } catch (listingError) {
