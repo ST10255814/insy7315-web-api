@@ -4,10 +4,10 @@ import Object from '../utils/ObjectIDConvert.js';
 import { generateInvoiceId } from '../utils/idGenerator.js';
 import { generateInvoiceDescription, formatCurrency, truncateText } from '../utils/invoiceHelpers.js';
 import { determineInvoiceStatus } from '../utils/statusManager.js';
-import { 
-  getInvoicesFromDB, 
-  createInvoiceInDB, 
-  findLeaseByLeaseId, 
+import {
+  getInvoicesFromDB,
+  createInvoiceInDB,
+  findLeaseByLeaseId,
   markInvoiceAsPaidInDB,
   getInvoiceStatsFromDB,
   regenerateDescriptionsInDB
