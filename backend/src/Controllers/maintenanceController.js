@@ -1,4 +1,4 @@
-import maintenanceService from "../Services/maintenanceService";
+import maintenanceService from "../Services/maintenanceService.js";
 
 export const getAllMaintenanceRequests = async (req, res) => {
   try {
@@ -11,3 +11,8 @@ export const getAllMaintenanceRequests = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const maintenanceController = {
+  getAllMaintenanceRequests,
+};
+export default maintenanceController;
