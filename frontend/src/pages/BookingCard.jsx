@@ -21,10 +21,6 @@ export default function BookingCard({ booking, onAction }) {
   const formattedAmount = formatAmount(booking?.price);
 
   const handleDownloadDocs = async (files) => {
-    if (!files || files.length === 0) {
-      Toast.info("No attached documents to download.");
-      return;
-    }
     for (const file of files) {
       try {
         // Handle both string URLs and file objects
