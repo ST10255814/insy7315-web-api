@@ -32,6 +32,15 @@ jest.mock('../src/emails/emailHandler.js', () => ({
 describe('UserService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Set up test environment variables
+    process.env.JWT_SECRET = 'test-jwt-secret-key';
+    process.env.NODE_ENV = 'test';
+  });
+
+  afterEach(() => {
+    // Clean up environment variables
+    delete process.env.JWT_SECRET;
+    delete process.env.NODE_ENV;
   });
 
   describe('Service Import', () => {

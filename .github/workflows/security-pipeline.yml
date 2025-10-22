@@ -235,6 +235,9 @@ jobs:
         npm ci
 
     - name: 🧪 Run Backend Tests
+      env:
+        JWT_SECRET: test-jwt-secret-for-testing
+        NODE_ENV: test
       run: |
         cd backend
         echo "🧪 Running backend unit tests..."
