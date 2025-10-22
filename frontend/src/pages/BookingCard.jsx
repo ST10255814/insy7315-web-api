@@ -10,6 +10,7 @@ import {
   FaUsers,
   FaCheck,
   FaTimes,
+  FaDownload
 } from "react-icons/fa";
 import { formatDateUS, formatAmount } from "../utils/formatters";
 import { statusClasses } from "../constants/constants.js";
@@ -129,7 +130,7 @@ export default function BookingCard({ booking, onAction }) {
           whileTap={{ scale: 0.95 }}
           onClick={() => downloadFiles(booking.supportDocuments)}
         >
-          <FaEye size={12} />
+          <FaDownload size={12} />
           <span className="text-xs font-medium">Download Attached Docs</span>
         </motion.button>
       )}

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { priorityColor } from "../constants/status.js";
-import { FaEye } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa";
 import { downloadFiles } from "../utils/fileDownload.js";
 
 const cardVariants = {
@@ -110,7 +110,7 @@ export default function MaintenanceCard({ request }) {
               whileTap={{ scale: 0.95 }}
               onClick={() => downloadFiles(request.supportDocuments)}
             >
-              <FaEye size={12} />
+              <FaDownload size={12} />
               <span className="text-xs font-medium">
                 Download Attached Docs
               </span>
