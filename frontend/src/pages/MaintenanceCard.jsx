@@ -144,8 +144,8 @@ export default function MaintenanceCard({ request }) {
           </motion.button>
         )}
 
-        {/* Download Button */}
-        {request.documentURL && request.documentURL.length > 0 && (
+        {/* Download Button - Only show for Pending requests */}
+        {request.status === "Pending" && request.documentURL && request.documentURL.length > 0 && (
           <motion.button
             whileHover={{
               scale: 1.02,

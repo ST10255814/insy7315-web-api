@@ -19,9 +19,6 @@ async function getAllMaintenanceRequests(adminId) {
       "listingDetail.landlordID": toObjectId(adminId),
     }).toArray();
 
-    console.log("Maintenance requests fetched:", requests);
-    console.log("Number of requests:", requests.length);
-
     if(!requests || requests.length === 0){
       return []; // Return empty array instead of throwing error
     }
@@ -31,8 +28,6 @@ async function getAllMaintenanceRequests(adminId) {
     
     for (const request of requests) {
       try {
-        console.log("Processing request:", request);
-        
         // Get user information for this specific request
         let user = null;
         if (request.userId) {
@@ -40,9 +35,6 @@ async function getAllMaintenanceRequests(adminId) {
             _id: toObjectId(request.userId),
           });
         }
-
-        console.log("User fetched for request:", user);
-
         // Create formatted maintenance request object
         const formattedRequest = {
           maintenanceID: request.newMaintenanceRequest?.maintenanceId || request._id,
@@ -58,7 +50,7 @@ async function getAllMaintenanceRequests(adminId) {
 
         maintenanceRequests.push(formattedRequest);
       } catch (requestError) {
-        console.error(`Error processing individual request:`, requestError);
+        throw new Error(`Error processing request ${request._id}: ${requestError.message}`);
       }
     }
 
