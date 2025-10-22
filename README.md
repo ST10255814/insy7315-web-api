@@ -1,6 +1,10 @@
 # 🏠 RentWise - Property Management System
 
+![Banner](https://via.placeholder.com/1200x400?text=RentWise+-+Property+Management+System)
+
 ### *Streamline Your Property Management Journey*
+
+<div align="center">
 
 [![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
@@ -32,6 +36,7 @@
 ## ✨ Features
 
 ### 🎯 Core Functionality
+
 - **🏘️ Property Management** - Add, edit, and manage multiple properties with detailed information
 - **📋 Lease Management** - Create and track lease agreements with tenants
 - **💰 Invoice Management** - Generate and manage invoices with automated calculations
@@ -40,6 +45,7 @@
 - **📊 Analytics Dashboard** - Visual insights with charts and statistics
 
 ### 🎨 User Experience
+
 - **📱 Fully Responsive Design** - Mobile-first approach with seamless desktop experience
 - **🎭 Smooth Animations** - Framer Motion powered animations for enhanced UX
 - **🌙 Modern UI/UX** - Clean, intuitive interface with Tailwind CSS
@@ -47,6 +53,7 @@
 - **🔍 Advanced Search & Filtering** - Quick property and lease filtering capabilities
 
 ### 🔐 Authentication & Security
+
 - **🛡️ JWT Authentication** - Secure token-based authentication
 - **🔒 HTTP-Only Cookies** - Enhanced security with secure cookie storage
 - **🛡️ Arcjet Protection** - Advanced rate limiting and attack protection
@@ -91,16 +98,16 @@
 <div align="center">
 
 ### 🏠 Landing Page
-<img width="1919" height="863" alt="landing_page" src="https://github.com/user-attachments/assets/6fe77631-5321-4c8b-9a24-02f5d09900c8" />
+![Landing Page Animation](https://via.placeholder.com/800x400?text=Landing+Page+GIF)
 
 ### 📊 Dashboard Overview
-<img width="1919" height="843" alt="dashboard" src="https://github.com/user-attachments/assets/489c43d9-8b34-4741-a832-6a37ce01e75e" />
+![Dashboard Animation](https://via.placeholder.com/800x400?text=Dashboard+GIF)
 
 ### 🏘️ Property Management
-<img width="1919" height="857" alt="property" src="https://github.com/user-attachments/assets/71fc465f-287a-458c-a6d3-7945c4c67d1d" />
+![Property Management Animation](https://via.placeholder.com/800x400?text=Property+GIF)
 
 ### 🔧 Maintenance Tracking
-<img width="1919" height="932" alt="maintenance" src="https://github.com/user-attachments/assets/e8e1dc54-87b4-4758-832e-9630501a4226" />
+![Maintenance Tracking Animation](https://via.placeholder.com/800x400?text=Maintenance+GIF)
 
 </div>
 
@@ -187,53 +194,6 @@ npm run build
 
 </details>
 
-<details>
-<summary>📋 Leases</summary>
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/leases` | Get all leases |
-| `POST` | `/api/leases` | Create new lease |
-| `PUT` | `/api/leases/:id` | Update lease |
-| `DELETE` | `/api/leases/:id` | Delete lease |
-
-</details>
-
-<details>
-<summary>💰 Invoices</summary>
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/invoices` | Get all invoices |
-| `POST` | `/api/invoices` | Create new invoice |
-| `PUT` | `/api/invoices/:id` | Update invoice |
-| `DELETE` | `/api/invoices/:id` | Delete invoice |
-
-</details>
-
-<details>
-<summary>🔧 Maintenance</summary>
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/maintenance` | Get maintenance requests |
-| `POST` | `/api/maintenance` | Create maintenance request |
-| `PUT` | `/api/maintenance/:id` | Update maintenance status |
-
-</details>
-
-<details>
-<summary>📅 Bookings</summary>
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/bookings` | Get all bookings |
-| `POST` | `/api/bookings` | Create new booking |
-| `PUT` | `/api/bookings/:id` | Update booking |
-| `DELETE` | `/api/bookings/:id` | Cancel booking |
-
-</details>
-
 ---
 
 ## 📊 Dashboard Features
@@ -243,194 +203,6 @@ npm run build
 - **📊 Interactive Charts** - Revenue trends, occupancy rates
 - **🔔 Recent Activity** - Latest transactions and updates
 - **⚡ Quick Actions** - Fast access to common tasks
-
-### 🏘️ Properties Tab
-- **➕ Add Properties** - Comprehensive property creation form
-- **🔍 Search & Filter** - Advanced filtering by location, type, status
-- **✏️ Edit Properties** - In-line editing capabilities
-- **📷 Image Management** - Cloudinary-powered image uploads
-
-### 📋 Leases Tab
-- **📝 Lease Creation** - Digital lease agreement generation
-- **📅 Date Management** - Start/end dates with automated calculations
-- **💰 Rent Tracking** - Monthly rent amounts and payment status
-- **👥 Tenant Information** - Complete tenant profiles
-
-### 💰 Invoices Tab
-- **🧾 Invoice Generation** - Automated invoice creation
-- **💳 Payment Tracking** - Status monitoring (Paid/Pending/Overdue)
-- **📊 Financial Reports** - Revenue analytics and summaries
-- **📄 PDF Export** - Professional invoice generation
-
-### 🔧 Maintenance Tab
-- **📋 Request Management** - Kanban-style maintenance board
-- **📎 File Attachments** - Document and image uploads
-- **🏷️ Priority Levels** - High, Medium, Low priority classification
-- **👷 Caretaker Assignment** - Task delegation system
-
-### 📅 Bookings Tab
-- **📅 Calendar View** - Visual booking management
-- **🏠 Property Availability** - Real-time availability checking
-- **💰 Pricing Management** - Dynamic pricing controls
-- **✅ Booking Confirmation** - Automated confirmation system
-
----
-
-## 🔒 Security Features
-
-### 🛡️ Authentication Security
-- **🔐 JWT Tokens** - Secure token-based authentication
-- **🍪 HTTP-Only Cookies** - Enhanced cookie security
-- **⏰ Token Expiration** - Automatic session management
-- **🔄 Refresh Tokens** - Seamless session renewal
-
-### 🛡️ Data Protection
-- **🧹 Input Sanitization** - XSS prevention
-- **✅ Data Validation** - Comprehensive server-side validation
-- **🔐 Password Hashing** - bcrypt encryption
-- **🛡️ CORS Protection** - Cross-origin request security
-
-### 🛡️ Advanced Security
-- **🚦 Rate Limiting** - Arcjet-powered request throttling
-- **🛡️ Attack Prevention** - SQL injection and XSS protection
-- **🔒 Helmet.js** - Security headers configuration
-- **📊 Security Monitoring** - Real-time threat detection
-
----
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd frontend
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run specific test files
-npm test userService.test.js
-npm test invoiceService.test.js
-```
-
-### Test Coverage
-
-Our test suite covers:
-- **🔐 User Authentication** - Registration, login, password reset
-- **🏘️ Property Management** - CRUD operations and validations
-- **📋 Lease Operations** - Lease creation and management
-- **💰 Invoice Processing** - Invoice generation and calculations
-- **🔧 Maintenance System** - Request handling and status updates
-
----
-
-## 📂 Project Structure
-
-```
-rentwise-property-management/
-├── 📁 backend/
-│   ├── 📁 src/
-│   │   ├── 📁 Controllers/          # Request handlers
-│   │   │   ├── userController.js
-│   │   │   ├── leaseController.js
-│   │   │   ├── invoiceController.js
-│   │   │   ├── listingController.js
-│   │   │   ├── bookingController.js
-│   │   │   └── maintenanceController.js
-│   │   ├── 📁 Services/             # Business logic
-│   │   │   ├── userService.js
-│   │   │   ├── leaseService.js
-│   │   │   ├── invoiceService.js
-│   │   │   ├── listingService.js
-│   │   │   ├── bookingService.js
-│   │   │   └── maintenanceService.js
-│   │   ├── 📁 middleware/           # Custom middleware
-│   │   │   ├── checkAuth.js
-│   │   │   └── arcjet.middleware.js
-│   │   ├── 📁 utils/                # Utility functions
-│   │   │   ├── db.js
-│   │   │   ├── validation.js
-│   │   │   ├── cookieUtils.js
-│   │   │   └── cloudinary.js
-│   │   ├── 📁 emails/               # Email templates
-│   │   └── server.js                # Server entry point
-│   ├── 📁 tests/                    # Test files
-│   ├── package.json
-│   └── README.md
-├── 📁 frontend/
-│   ├── 📁 src/
-│   │   ├── 📁 components/           # React components
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Navbar.jsx
-│   │   │   └── ...
-│   │   ├── 📁 pages/                # Page components
-│   │   │   ├── PropertyCard.jsx
-│   │   │   ├── LeaseCard.jsx
-│   │   │   ├── InvoiceCard.jsx
-│   │   │   ├── MaintenanceCard.jsx
-│   │   │   └── ...
-│   │   ├── 📁 utils/                # API and utilities
-│   │   │   ├── axios.js
-│   │   │   ├── queries.js
-│   │   │   └── formatters.js
-│   │   ├── 📁 lib/                  # Libraries
-│   │   │   ├── toast.js
-│   │   │   └── queryClient.js
-│   │   ├── 📁 constants/            # Constants
-│   │   └── App.jsx                  # Main app component
-│   ├── package.json
-│   └── README.md
-└── README.md                        # Main project README
-```
-
----
-
-## 👥 Contributing
-
-We welcome contributions to RentWise! Here's how you can help:
-
-### 🚀 Getting Started
-1. **Fork** the repository
-2. **Clone** your fork locally
-3. **Create** a new branch for your feature
-4. **Make** your changes
-5. **Test** your changes thoroughly
-6. **Submit** a pull request
-
-### 📝 Code Style
-- Follow **ESLint** configuration
-- Use **Prettier** for code formatting
-- Write **meaningful commit messages**
-- Add **tests** for new features
-- Update **documentation** as needed
-
-### 🐛 Bug Reports
-When reporting bugs, please include:
-- **Environment** details (OS, Node version, etc.)
-- **Steps** to reproduce the issue
-- **Expected** vs **actual** behavior
-- **Screenshots** if applicable
-
-### 💡 Feature Requests
-For new features, please:
-- **Check** existing issues first
-- **Describe** the problem you're solving
-- **Provide** detailed requirements
-- **Consider** the impact on existing users
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -465,7 +237,3 @@ For support and questions:
 - **💬 Discord**: [Join our community](https://discord.gg/rentwise)
 - **📚 Documentation**: [docs.rentwise.com](https://docs.rentwise.com)
 - **🐛 Issues**: [GitHub Issues](https://github.com/yourusername/rentwise/issues)
-
----
-
-*Last updated: October 2025*
