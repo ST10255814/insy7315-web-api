@@ -43,7 +43,30 @@ app.use(
 
 // CORS configuration - MUST be before routes
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://rentwiseproperty.onrender.com',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://rentwiseproperty.onrender.com',
+      process.env.CLIENT_URL
+    ].filter(Boolean);
+    
+    // Remove any trailing slashes and check
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    const isAllowed = allowedOrigins.some(allowed => 
+      allowed.replace(/\/$/, '') === normalizedOrigin
+    );
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
