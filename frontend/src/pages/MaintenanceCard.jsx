@@ -23,13 +23,8 @@ export default function MaintenanceCard({ request }) {
   return (
     <motion.div
       variants={cardVariants}
-      whileHover={{
-        scale: 1.015,
-        boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
-        transition: { duration: 0.2, ease: "easeOut" },
-      }}
       style={{ willChange: "transform, box-shadow" }}
-      className="relative bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 cursor-pointer"
+      className="relative bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100"
     >
       {/* Priority Badge */}
       <div

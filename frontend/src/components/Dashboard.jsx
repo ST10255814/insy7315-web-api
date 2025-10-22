@@ -109,9 +109,9 @@ export default function Dashboard() {
             {/* Mobile Close */}
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:bg-white/70 transition-colors"
+              className="lg:hidden p-2 rounded-lg hover:bg-red-500 transition-colors"
             >
-              <FaTimes className="text-gray-600 w-4 h-4" />
+              <FaTimes className="text-gray-600 hover:text-white w-4 h-4" />
             </button>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function Dashboard() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto relative z-10">
         <div className="p-6">
           {/* Page Header */}
           <motion.div
