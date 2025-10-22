@@ -60,7 +60,7 @@ export default function MaintenanceCard({ request }) {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <FaFileAlt className="text-gray-500 text-sm flex-shrink-0" />
-            <h4 className="font-semibold text-gray-800 text-sm">Description</h4>
+            <h4 className="font-semibold text-gray-800 text-sm">Description:</h4>
           </div>
           <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg">
             {request.description}
