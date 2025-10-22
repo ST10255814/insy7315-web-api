@@ -50,7 +50,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-lg w-full fixed top-0 z-50 backdrop-blur-md bg-opacity-95">
+    <nav className="bg-white shadow-lg w-full fixed top-0 z-50 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4 relative">
         {/* Brand fixed left */}
         <h1

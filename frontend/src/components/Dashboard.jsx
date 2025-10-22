@@ -57,7 +57,7 @@ export default function Dashboard() {
   const currentTab = tabs.find((t) => t.key === activeTab) || tabs[0];
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 pt-16">
+    <div className="flex h-screen bg-white pt-16">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -79,7 +79,7 @@ export default function Dashboard() {
           width: isCollapsed && isDesktop ? 80 : 320
         }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className={`fixed lg:relative z-50 h-full bg-white/90 backdrop-blur-lg border-r border-white/20 shadow-xl flex flex-col`}
+        className={`fixed lg:relative z-50 h-full bg-white backdrop-blur-lg border-r border-white/20 shadow-xl flex flex-col`}
       >
         {/* Sidebar Header */}
         <div className="p-6 border-b border-white/10">
