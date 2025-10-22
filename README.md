@@ -91,16 +91,16 @@
 <div align="center">
 
 ### 🏠 Landing Page
-![Landing Page]<img width="1919" height="863" alt="landing_page" src="https://github.com/user-attachments/assets/6fe77631-5321-4c8b-9a24-02f5d09900c8" />
+<img width="1919" height="863" alt="landing_page" src="https://github.com/user-attachments/assets/6fe77631-5321-4c8b-9a24-02f5d09900c8" />
 
 ### 📊 Dashboard Overview
-![Dashboard]<img width="1919" height="843" alt="dashboard" src="https://github.com/user-attachments/assets/489c43d9-8b34-4741-a832-6a37ce01e75e" />
+<img width="1919" height="843" alt="dashboard" src="https://github.com/user-attachments/assets/489c43d9-8b34-4741-a832-6a37ce01e75e" />
 
 ### 🏘️ Property Management
-![Properties]<img width="1919" height="857" alt="property" src="https://github.com/user-attachments/assets/71fc465f-287a-458c-a6d3-7945c4c67d1d" />
+<img width="1919" height="857" alt="property" src="https://github.com/user-attachments/assets/71fc465f-287a-458c-a6d3-7945c4c67d1d" />
 
 ### 🔧 Maintenance Tracking
-![Maintenance]<img width="1919" height="932" alt="maintenance" src="https://github.com/user-attachments/assets/e8e1dc54-87b4-4758-832e-9630501a4226" />
+<img width="1919" height="932" alt="maintenance" src="https://github.com/user-attachments/assets/e8e1dc54-87b4-4758-832e-9630501a4226" />
 
 </div>
 
