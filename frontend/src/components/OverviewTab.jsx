@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import StatsCardContainer from "./overview/StatsCardContainer";
-import ActivityFeed from "./overview/ActivityFeed";
-import ChartContainer from "./overview/ChartContainer";
-import { OverviewRefreshButton } from "./overview/OverviewRefreshUtils";
+import StatsCardContainer from "./overview/StatsCardContainer.jsx";
+import ActivityFeed from "./overview/ActivityFeed.jsx";
+import ChartContainer from "./overview/ChartContainer.jsx";
+import { OverviewRefreshButton } from "./overview/OverviewRefreshUtils.jsx";
 
 export default function OverviewTab() {
   return (
