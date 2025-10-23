@@ -35,6 +35,8 @@ describe('ListingService', () => {
       expect(listingService).toBeDefined();
       expect(typeof listingService.createListing).toBe('function');
       expect(typeof listingService.getListingsByAdminId).toBe('function');
+      expect(typeof listingService.countNumberOfListingsByAdminId).toBe('function');
+      expect(typeof listingService.countListingsAddedThisMonth).toBe('function');
     });
   });
 
@@ -78,10 +80,15 @@ describe('ListingService', () => {
         insertOne: jest.fn().mockResolvedValue({ insertedId: 'listing123' })
       };
 
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ insertedId: 'activity123' })
+      };
+
       const mockDb = {
         collection: jest.fn((collectionName) => {
           if (collectionName === 'System-Users') return mockUserCollection;
           if (collectionName === 'Listings') return mockListingsCollection;
+          if (collectionName === 'User-Activity-Logs') return mockActivityCollection;
         })
       };
 
@@ -138,10 +145,15 @@ describe('ListingService', () => {
         insertOne: jest.fn().mockResolvedValue({ insertedId: 'listing123' })
       };
 
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ insertedId: 'activity123' })
+      };
+
       const mockDb = {
         collection: jest.fn((collectionName) => {
           if (collectionName === 'System-Users') return mockUserCollection;
           if (collectionName === 'Listings') return mockListingsCollection;
+          if (collectionName === 'User-Activity-Logs') return mockActivityCollection;
         })
       };
 
@@ -224,6 +236,267 @@ describe('ListingService', () => {
       await expect(listingService.getListingsByAdminId(adminId))
         .rejects
         .toThrow('Error fetching listings: Database error');
+    });
+  });
+
+  describe('countNumberOfListingsByAdminId', () => {
+    test('should count listings for admin successfully', async () => {
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(7)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countNumberOfListingsByAdminId('admin123');
+
+      expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith({
+        'landlordInfo.userId': { _id: 'admin123' }
+      });
+      expect(result).toBe(7);
+    });
+
+    test('should return 0 when no listings found', async () => {
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(0)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countNumberOfListingsByAdminId('admin123');
+
+      expect(result).toBe(0);
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(listingService.countNumberOfListingsByAdminId('admin123'))
+        .rejects
+        .toThrow('Error counting listings: Database error');
+    });
+  });
+
+  describe('countListingsAddedThisMonth', () => {
+    test('should count listings added this month successfully', async () => {
+      // Mock current date to be December 15, 2024
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(3)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countListingsAddedThisMonth('admin123');
+
+      // Verify the date range for December 2024
+      const expectedQuery = {
+        'landlordInfo.userId': { _id: 'admin123' },
+        'createdAt': {
+          $gte: new Date(2024, 11, 1), // December 1st, 2024
+          $lte: new Date(2024, 11, 31, 23, 59, 59, 999) // December 31st, 2024
+        }
+      };
+
+      expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith(expectedQuery);
+      expect(result).toBe(3);
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should return 0 when no listings added this month', async () => {
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(0)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countListingsAddedThisMonth('admin123');
+
+      expect(result).toBe(0);
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should handle different months correctly', async () => {
+      // Mock current date to be January 10, 2025
+      const originalDate = Date;
+      const mockDate = new Date('2025-01-10');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(2)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countListingsAddedThisMonth('admin123');
+
+      // Verify the date range for January 2025
+      const expectedQuery = {
+        'landlordInfo.userId': { _id: 'admin123' },
+        'createdAt': {
+          $gte: new Date(2025, 0, 1), // January 1st, 2025
+          $lte: new Date(2025, 0, 31, 23, 59, 59, 999) // January 31st, 2025
+        }
+      };
+
+      expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith(expectedQuery);
+      expect(result).toBe(2);
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should handle February (leap year) correctly', async () => {
+      // Mock current date to be February 15, 2024 (leap year)
+      const originalDate = Date;
+      const mockDate = new Date('2024-02-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(1)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.countListingsAddedThisMonth('admin123');
+
+      // Verify the date range for February 2024 (leap year - 29 days)
+      const expectedQuery = {
+        'landlordInfo.userId': { _id: 'admin123' },
+        'createdAt': {
+          $gte: new Date(2024, 1, 1), // February 1st, 2024
+          $lte: new Date(2024, 1, 29, 23, 59, 59, 999) // February 29th, 2024 (leap year)
+        }
+      };
+
+      expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith(expectedQuery);
+      expect(result).toBe(1);
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(listingService.countListingsAddedThisMonth('admin123'))
+        .rejects
+        .toThrow('Error counting listings added this month: Database error');
+
+      // Restore original Date
+      global.Date = originalDate;
     });
   });
 });

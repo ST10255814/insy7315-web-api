@@ -28,6 +28,7 @@ describe('BookingService', () => {
     test('should import bookingService successfully', () => {
       expect(bookingService).toBeDefined();
       expect(typeof bookingService.getBookings).toBe('function');
+      expect(typeof bookingService.getCurrentMonthRevenue).toBe('function');
     });
   });
 
@@ -308,6 +309,367 @@ describe('BookingService', () => {
       await expect(bookingService.getBookings(adminId))
         .rejects
         .toThrow('Failed to fetch bookings');
+    });
+  });
+
+  describe('getCurrentMonthRevenue', () => {
+    test('should calculate current month revenue for admin successfully', async () => {
+      // Mock current date to be December 2024
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-12-2024', // Current month
+            totalPrice: 1500,
+            status: 'Active'
+          }
+        },
+        {
+          _id: 'booking2',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0002',
+            checkInDate: '20-12-2024', // Current month
+            totalPrice: 2000,
+            status: 'Confirmed'
+          }
+        },
+        {
+          _id: 'booking3',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0003',
+            checkInDate: '15-11-2024', // Previous month
+            totalPrice: 1000,
+            status: 'Active'
+          }
+        }
+      ];
+
+      const mockAdminListings = [
+        {
+          _id: 'listing123',
+          landlordInfo: { userId: { _id: 'admin123' } }
+        }
+      ];
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockAdminListings)
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await bookingService.getCurrentMonthRevenue('admin123');
+
+      expect(result).toBe(3500); // 1500 + 2000 (only current month bookings)
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should return 0 when no bookings found for current month', async () => {
+      // Mock current date to be December 2024
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-11-2024', // Previous month
+            totalPrice: 1500,
+            status: 'Active'
+          }
+        }
+      ];
+
+      const mockAdminListings = [
+        {
+          _id: 'listing123',
+          landlordInfo: { userId: { _id: 'admin123' } }
+        }
+      ];
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockAdminListings)
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await bookingService.getCurrentMonthRevenue('admin123');
+
+      expect(result).toBe(0);
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should exclude invalid booking statuses', async () => {
+      // Mock current date to be December 2024
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: '15-12-2024',
+            totalPrice: 1500,
+            status: 'Active'
+          }
+        },
+        {
+          _id: 'booking2',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0002',
+            checkInDate: '20-12-2024',
+            totalPrice: 2000,
+            status: 'Cancelled' // Invalid status
+          }
+        }
+      ];
+
+      const mockAdminListings = [
+        {
+          _id: 'listing123',
+          landlordInfo: { userId: { _id: 'admin123' } }
+        }
+      ];
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockAdminListings)
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await bookingService.getCurrentMonthRevenue('admin123');
+
+      expect(result).toBe(1500); // Only Active booking counted
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should handle invalid date formats gracefully', async () => {
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockBookings = [
+        {
+          _id: 'booking1',
+          listingDetail: { listingID: 'listing123' },
+          newBooking: {
+            bookingId: 'B-0001',
+            checkInDate: 'invalid-date',
+            totalPrice: 1500,
+            status: 'Active'
+          }
+        }
+      ];
+
+      const mockAdminListings = [
+        {
+          _id: 'listing123',
+          landlordInfo: { userId: { _id: 'admin123' } }
+        }
+      ];
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockBookings)
+        }))
+      };
+
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockAdminListings)
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await bookingService.getCurrentMonthRevenue('admin123');
+
+      expect(result).toBe(0); // Invalid date should be excluded
+
+      // Restore original Date
+      global.Date = originalDate;
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockRejectedValue(new Error('Database connection failed'))
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(bookingService.getCurrentMonthRevenue('admin123'))
+        .rejects
+        .toThrow('Failed to calculate current month revenue');
+    });
+
+    test('should return 0 when admin has no listings', async () => {
+      const originalDate = Date;
+      const mockDate = new Date('2024-12-15');
+      global.Date = class extends Date {
+        constructor(...args) {
+          if (args.length === 0) {
+            return mockDate;
+          }
+          return new originalDate(...args);
+        }
+        static now() {
+          return mockDate.getTime();
+        }
+      };
+
+      const mockAdminListings = []; // No listings for admin
+
+      const mockBookingsCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue([])
+        }))
+      };
+
+      const mockListingCollection = {
+        find: jest.fn(() => ({
+          toArray: jest.fn().mockResolvedValue(mockAdminListings)
+        }))
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Bookings') return mockBookingsCollection;
+          if (collectionName === 'Listings') return mockListingCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await bookingService.getCurrentMonthRevenue('admin123');
+
+      expect(result).toBe(0);
+
+      // Restore original Date
+      global.Date = originalDate;
     });
   });
 });

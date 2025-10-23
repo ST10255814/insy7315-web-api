@@ -45,6 +45,8 @@ describe('LeaseService', () => {
       expect(typeof leaseService.validateDate).toBe('function');
       expect(typeof leaseService.updateLeaseStatusesByAdmin).toBe('function');
       expect(typeof leaseService.updateAllLeaseStatuses).toBe('function');
+      expect(typeof leaseService.countActiveLeasesByAdminId).toBe('function');
+      expect(typeof leaseService.getLeasedPropertyPercentage).toBe('function');
     });
   });
 
@@ -239,12 +241,17 @@ describe('LeaseService', () => {
         insertOne: jest.fn().mockResolvedValue({ insertedId: 'lease123' })
       };
 
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ insertedId: 'activity123' })
+      };
+
       const mockDb = {
         collection: jest.fn((collectionName) => {
           if (collectionName === 'Bookings') return mockBookingsCollection;
           if (collectionName === 'System-Users') return mockUserCollection;
           if (collectionName === 'Listings') return mockListingCollection;
           if (collectionName === 'Leases') return mockLeasesCollection;
+          if (collectionName === 'User-Activity-Logs') return mockActivityCollection;
         })
       };
 
@@ -445,6 +452,186 @@ describe('LeaseService', () => {
       });
 
       expect(result).toBe(1); // One lease updated
+    });
+  });
+
+  describe('countActiveLeasesByAdminId', () => {
+    test('should count active leases for admin successfully', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockResolvedValue(5)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockLeasesCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.countActiveLeasesByAdminId('admin123');
+
+      expect(mockLeasesCollection.countDocuments).toHaveBeenCalledWith({
+        adminId: expect.objectContaining({ _id: 'admin123' }),
+        status: 'Active'
+      });
+      expect(result).toBe(5);
+    });
+
+    test('should return 0 when no active leases found', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockResolvedValue(0)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockLeasesCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.countActiveLeasesByAdminId('admin123');
+
+      expect(result).toBe(0);
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockLeasesCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(leaseService.countActiveLeasesByAdminId('admin123'))
+        .rejects
+        .toThrow('Database error');
+    });
+  });
+
+  describe('getLeasedPropertyPercentage', () => {
+    test('should calculate leased property percentage successfully', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockResolvedValue(3) // 3 active leases
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(10) // 10 total properties
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Leases') return mockLeasesCollection;
+          if (collectionName === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.getLeasedPropertyPercentage('admin123');
+
+      expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith({
+        'landlordInfo.userId': expect.objectContaining({ _id: 'admin123' })
+      });
+      expect(mockLeasesCollection.countDocuments).toHaveBeenCalledWith({
+        adminId: expect.objectContaining({ _id: 'admin123' }),
+        status: 'Active'
+      });
+      expect(result).toBe(30); // 3/10 * 100 = 30%
+    });
+
+    test('should return 0 when admin has no properties', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn()
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(0) // No properties
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Leases') return mockLeasesCollection;
+          if (collectionName === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.getLeasedPropertyPercentage('admin123');
+
+      expect(result).toBe(0);
+      expect(mockLeasesCollection.countDocuments).not.toHaveBeenCalled(); // Should not check leases
+    });
+
+    test('should return 0 when admin has no active leases', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockResolvedValue(0) // No active leases
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(5) // 5 total properties
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Leases') return mockLeasesCollection;
+          if (collectionName === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.getLeasedPropertyPercentage('admin123');
+
+      expect(result).toBe(0); // 0/5 * 100 = 0%
+    });
+
+    test('should handle 100% leased scenario', async () => {
+      const mockLeasesCollection = {
+        countDocuments: jest.fn().mockResolvedValue(5) // 5 active leases
+      };
+
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockResolvedValue(5) // 5 total properties
+      };
+
+      const mockDb = {
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'Leases') return mockLeasesCollection;
+          if (collectionName === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await leaseService.getLeasedPropertyPercentage('admin123');
+
+      expect(result).toBe(100); // 5/5 * 100 = 100%
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockListingsCollection = {
+        countDocuments: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(leaseService.getLeasedPropertyPercentage('admin123'))
+        .rejects
+        .toThrow('Database error');
     });
   });
 });
