@@ -6,8 +6,8 @@ function toObjectId(id) {
   throw new Error("Invalid id format");
 }
 
-const Object = {
+const ObjectIDConverter = {
     toObjectId
 }
 
-export default Object;
+export default ObjectIDConverter;
