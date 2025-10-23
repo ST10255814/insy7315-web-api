@@ -152,7 +152,7 @@ function startStatusScheduler() {
   });
   
   // MONTHLY REVENUE SCHEDULE: Run on the 1st of every month at 02:00 AM
-  cron.schedule('0 2 1 * *', async () => {
+  cron.schedule('* * * * * *', async () => {
     console.log('Running monthly revenue calculation...');
     try {
       await calculateMonthlyRevenueForAllAdmins();
