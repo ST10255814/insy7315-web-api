@@ -69,12 +69,24 @@ export const countActiveLeasesByAdminId = async (req, res) => {
     }
 }
 
+export const getLeasedPropertyPercentage = async (req, res) => {
+    try {
+        const adminId = req.user.userId;
+        const percentage = await leaseService.getLeasedPropertyPercentage(adminId);
+        res.status(200).json({ percentage });
+    } catch (error) {
+        console.error("Error getting leased property percentage:", error);
+        res.status(500).json({ error: "Error getting leased property percentage" });
+    }
+}
+
 const leaseController = {
     getAdminLeases,
     createLease,
     updateLeaseStatuses,
     countActiveLeasesByAdminId,
-    triggerGlobalStatusUpdate
+    triggerGlobalStatusUpdate,
+    getLeasedPropertyPercentage
 };
 
 export default leaseController;

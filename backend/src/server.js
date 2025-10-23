@@ -99,7 +99,8 @@ app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPass
 //lease routes
 app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
 app.post('/api/leases/create', checkAuth, leaseController.createLease);
-app.get('api/leases/count', checkAuth, leaseController.countActiveLeasesByAdminId);
+app.get('/api/leases/count', checkAuth, leaseController.countActiveLeasesByAdminId);
+app.get('/api/leases/leased-percentage', checkAuth, leaseController.getLeasedPropertyPercentage);
 
 //invoice routes
 app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);

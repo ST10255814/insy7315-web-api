@@ -21,3 +21,21 @@ export async function createLeaseForBookingID(bookingID) {
     throw error;
   }
 }
+
+export async function countActiveLeasesByAdminId() {
+  try {
+    const response = await api.get(`/api/leases/count`, { withCredentials: true });
+    return response.data.count;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getLeasedPropertyPercentage() {
+  try {
+    const response = await api.get(`/api/leases/leased-percentage`, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

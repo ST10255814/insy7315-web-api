@@ -23,6 +23,7 @@ import {
 import StatsCard from "../pages/StatsCard";
 import { getCurrentMonthRevenue } from "../utils/bookings.api";
 import { countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../utils/listings.api";
+import { countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../utils/leases.api";
 import Toast from "../lib/toast";
 
 // Register ChartJS components
@@ -59,6 +60,20 @@ export default function OverviewTab() {
   // State for properties added this month
   const [monthlyProperties, setMonthlyProperties] = useState({
     count: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for active leases count
+  const [activeLeases, setActiveLeases] = useState({
+    count: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for leased property percentage
+  const [leasedPercentage, setLeasedPercentage] = useState({
+    percentage: 0,
     loading: true,
     error: null
   });
@@ -127,9 +142,51 @@ export default function OverviewTab() {
       }
     };
 
+    const fetchActiveLeases = async () => {
+      try {
+        setActiveLeases(prev => ({ ...prev, loading: true, error: null }));
+        const count = await countActiveLeasesByAdminId();
+        setActiveLeases({
+          count: count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching active leases:', error);
+        setActiveLeases(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load active leases count'
+        }));
+        Toast.error('Failed to load active leases count');
+      }
+    };
+
+    const fetchLeasedPercentage = async () => {
+      try {
+        setLeasedPercentage(prev => ({ ...prev, loading: true, error: null }));
+        const data = await getLeasedPropertyPercentage();
+        setLeasedPercentage({
+          percentage: data.percentage || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching leased percentage:', error);
+        setLeasedPercentage(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load leased percentage'
+        }));
+        Toast.error('Failed to load leased percentage');
+      }
+    };
+
     fetchMonthlyRevenue();
     fetchTotalProperties();
     fetchMonthlyProperties();
+    fetchActiveLeases();
+    fetchLeasedPercentage();
   }, []);
 
   // Format currency for display
@@ -340,8 +397,20 @@ export default function OverviewTab() {
         />
         <StatsCard
           title="Active Leases"
-          value="18"
-          subtitle="75% occupancy"
+          value={
+            activeLeases.loading 
+              ? "Loading..." 
+              : activeLeases.error 
+                ? "Error" 
+                : activeLeases.count.toString()
+          }
+          subtitle={
+            leasedPercentage.loading 
+              ? "Calculating..." 
+              : leasedPercentage.error 
+                ? "Failed to load" 
+                : `${leasedPercentage.percentage.toFixed(0)}% occupancy`
+          }
           color="purple"
           icon={<FaClipboardList />}
         />

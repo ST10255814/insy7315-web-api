@@ -261,6 +261,32 @@ async function countActiveLeasesByAdminId(adminId) {
   }
 }
 
+//get % of admin owned properties that are currently leased
+async function getLeasedPropertyPercentage(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+    const listingsCollection = db.collection("Listings");
+
+    const totalProperties = await listingsCollection.countDocuments({ "landlordInfo.userId": toObjectId(adminId) });
+    if (totalProperties === 0) {
+      return 0; // Avoid division by zero
+    }
+
+    //count leases that are active
+    const activeLeases = await leasesCollection.countDocuments({ 
+      adminId: toObjectId(adminId),
+      status: "Active"
+    });
+
+    const percentage = (activeLeases / totalProperties) * 100;
+    return percentage;
+  } catch (error) {
+    console.error(`Error calculating leased property percentage for adminId=${adminId}:`, error);
+    throw error;
+  }
+}
+
 const leaseService = {
     getLeasesByAdminId,
     createLease,
@@ -269,7 +295,8 @@ const leaseService = {
     countActiveLeasesByAdminId,
     validateDate,
     updateLeaseStatusesByAdmin,
-    updateAllLeaseStatuses
+    updateAllLeaseStatuses,
+    getLeasedPropertyPercentage
 };
 
 export default leaseService;
