@@ -5,10 +5,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import cron from 'node-cron';
-import leaseService from './Services/leaseService.js';
-import invoiceService from './Services/invoiceService.js';
 import { upload } from './utils/cloudinary.js';
+import { startStatusScheduler } from './Schedule_Updates/scheduledTasks.js';
+import revenueDbOperations from './utils/revenueDbOperations.js';
 
 dotenv.config();
 
@@ -82,6 +81,7 @@ import listingController from './Controllers/listingController.js';
 import bookingController from './Controllers/bookingController.js';
 import maintenanceController from './Controllers/maintenanceController.js';
 import activityController from './Controllers/activityController.js';
+import revenueController from './Controllers/revenueController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -128,22 +128,50 @@ app.get('/api/maintenance/count-high-priority', checkAuth, maintenanceController
 //activity routes
 app.get('/api/activity-logs', checkAuth, activityController.getRecentActivities);
 
+//revenue routes
+app.get('/api/revenue/monthly', checkAuth, revenueController.getMonthlyRevenue);
+app.get('/api/revenue/trend', checkAuth, revenueController.getRevenueTrend);
+app.get('/api/revenue/current-month', checkAuth, revenueController.getCurrentMonthRevenue);
+app.get('/api/revenue/summary', checkAuth, revenueController.getRevenueSummary);
+app.post('/api/revenue/calculate', checkAuth, revenueController.calculateRevenue);
+
+// Test endpoint for revenue system (remove in production)
+app.get('/api/revenue/test-calculation', checkAuth, async (req, res) => {
+  try {
+    const { manualRevenueCalculation } = await import('./Schedule_Updates/scheduledTasks.js');
+    const currentDate = new Date();
+    const testMonth = currentDate.getMonth() || 12; // Previous month
+    const testYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+    
+    const results = await manualRevenueCalculation(testMonth, testYear);
+    res.json({
+      success: true,
+      message: `Test revenue calculation completed for ${testMonth}/${testYear}`,
+      data: results
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Test revenue calculation failed',
+      error: error.message
+    });
+  }
+});
+
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   
-  // Start the status schedulers - runs daily at midnight
-  cron.schedule('0 0 * * *', async () => {
-    console.log('Running scheduled status updates...');
-    try {
-      await leaseService.updateAllLeaseStatuses();
-      await invoiceService.updateAllInvoiceStatuses();
-      console.log('Daily status updates completed successfully');
-    } catch (error) {
-      console.error('Error during daily status updates:', error);
-    }
-  });
+  // Initialize revenue collection
+  try {
+    await revenueDbOperations.validateRevenueCollection();
+    const stats = await revenueDbOperations.getRevenueCollectionStats();
+    console.log('Revenue collection stats:', stats);
+  } catch (error) {
+    console.error('Error initializing revenue collection:', error);
+  }
   
-  console.log('Status schedulers started - Daily updates at midnight for leases and invoices');
+  // Start the schedulers (status updates and revenue calculations)
+  startStatusScheduler();
 });

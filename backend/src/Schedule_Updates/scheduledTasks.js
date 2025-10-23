@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { client } from '../utils/db.js';
 import leaseService from '../Services/leaseService.js';
 import invoiceService from '../Services/invoiceService.js';
+import revenueService from '../Services/revenueService.js';
 import { determineLeaseStatus } from '../utils/statusManager.js';
 
 // Function to update all lease statuses
@@ -96,6 +97,46 @@ async function updateAllInvoiceStatuses() {
     throw error;
   }
 }
+
+// Function to calculate and store monthly revenue for all admins
+async function calculateMonthlyRevenueForAllAdmins() {
+  try {
+    console.log('Starting monthly revenue calculation for all admins...');
+    
+    const currentDate = new Date();
+    // Calculate for the previous month since we're running this at the beginning of each month
+    let targetMonth = currentDate.getMonth(); // 0-indexed, so this gives us last month
+    let targetYear = currentDate.getFullYear();
+    
+    if (targetMonth === 0) {
+      // If current month is January, calculate for December of previous year
+      targetMonth = 12;
+      targetYear -= 1;
+    }
+
+    console.log(`Calculating revenue for month: ${targetMonth}, year: ${targetYear}`);
+
+    const results = await revenueService.processAllAdminRevenue(targetMonth, targetYear);
+    
+    console.log(`Monthly revenue calculation completed:
+      - Processed admins: ${results.processedAdmins}
+      - Total revenue: R${results.totalRevenue}
+      - Errors: ${results.errors.length}`);
+    
+    if (results.errors.length > 0) {
+      console.log('Errors encountered:');
+      results.errors.forEach(error => {
+        console.log(`  - Admin ${error.adminName} (${error.adminId}): ${error.error}`);
+      });
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('Error calculating monthly revenue for all admins:', error);
+    throw error;
+  }
+}
+
 // Function to start the scheduled tasks
 function startStatusScheduler() {
   // PRIMARY SCHEDULE: Run every day at midnight (00:00)
@@ -109,7 +150,19 @@ function startStatusScheduler() {
       console.error('Error during daily status updates:', error);
     }
   });
-  console.log('Status scheduler started - Daily updates at midnight');
+  
+  // MONTHLY REVENUE SCHEDULE: Run on the 1st of every month at 02:00 AM
+  cron.schedule('0 2 1 * *', async () => {
+    console.log('Running monthly revenue calculation...');
+    try {
+      await calculateMonthlyRevenueForAllAdmins();
+      console.log('Monthly revenue calculation completed successfully');
+    } catch (error) {
+      console.error('Error during monthly revenue calculation:', error);
+    }
+  });
+  
+  console.log('Status scheduler started - Daily updates at midnight, Monthly revenue calculation on 1st at 2 AM');
 }
 
 // Function to manually trigger status updates (useful for testing)
@@ -126,4 +179,29 @@ async function manualStatusUpdate() {
   }
 }
 
-export { startStatusScheduler, manualStatusUpdate, updateAllLeaseStatuses, updateAllInvoiceStatuses };
+// Function to manually trigger revenue calculation (useful for testing)
+async function manualRevenueCalculation(month = null, year = null) {
+  try {
+    console.log('Starting manual revenue calculation...');
+    
+    const currentDate = new Date();
+    const targetMonth = month || (currentDate.getMonth() === 0 ? 12 : currentDate.getMonth());
+    const targetYear = year || (currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear());
+    
+    const results = await revenueService.processAllAdminRevenue(targetMonth, targetYear);
+    console.log(`Manual revenue calculation completed - Processed: ${results.processedAdmins} admins, Total: R${results.totalRevenue}`);
+    return results;
+  } catch (error) {
+    console.error('Error during manual revenue calculation:', error);
+    throw error;
+  }
+}
+
+export { 
+  startStatusScheduler, 
+  manualStatusUpdate, 
+  manualRevenueCalculation,
+  updateAllLeaseStatuses, 
+  updateAllInvoiceStatuses,
+  calculateMonthlyRevenueForAllAdmins
+};
