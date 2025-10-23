@@ -112,6 +112,7 @@ app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.r
 app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
 app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
 app.get('/api/listings/count', checkAuth, listingController.countNumberOfListingsByAdminId);
+app.get('/api/listings/count-this-month', checkAuth, listingController.countListingsAddedThisMonth);
 
 //booking routes
 app.get('/api/bookings', checkAuth, bookingController.getBookings);

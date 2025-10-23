@@ -48,3 +48,21 @@ export async function createListing(listingData) {
     throw error;
   }
 }
+
+export async function countNumberOfListingsByAdminId() {
+  try {
+    const response = await api.get("/api/listings/count", { withCredentials: true });
+    return response.data.count;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function countListingsAddedThisMonth() {
+  try {
+    const response = await api.get("/api/listings/count-this-month", { withCredentials: true });
+    return response.data.count;
+  } catch (error) {
+    throw error;
+  }
+}

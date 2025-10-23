@@ -94,5 +94,42 @@ async function countNumberOfListingsByAdminId(adminId) {
   }
 }
 
-const listingService = { createListing, getListingsByAdminId, countNumberOfListingsByAdminId };
+async function countListingsAddedThisMonth(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    // Get current month and year
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-indexed (0 = January, 11 = December)
+
+    // Create start and end dates for current month
+    const startOfMonth = new Date(currentYear, currentMonth, 1);
+    const endOfMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999); // Last day of current month
+
+    console.log(`Counting listings added between ${startOfMonth} and ${endOfMonth} for admin ${adminId}`);
+
+    const count = await listingsCollection.countDocuments({ 
+      "landlordInfo.userId": toObjectId(adminId),
+      "createdAt": {
+        $gte: startOfMonth,
+        $lte: endOfMonth
+      }
+    });
+
+    console.log(`Found ${count} listings added this month for admin ${adminId}`);
+    return count;
+  } catch (error) {
+    console.error(`Error counting listings added this month: ${error.message}`);
+    throw new Error(`Error counting listings added this month: ${error.message}`);
+  }
+}
+
+const listingService = { 
+  createListing, 
+  getListingsByAdminId, 
+  countNumberOfListingsByAdminId, 
+  countListingsAddedThisMonth 
+};
 export default listingService;

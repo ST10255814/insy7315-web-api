@@ -48,8 +48,22 @@ async function countNumberOfListingsByAdminId(req, res) {
     }
 }
 
+async function countListingsAddedThisMonth(req, res) {
+    const id = req.user.userId;
+    console.log(`[countListingsAddedThisMonth] Entry: adminId="${id}"`);
+    try {
+        const count = await listingService.countListingsAddedThisMonth(id);
+        console.log(`[countListingsAddedThisMonth] Exit: Counted ${count} listings added this month`);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error(`[countListingsAddedThisMonth] Error: ${error.message}`);
+        res.status(400).json({ error: error.message });
+    }
+}
+
 export default {
     createListing,
     getListingsByAdminId,
-    countNumberOfListingsByAdminId
+    countNumberOfListingsByAdminId,
+    countListingsAddedThisMonth
 };

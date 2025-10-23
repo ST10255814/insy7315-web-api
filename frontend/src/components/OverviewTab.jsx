@@ -22,6 +22,7 @@ import {
 } from "react-icons/fa";
 import StatsCard from "../pages/StatsCard";
 import { getCurrentMonthRevenue } from "../utils/bookings.api";
+import { countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../utils/listings.api";
 import Toast from "../lib/toast";
 
 // Register ChartJS components
@@ -48,7 +49,21 @@ export default function OverviewTab() {
     error: null
   });
 
-  // Fetch current month revenue on component mount
+  // State for total properties count
+  const [totalProperties, setTotalProperties] = useState({
+    count: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for properties added this month
+  const [monthlyProperties, setMonthlyProperties] = useState({
+    count: 0,
+    loading: true,
+    error: null
+  });
+
+  // Fetch data on component mount
   useEffect(() => {
     const fetchMonthlyRevenue = async () => {
       try {
@@ -72,7 +87,49 @@ export default function OverviewTab() {
       }
     };
 
+    const fetchTotalProperties = async () => {
+      try {
+        setTotalProperties(prev => ({ ...prev, loading: true, error: null }));
+        const count = await countNumberOfListingsByAdminId();
+        setTotalProperties({
+          count: count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching total properties:', error);
+        setTotalProperties(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load properties count'
+        }));
+        Toast.error('Failed to load properties count');
+      }
+    };
+
+    const fetchMonthlyProperties = async () => {
+      try {
+        setMonthlyProperties(prev => ({ ...prev, loading: true, error: null }));
+        const count = await countListingsAddedThisMonth();
+        setMonthlyProperties({
+          count: count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching monthly properties:', error);
+        setMonthlyProperties(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load monthly properties count'
+        }));
+        Toast.error('Failed to load monthly properties count');
+      }
+    };
+
     fetchMonthlyRevenue();
+    fetchTotalProperties();
+    fetchMonthlyProperties();
   }, []);
 
   // Format currency for display
@@ -243,8 +300,22 @@ export default function OverviewTab() {
       >
         <StatsCard
           title="Total Properties"
-          value="24"
-          subtitle="↗ +2 this month"
+          value={
+            totalProperties.loading 
+              ? "Loading..." 
+              : totalProperties.error 
+                ? "Error" 
+                : totalProperties.count.toString()
+          }
+          subtitle={
+            monthlyProperties.loading 
+              ? "Fetching data..." 
+              : monthlyProperties.error 
+                ? "Failed to load" 
+                : monthlyProperties.count > 0 
+                  ? `↗ +${monthlyProperties.count} this month`
+                  : "No new properties this month"
+          }
           color="blue"
           icon={<FaHome />}
         />
