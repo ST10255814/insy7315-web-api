@@ -1,0 +1,82 @@
+{
+  "security": {
+    "version": "1.0.0",
+    "framework": "comprehensive-security-pipeline",
+    "lastUpdated": "2024-10-23",
+    "checks": {
+      "secrets": {
+        "enabled": true,
+        "patterns": [
+          "api_key",
+          "secret",
+          "password",
+          "token",
+          "private_key",
+          "mongodb://",
+          "postgres://"
+        ]
+      },
+      "dependencies": {
+        "enabled": true,
+        "auditLevel": "high",
+        "checkLicenses": true,
+        "maxVulnerabilities": 0
+      },
+      "codeAnalysis": {
+        "enabled": true,
+        "staticAnalysis": true,
+        "securityLinting": true,
+        "owaspCompliance": true
+      },
+      "infrastructure": {
+        "enabled": true,
+        "dockerSecurity": true,
+        "networkSecurity": true,
+        "sslTlsCheck": true
+      },
+      "runtime": {
+        "enabled": true,
+        "authTesting": true,
+        "apiSecurity": true,
+        "endpointTesting": true
+      }
+    },
+    "thresholds": {
+      "securityScore": {
+        "minimum": 75,
+        "excellent": 90
+      },
+      "issues": {
+        "critical": 0,
+        "high": 0,
+        "medium": 5,
+        "low": 10
+      }
+    },
+    "reporting": {
+      "generateReports": true,
+      "securityBadge": true,
+      "alertOnFailure": true
+    },
+    "schedule": {
+      "weeklyScans": true,
+      "onPush": true,
+      "onPullRequest": true
+    }
+  },
+  "compliance": {
+    "owasp": {
+      "top10": true,
+      "version": "2021"
+    },
+    "standards": [
+      "OWASP Top 10",
+      "Node.js Security Best Practices",
+      "npm Security Guidelines"
+    ]
+  },
+  "contacts": {
+    "securityTeam": "security@company.com",
+    "emergencyContact": "urgent-security@company.com"
+  }
+}
