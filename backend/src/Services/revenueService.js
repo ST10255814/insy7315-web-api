@@ -52,9 +52,12 @@ async function calculateMonthlyRevenue(adminId, month, year) {
             const checkInDate = booking.newBooking.checkInDate;
             const status = booking.newBooking.status;
             
+            console.log(`[DEBUG] Checking booking ${booking.newBooking.bookingId}: date=${checkInDate}, status=${status}`);
+            
             // Only include completed or active bookings (revenue-generating)
             const validStatuses = ["Active", "active", "confirmed", "Confirmed", "expired", "Expired", "completed", "Completed"];
             if (!validStatuses.includes(status)) {
+                console.log(`[DEBUG] Booking ${booking.newBooking.bookingId} excluded - invalid status: ${status}`);
                 return false;
             }
             
@@ -64,8 +67,11 @@ async function calculateMonthlyRevenue(adminId, month, year) {
                 const bookingMonth = parseInt(monthStr);
                 const bookingYear = parseInt(yearStr);
                 
+                const matches = bookingMonth === month && bookingYear === year;
+                console.log(`[DEBUG] Booking ${booking.newBooking.bookingId}: month=${bookingMonth}, year=${bookingYear}, target=${month}/${year}, matches=${matches}`);
+                
                 // Include booking if it starts in the specified month/year
-                return bookingMonth === month && bookingYear === year;
+                return matches;
             } catch (dateError) {
                 console.error(`Error parsing date for booking ${booking.newBooking.bookingId}:`, dateError);
                 return false;
@@ -123,6 +129,14 @@ async function storeMonthlyRevenue(revenueData) {
         const db = client.db('RentWise');
         const revenueCollection = db.collection('MonthlyRevenue');
 
+        console.log(`[DEBUG] storeMonthlyRevenue called with:`, {
+            adminId: revenueData.adminId,
+            month: revenueData.month,
+            year: revenueData.year,
+            totalRevenue: revenueData.totalRevenue,
+            bookingCount: revenueData.bookingCount
+        });
+
         // Check if revenue data for this admin/month/year already exists
         const existingRevenue = await revenueCollection.findOne({
             adminId: revenueData.adminId,
@@ -130,18 +144,48 @@ async function storeMonthlyRevenue(revenueData) {
             year: revenueData.year
         });
 
+        console.log(`[DEBUG] Existing revenue found:`, existingRevenue ? {
+            id: existingRevenue._id,
+            revenue: existingRevenue.totalRevenue,
+            bookings: existingRevenue.bookingCount
+        } : 'None');
+
         const revenueDocument = {
             ...revenueData,
             updatedAt: new Date()
         };
 
+        console.log(`[DEBUG] Revenue document to store:`, {
+            adminId: revenueDocument.adminId,
+            month: revenueDocument.month,
+            year: revenueDocument.year,
+            totalRevenue: revenueDocument.totalRevenue,
+            bookingCount: revenueDocument.bookingCount
+        });
+
         if (existingRevenue) {
+            // Prevent overwriting non-zero revenue with zero revenue (safety check)
+            if (existingRevenue.totalRevenue > 0 && revenueDocument.totalRevenue === 0) {
+                console.log(`[PROTECTION] Preventing overwrite of non-zero revenue (${existingRevenue.totalRevenue}) with zero revenue for admin ${revenueData.adminId}, month ${revenueData.month}/${revenueData.year}`);
+                return { ...existingRevenue };
+            }
+            
             // Update existing record
             const result = await revenueCollection.updateOne(
                 { _id: existingRevenue._id },
                 { $set: revenueDocument }
             );
+            console.log(`[DEBUG] Update result:`, result);
             console.log(`Updated existing revenue record for admin ${revenueData.adminId}, month ${revenueData.month}/${revenueData.year}`);
+            
+            // Verify the update
+            const verifyUpdate = await revenueCollection.findOne({ _id: existingRevenue._id });
+            console.log(`[DEBUG] Verification after update:`, {
+                id: verifyUpdate._id,
+                revenue: verifyUpdate.totalRevenue,
+                bookings: verifyUpdate.bookingCount
+            });
+            
             return { ...revenueDocument, _id: existingRevenue._id };
         } else {
             // Create new record
@@ -301,12 +345,12 @@ async function processAllAdminRevenue(month, year) {
                 
                 const revenueData = await calculateMonthlyRevenue(adminId, month, year);
                 
-                // Only store revenue data if there's actual revenue > 0
+                // Always attempt to store revenue data to see what's happening
+                await storeMonthlyRevenue(revenueData);
                 if (revenueData.totalRevenue > 0) {
-                    await storeMonthlyRevenue(revenueData);
                     console.log(`✓ Stored revenue for admin ${adminId}: R${revenueData.totalRevenue} from ${revenueData.bookingCount} bookings`);
                 } else {
-                    console.log(`⚪ Skipped admin ${adminId}: R0 (no bookings/revenue for ${month}/${year})`);
+                    console.log(`⚪ Processed admin ${adminId}: R0 (no bookings/revenue for ${month}/${year}) - Protected existing data if any`);
                 }
                 
                 results.processedAdmins++;
