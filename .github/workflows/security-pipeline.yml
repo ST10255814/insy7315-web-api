@@ -1,4 +1,4 @@
-name: 🔒 Comprehensive Security & Testing Pipeline
+name: Comprehensive Security & Testing Pipeline
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
       - main
       - pipeline
       - develop
-      - 'pipeline-*'    # Match pipeline-test, pipeline-dev, etc.
-      - 'PIPELINE_*'    # Match PIPELINE_SECURTY, etc.
-      - 'feature/*'     # Match feature branches
-      - 'security/*'    # Match security branches
+      - 'pipeline-*'
+      - 'PIPELINE_*'
+      - 'feature/*'
+      - 'security/*'
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: '0 6 * * 1' # Weekly security scan on Mondays at 6 AM UTC
-  workflow_dispatch: # Allow manual trigger
+    - cron: '0 */2 * * *' # hourly security scan
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '18'
@@ -22,9 +22,8 @@ env:
   MAX_VULNERABILITIES: 0
 
 jobs:
-  # 🌳 SECURITY FOUNDATION LAYER
   security-foundation:
-    name: 🛡️ Security Foundation Scan
+    name: Security Foundation Scan
     runs-on: ubuntu-latest
     outputs:
       has-secrets: ${{ steps.secret-scan.outputs.has-secrets }}
@@ -32,56 +31,49 @@ jobs:
       security-score: ${{ steps.security-score.outputs.score }}
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # Full history for better analysis
+        fetch-depth: 0
       
-    - name: 🔍 Environment Security Scan
+    - name: Environment Security Scan
       id: env-scan
       run: |
-        echo "🔍 Scanning environment configuration..."
+        echo "Scanning environment configuration..."
         
-        # Check for exposed secrets in git history
-        echo "📜 Checking git history for secrets..."
+        echo "Checking git history for secrets..."
         if git log --all --full-history -- "*.env*" | grep -i "password\|secret\|key" | head -5; then
-          echo "⚠️ WARNING: Potential secrets found in git history"
+          echo "WARNING: Potential secrets found in git history"
         else
-          echo "✅ No secrets detected in git history"
+          echo "No secrets detected in git history"
         fi
         
-        # Check for environment file security
-        echo "🔒 Checking environment file security..."
+        echo "Checking environment file security..."
         if [ -f ".env.example" ]; then
-          echo "✅ Environment example file found"
+          echo "Environment example file found"
           if grep -E "(password|secret|key).*=" .env.example | grep -v "your_" | grep -v "example"; then
-            echo "⚠️ WARNING: Actual secrets may be in .env.example"
+            echo "WARNING: Actual secrets may be in .env.example"
           fi
         else
-          echo "⚠️ Consider adding .env.example for documentation"
+          echo "Consider adding .env.example for documentation"
         fi
 
-    - name: 🕵️ Advanced Secret Detection
+    - name: Advanced Secret Detection
       id: secret-scan
       run: |
-        echo "🕵️ Running advanced secret detection..."
+        echo "Running advanced secret detection..."
         
         SECRET_PATTERNS=(
-          # API Keys
-          "sk-[a-zA-Z0-9]{48}" # OpenAI API keys
-          "ghp_[a-zA-Z0-9]{36}" # GitHub personal access tokens
-          "gho_[a-zA-Z0-9]{36}" # GitHub OAuth tokens
-          "AIza[0-9A-Za-z\\-_]{35}" # Google API keys
-          # AWS
-          "AKIA[0-9A-Z]{16}" # AWS Access Key ID
+          "sk-[a-zA-Z0-9]{48}"
+          "ghp_[a-zA-Z0-9]{36}"
+          "gho_[a-zA-Z0-9]{36}"
+          "AIza[0-9A-Za-z\\-_]{35}"
+          "AKIA[0-9A-Z]{16}"
           "aws_secret_access_key.*[=:].*[A-Za-z0-9/+=]{40}"
-          # Database URLs
           "mongodb://[^:]+:[^@]+@[^/]+"
           "postgres://[^:]+:[^@]+@[^/]+"
           "mysql://[^:]+:[^@]+@[^/]+"
-          # JWT secrets (short patterns)
           "jwt.*secret.*[=:].*[A-Za-z0-9]{16,}"
-          # Private keys
           "-----BEGIN PRIVATE KEY-----"
           "-----BEGIN RSA PRIVATE KEY-----"
         )
@@ -89,7 +81,7 @@ jobs:
         SECRET_FOUND=false
         for pattern in "${SECRET_PATTERNS[@]}"; do
           if grep -r -E "$pattern" --include="*.js" --include="*.json" --include="*.md" --include="*.env*" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=build . 2>/dev/null | head -3; then
-            echo "🚨 CRITICAL: Advanced secret pattern detected: $pattern"
+            echo "CRITICAL: Advanced secret pattern detected: $pattern"
             SECRET_FOUND=true
           fi
         done
@@ -97,16 +89,15 @@ jobs:
         if [ "$SECRET_FOUND" = true ]; then
           echo "has-secrets=true" >> $GITHUB_OUTPUT
         else
-          echo "✅ No advanced secret patterns detected"
+          echo "No advanced secret patterns detected"
           echo "has-secrets=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: 🔐 Cryptographic Security Check
+    - name: Cryptographic Security Check
       run: |
-        echo "🔐 Checking cryptographic implementation..."
+        echo "Checking cryptographic implementation..."
         
-        # Check for weak crypto usage
-        echo "🔍 Scanning for weak cryptographic patterns..."
+        echo "Scanning for weak cryptographic patterns..."
         WEAK_CRYPTO=(
           "md5\("
           "sha1\("
@@ -118,20 +109,18 @@ jobs:
         
         for pattern in "${WEAK_CRYPTO[@]}"; do
           if grep -r -E "$pattern" --include="*.js" backend/src/ 2>/dev/null; then
-            echo "⚠️ WARNING: Weak cryptographic pattern found: $pattern"
+            echo "WARNING: Weak cryptographic pattern found: $pattern"
           fi
         done
         
-        # Check for proper bcrypt usage
         if grep -r "bcrypt\|scrypt\|argon2" backend/src/ >/dev/null 2>&1; then
-          echo "✅ Strong password hashing detected"
+          echo "Strong password hashing detected"
         else
-          echo "⚠️ WARNING: No strong password hashing library detected"
+          echo "WARNING: No strong password hashing library detected"
         fi
 
-  # 🌲 DEPENDENCY SECURITY LAYER
   dependency-security:
-    name: 📦 Dependency Security Analysis
+    name: Dependency Security Analysis
     runs-on: ubuntu-latest
     needs: security-foundation
     strategy:
@@ -139,91 +128,84 @@ jobs:
         workspace: [backend, frontend]
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
       
-    - name: 🔧 Setup Node.js Environment
+    - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
 
-    - name: 🔄 Sync Package Lock File
+    - name: Sync Package Lock File
       run: |
         cd ${{ matrix.workspace }}
-        echo "🔄 Checking package-lock.json sync status..."
+        echo "Checking package-lock.json sync status..."
         
-        # Check if package-lock.json exists and is in sync
         if [ ! -f "package-lock.json" ]; then
-          echo "📦 package-lock.json not found, generating..."
+          echo "package-lock.json not found, generating..."
           npm install --no-audit --silent
         else
-          echo "📦 Attempting to sync package-lock.json..."
+          echo "Attempting to sync package-lock.json..."
           npm install --no-audit --silent || {
-            echo "⚠️ npm install had issues, trying to fix package-lock.json..."
+            echo "npm install had issues, trying to fix package-lock.json..."
             rm -f package-lock.json
             npm install --no-audit --silent
           }
         fi
         
-        echo "✅ Package lock file sync completed"
+        echo "Package lock file sync completed"
 
-    - name: 📊 Dependency Tree Analysis
+    - name: Dependency Tree Analysis
       run: |
         cd ${{ matrix.workspace }}
-        echo "📊 Analyzing dependency tree for ${{ matrix.workspace }}..."
+        echo "Analyzing dependency tree for ${{ matrix.workspace }}..."
         
-        # Generate detailed dependency report
         npm list --depth=0 --json > dependency-report.json
         
-        # Count total dependencies
         TOTAL_DEPS=$(npm list --depth=0 --parseable | wc -l)
-        echo "📈 Total dependencies: $TOTAL_DEPS"
+        echo "Total dependencies: $TOTAL_DEPS"
         
-        # Check for oversized node_modules
         if [ -d "node_modules" ]; then
           NODE_MODULES_SIZE=$(du -sh node_modules | cut -f1)
-          echo "💾 node_modules size: $NODE_MODULES_SIZE"
+          echo "node_modules size: $NODE_MODULES_SIZE"
         fi
 
-    - name: 🔍 Vulnerability Deep Scan
+    - name: Vulnerability Deep Scan
       run: |
         cd ${{ matrix.workspace }}
-        echo "🔍 Running comprehensive vulnerability scan for ${{ matrix.workspace }}..."
+        echo "Running comprehensive vulnerability scan for ${{ matrix.workspace }}..."
         
-        # Use clean install if possible, fallback to regular install if needed
         npm ci --no-audit || {
-          echo "⚠️ npm ci failed, falling back to npm install..."
+          echo "npm ci failed, falling back to npm install..."
           npm install --no-audit
         }
         
-        # Multiple audit approaches
-        echo "🛡️ Running npm audit (high severity)..."
+        echo "Running npm audit (high severity)..."
         npm audit --audit-level=high --json > audit-high.json || true
         
         if [ -f audit-high.json ]; then
           if command -v jq >/dev/null 2>&1; then
             VULN_COUNT=$(jq '.metadata.vulnerabilities.total // 0' audit-high.json 2>/dev/null || echo "0")
             if [ "$VULN_COUNT" -gt 0 ]; then
-              echo "⚠️ High severity vulnerabilities detected: $VULN_COUNT"
+              echo "High severity vulnerabilities detected: $VULN_COUNT"
             else
-              echo "✅ No high severity vulnerabilities found"
+              echo "No high severity vulnerabilities found"
             fi
           else
-            echo "⚠️ jq not available, checking audit results manually..."
+            echo "jq not available, checking audit results manually..."
             if grep -q '"high"' audit-high.json; then
-              echo "⚠️ High severity vulnerabilities may exist"
+              echo "High severity vulnerabilities may exist"
             else
-              echo "✅ No obvious high severity vulnerabilities in output"
+              echo "No obvious high severity vulnerabilities in output"
             fi
           fi
         else
-          echo "✅ No audit file generated - likely no vulnerabilities"
+          echo "No audit file generated - likely no vulnerabilities"
         fi
         
-        # Check for specific known vulnerable packages
-        echo "🔍 Checking for known vulnerable packages..."
+        echo "Checking for known vulnerable packages..."
         VULNERABLE_PACKAGES=(
           "lodash@4.17.20"
           "lodash@4.17.19"
@@ -237,34 +219,32 @@ jobs:
         
         for package in "${VULNERABLE_PACKAGES[@]}"; do
           if npm list $package --depth=0 >/dev/null 2>&1; then
-            echo "🚨 CRITICAL: Known vulnerable package found: $package"
+            echo "CRITICAL: Known vulnerable package found: $package"
           else
-            echo "✅ $package not found or not vulnerable version"
+            echo "$package not found or not vulnerable version"
           fi
         done
 
-    - name: 📋 License Compliance Check
+    - name: License Compliance Check
       run: |
         cd ${{ matrix.workspace }}
-        echo "📋 Checking license compliance..."
+        echo "Checking license compliance..."
         
-        # Check for problematic licenses
         if command -v jq >/dev/null 2>&1; then
           npm list --depth=0 --json | jq -r '.dependencies | to_entries[] | select(.value.license) | "\(.key): \(.value.license)"' 2>/dev/null | while read line; do
             if echo "$line" | grep -E "(GPL-2\.0|GPL-3\.0|AGPL|LGPL)" >/dev/null; then
-              echo "⚠️ WARNING: Copyleft license detected: $line"
+              echo "WARNING: Copyleft license detected: $line"
             fi
-          done || echo "ℹ️ License check completed with jq"
+          done || echo "License check completed with jq"
         else
-          echo "ℹ️ jq not available, performing basic license check..."
-          npm list --depth=0 2>/dev/null | grep -E "(GPL|AGPL|LGPL)" && echo "⚠️ Potential copyleft licenses found" || echo "✅ No obvious copyleft licenses detected"
+          echo "jq not available, performing basic license check..."
+          npm list --depth=0 2>/dev/null | grep -E "(GPL|AGPL|LGPL)" && echo "Potential copyleft licenses found" || echo "No obvious copyleft licenses detected"
         fi
         
-        echo "✅ License compliance check completed"
+        echo "License compliance check completed"
 
-  # 🌲 CODE SECURITY LAYER
   code-security:
-    name: 🔍 Code Security Analysis
+    name: Code Security Analysis
     runs-on: ubuntu-latest
     needs: security-foundation
     strategy:
@@ -302,23 +282,20 @@ jobs:
         
         echo "✅ Backend dependencies sync completed"
 
-    - name: �🔍 Static Code Analysis (${{ matrix.check-type }})
+    - name: Static Code Analysis (${{ matrix.check-type }})
       run: |
         cd backend
-        # Use clean install if possible, fallback to regular install if needed
         npm ci --no-audit || {
-          echo "⚠️ npm ci failed, falling back to npm install..."
+          echo "npm ci failed, falling back to npm install..."
           npm install --no-audit
         }
         
         case "${{ matrix.check-type }}" in
           "static-analysis")
-            echo "🔍 Running static code analysis..."
+            echo "Running static code analysis..."
             
-            # Install security analysis tools
-            npm install --no-audit eslint eslint-plugin-security || echo "⚠️ ESLint installation had issues"
+            npm install --no-audit eslint eslint-plugin-security || echo "ESLint installation had issues"
             
-            # Create comprehensive ESLint config
             cat > .eslintrc.security.js << 'EOF'
         module.exports = {
           env: {
@@ -354,20 +331,19 @@ jobs:
         };
         EOF
             
-            echo "🧪 Running ESLint security analysis..."
+            echo "Running ESLint security analysis..."
             if command -v npx >/dev/null 2>&1; then
-              npx eslint src/ --config .eslintrc.security.js --format compact || echo "⚠️ Security linting found issues"
+              npx eslint src/ --config .eslintrc.security.js --format compact || echo "Security linting found issues"
             else
-              echo "ℹ️ NPX not available, performing manual security pattern checks..."
-              grep -r -E "(eval\(|Function\(|innerHTML)" src/ && echo "⚠️ Potentially dangerous patterns found" || echo "✅ No obvious dangerous patterns"
+              echo "NPX not available, performing manual security pattern checks..."
+              grep -r -E "(eval\(|Function\(|innerHTML)" src/ && echo "Potentially dangerous patterns found" || echo "No obvious dangerous patterns"
             fi
             ;;
             
           "security-linting")
-            echo "🔍 Running security-focused linting..."
+            echo "Running security-focused linting..."
             
-            # Check for dangerous patterns
-            echo "🚨 Scanning for dangerous code patterns..."
+            echo "Scanning for dangerous code patterns..."
             
             DANGEROUS_PATTERNS=(
               "eval\("
@@ -384,73 +360,64 @@ jobs:
             
             for pattern in "${DANGEROUS_PATTERNS[@]}"; do
               if grep -r -E "$pattern" src/ 2>/dev/null; then
-                echo "🚨 DANGEROUS PATTERN: $pattern"
+                echo "DANGEROUS PATTERN: $pattern"
               fi
             done
             ;;
             
           "owasp-scan")
-            echo "🔍 Running OWASP security checks..."
+            echo "Running OWASP security checks..."
             
-            # OWASP Top 10 focused checks
-            echo "🛡️ Checking for OWASP Top 10 vulnerabilities..."
+            echo "Checking for OWASP Top 10 vulnerabilities..."
             
-            # A01: Broken Access Control
-            echo "🔐 Checking access control..."
+            echo "Checking access control..."
             if grep -r "req\.user" src/ | grep -v "if.*req\.user" | head -3; then
-              echo "⚠️ Potential access control issues - ensure proper authorization checks"
+              echo "Potential access control issues - ensure proper authorization checks"
             fi
             
-            # A02: Cryptographic Failures
-            echo "🔐 Checking cryptographic implementation..."
+            echo "Checking cryptographic implementation..."
             if grep -r -E "(md5|sha1|des|rc4)" src/; then
-              echo "🚨 WEAK CRYPTOGRAPHY DETECTED"
+              echo "WEAK CRYPTOGRAPHY DETECTED"
             fi
             
-            # A03: Injection
-            echo "💉 Checking for injection vulnerabilities..."
+            echo "Checking for injection vulnerabilities..."
             if grep -r -E "(\$where|\$ne|\$in.*\$|eval.*\$)" src/; then
-              echo "🚨 POTENTIAL NoSQL INJECTION"
+              echo "POTENTIAL NoSQL INJECTION"
             fi
             
-            # A05: Security Misconfiguration
-            echo "⚙️ Checking security configuration..."
+            echo "Checking security configuration..."
             if ! grep -r "helmet\|csp\|hsts" src/; then
-              echo "⚠️ Missing security headers middleware"
+              echo "Missing security headers middleware"
             fi
             
-            # A06: Vulnerable Components (already covered in dependency scan)
-            echo "✅ Vulnerable components check handled by dependency scan"
+            echo "Vulnerable components check handled by dependency scan"
             
-            # A07: Authentication Failures
-            echo "🔑 Checking authentication implementation..."
+            echo "Checking authentication implementation..."
             if grep -r "password" src/ | grep -v "bcrypt\|scrypt\|argon2"; then
-              echo "⚠️ Check password handling implementation"
+              echo "Check password handling implementation"
             fi
             ;;
         esac
 
-  # 🌲 INFRASTRUCTURE SECURITY LAYER
   infrastructure-security:
-    name: 🏗️ Application Security Configuration
+    name: Application Security Configuration
     runs-on: ubuntu-latest
     needs: [security-foundation, dependency-security]
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
       
-    - name: 🔧 Setup Node.js Environment
+    - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: � Project Structure Security Check
+    - name: Project Structure Security Check
       run: |
-        echo "� Checking project structure security..."
+        echo "Checking project structure security..."
         
-        # Check for sensitive files that shouldn't be in repo
-        echo "🔍 Checking for sensitive files..."
+        echo "Checking for sensitive files..."
         SENSITIVE_FILES=(
           ".env"
           "*.pem"
@@ -464,121 +431,110 @@ jobs:
         
         for pattern in "${SENSITIVE_FILES[@]}"; do
           if find . -name "$pattern" -not -path "./node_modules/*" -not -path "./.git/*" 2>/dev/null | head -3; then
-            echo "⚠️ WARNING: Potentially sensitive file found: $pattern"
+            echo "WARNING: Potentially sensitive file found: $pattern"
           fi
         done
         
-        # Check for proper .gitignore
         if [ -f ".gitignore" ]; then
-          echo "✅ .gitignore file found"
+          echo ".gitignore file found"
           if grep -q "\.env" .gitignore && grep -q "node_modules" .gitignore; then
-            echo "✅ .gitignore includes common sensitive patterns"
+            echo ".gitignore includes common sensitive patterns"
           else
-            echo "⚠️ WARNING: .gitignore may be missing important patterns"
+            echo "WARNING: .gitignore may be missing important patterns"
           fi
         else
-          echo "⚠️ WARNING: No .gitignore file found"
+          echo "WARNING: No .gitignore file found"
         fi
 
-    - name: 🌐 Network Security Configuration
+    - name: Network Security Configuration
       run: |
-        echo "🌐 Checking network security configuration..."
+        echo "Checking network security configuration..."
         
         cd backend
         
-        # Check CORS configuration
-        echo "🔍 Analyzing CORS configuration..."
+        echo "Analyzing CORS configuration..."
         if grep -r "cors" src/ | grep -E "(origin.*\*|credentials.*true)" | head -3; then
-          echo "⚠️ WARNING: Permissive CORS configuration detected"
+          echo "WARNING: Permissive CORS configuration detected"
         else
-          echo "✅ CORS configuration appears secure"
+          echo "CORS configuration appears secure"
         fi
         
-        # Check HTTPS enforcement
-        echo "🔒 Checking HTTPS enforcement..."
+        echo "Checking HTTPS enforcement..."
         if grep -r -E "(http://|secure.*false)" src/ | grep -v localhost | head -3; then
-          echo "⚠️ WARNING: Non-HTTPS configurations detected"
+          echo "WARNING: Non-HTTPS configurations detected"
         else
-          echo "✅ HTTPS enforcement configured"
+          echo "HTTPS enforcement configured"
         fi
         
-        # Check security headers
-        echo "🛡️ Checking security headers..."
+        echo "Checking security headers..."
         if grep -r -E "(helmet|hsts|csp|x-frame-options)" src/; then
-          echo "✅ Security headers middleware detected"
+          echo "Security headers middleware detected"
         else
-          echo "⚠️ WARNING: Security headers middleware not detected"
+          echo "WARNING: Security headers middleware not detected"
         fi
 
-    - name: 🔐 SSL/TLS Configuration Check
+    - name: SSL/TLS Configuration Check
       run: |
-        echo "🔐 Checking SSL/TLS configuration..."
+        echo "Checking SSL/TLS configuration..."
         
-        # Check for SSL/TLS settings
         if grep -r -E "(ssl|tls)" backend/src/ | head -3; then
-          echo "🔍 SSL/TLS configuration found"
+          echo "SSL/TLS configuration found"
           
-          # Check for weak TLS versions
           if grep -r -E "(SSLv2|SSLv3|TLSv1\.0|TLSv1\.1)" backend/src/; then
-            echo "🚨 CRITICAL: Weak TLS versions detected"
+            echo "CRITICAL: Weak TLS versions detected"
           else
-            echo "✅ No weak TLS versions detected"
+            echo "No weak TLS versions detected"
           fi
         else
-          echo "ℹ️ No explicit SSL/TLS configuration (may be handled by proxy)"
+          echo "No explicit SSL/TLS configuration (may be handled by proxy)"
         fi
 
-  # 🌲 RUNTIME SECURITY LAYER
   runtime-security:
-    name: 🚀 Runtime Security Testing
+    name: Runtime Security Testing
     runs-on: ubuntu-latest
     needs: [code-security, infrastructure-security]
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
       
-    - name: 🔧 Setup Node.js Environment
+    - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: backend/package-lock.json
 
-    - name: 🔄 Sync Backend Dependencies  
+    - name: Sync Backend Dependencies  
       run: |
         cd backend
-        echo "🔄 Ensuring backend dependencies are in sync..."
+        echo "Ensuring backend dependencies are in sync..."
         
-        # Sync package-lock.json if needed
         npm install --no-audit --silent || {
-          echo "⚠️ Regenerating package-lock.json..."
+          echo "Regenerating package-lock.json..."
           rm -f package-lock.json
           npm install --no-audit --silent
         }
         
-        echo "✅ Backend dependencies ready for testing"
+        echo "Backend dependencies ready for testing"
 
-    - name: 🧪 Security Unit Tests
+    - name: Security Unit Tests
       env:
         JWT_SECRET: test-jwt-secret-for-security-testing-only
         NODE_ENV: test
       run: |
         cd backend
-        # Use clean install for testing environment
         npm ci --no-audit || {
-          echo "⚠️ npm ci failed, falling back to npm install..."
+          echo "npm ci failed, falling back to npm install..."
           npm install --no-audit
         }
         
-        echo "🧪 Running security-focused unit tests..."
+        echo "Running security-focused unit tests..."
         
-        # Run existing tests
         npm test
         
-        echo "🔍 Checking test coverage for security-critical files..."
+        echo "Checking test coverage for security-critical files..."
         
-        # Check if security middleware tests exist
         SECURITY_FILES=(
           "middleware/arcjet.middleware.js"
           "middleware/checkAuth.js"
@@ -589,144 +545,131 @@ jobs:
           if [ -f "src/$file" ]; then
             TEST_FILE="tests/$(basename $file .js).test.js"
             if [ -f "$TEST_FILE" ]; then
-              echo "✅ Test found for $file"
+              echo "Test found for $file"
             else
-              echo "⚠️ WARNING: No test found for security-critical file: $file"
+              echo "WARNING: No test found for security-critical file: $file"
             fi
           fi
         done
 
-    - name: 🔒 Authentication & Authorization Tests
+    - name: Authentication & Authorization Tests
       env:
         JWT_SECRET: test-jwt-secret-for-auth-testing
         NODE_ENV: test
       run: |
         cd backend
-        echo "🔒 Testing authentication and authorization..."
+        echo "Testing authentication and authorization..."
         
-        # Check if JWT is used in the project
         if grep -r "jwt\|jsonwebtoken" src/ package.json >/dev/null 2>&1; then
-          echo "🔑 JWT usage detected, creating security test..."
+          echo "JWT usage detected, creating security test..."
           
-          # Create temporary auth test script using CommonJS
           cat > security-auth-test.js << 'EOF'
         const jwt = require('jsonwebtoken');
         
         const testJwtSecurity = () => {
-          console.log('🔑 Testing JWT security...');
+          console.log('Testing JWT security...');
           
           try {
-            // Test token tampering detection
             const secret = process.env.JWT_SECRET || 'test-secret-for-testing-only';
             const token = jwt.sign({ userId: 'user1' }, secret);
             const tamperedToken = token.slice(0, -5) + 'XXXXX';
             
             try {
               jwt.verify(tamperedToken, secret);
-              console.log('🚨 CRITICAL: JWT verification failed to detect tampering');
+              console.log('CRITICAL: JWT verification failed to detect tampering');
             } catch (e) {
-              console.log('✅ JWT properly detects token tampering');
+              console.log('JWT properly detects token tampering');
             }
             
-            // Test valid token
             try {
               const decoded = jwt.verify(token, secret);
-              console.log('✅ JWT verification works correctly');
+              console.log('JWT verification works correctly');
             } catch (e) {
-              console.log('⚠️ Issue with JWT verification:', e.message);
+              console.log('Issue with JWT verification:', e.message);
             }
             
           } catch (error) {
-            console.log('ℹ️ JWT testing completed with minor issues:', error.message);
+            console.log('JWT testing completed with minor issues:', error.message);
           }
         };
         
         testJwtSecurity();
         EOF
           
-          node security-auth-test.js || echo "ℹ️ JWT test completed with warnings"
+          node security-auth-test.js || echo "JWT test completed with warnings"
           rm security-auth-test.js
         else
-          echo "ℹ️ No JWT usage detected in project"
+          echo "No JWT usage detected in project"
         fi
         
-        # Check for authentication middleware
         if [ -f "src/middleware/checkAuth.js" ]; then
-          echo "✅ Authentication middleware found"
+          echo "Authentication middleware found"
         else
-          echo "ℹ️ No authentication middleware file found at expected location"
+          echo "No authentication middleware file found at expected location"
         fi
 
-    - name: 🌐 API Endpoint Security Test
+    - name: API Endpoint Security Test
       run: |
         cd backend
-        echo "🌐 Testing API endpoint security..."
+        echo "Testing API endpoint security..."
         
-        # Ensure dependencies are available for testing
-        npm install --no-audit --silent || echo "⚠️ npm install had warnings"
+        npm install --no-audit --silent || echo "npm install had warnings"
         
-        # Check if we can start the server for testing
-        echo "🔍 Checking server configuration..."
+        echo "Checking server configuration..."
         
-        # Test server startup without actually running it long-term
         if [ -f "src/server.js" ]; then
-          echo "✅ Server file found"
+          echo "Server file found"
           
-          # Check for security middleware in server configuration
           if grep -E "(helmet|cors|rateLimit)" src/server.js >/dev/null 2>&1; then
-            echo "✅ Security middleware detected in server configuration"
+            echo "Security middleware detected in server configuration"
           else
-            echo "⚠️ WARNING: No obvious security middleware in server.js"
+            echo "WARNING: No obvious security middleware in server.js"
           fi
           
-          # Check for environment variable usage
           if grep -E "(process\.env|dotenv)" src/server.js >/dev/null 2>&1; then
-            echo "✅ Environment variable configuration detected"
+            echo "Environment variable configuration detected"
           else
-            echo "⚠️ WARNING: No environment variable configuration detected"
+            echo "WARNING: No environment variable configuration detected"
           fi
         else
-          echo "ℹ️ Server file not found at expected location"
+          echo "Server file not found at expected location"
         fi
         
-        # Static analysis of security headers setup
-        echo "🔍 Analyzing security headers configuration..."
+        echo "Analyzing security headers configuration..."
         if grep -r -i "helmet\|hsts\|csp" src/ >/dev/null 2>&1; then
-          echo "✅ Security headers middleware found in codebase"
+          echo "Security headers middleware found in codebase"
         else
-          echo "⚠️ WARNING: Security headers middleware not detected in codebase"
+          echo "WARNING: Security headers middleware not detected in codebase"
         fi
 
-  # 🌲 COMPLIANCE & REPORTING LAYER
   security-compliance:
-    name: 📊 Security Compliance & Reporting
+    name: Security Compliance & Reporting
     runs-on: ubuntu-latest
     needs: [security-foundation, dependency-security, code-security, infrastructure-security, runtime-security]
     if: always()
     
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: 📊 Generate Security Report
+    - name: Generate Security Report
       run: |
-        echo "📊 Generating comprehensive security report..."
+        echo "Generating comprehensive security report..."
         
-        # Create security report with proper variable substitution
         REPORT_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
         
         cat > security-report.md << EOF
-        # 🔒 Security Assessment Report
+        # Security Assessment Report
         
-        ## 📅 Scan Details
+        ## Scan Details
         - **Date**: ${REPORT_DATE}
         - **Repository**: ${{ github.repository }}
         - **Branch**: ${{ github.ref_name }}
         - **Commit**: ${{ github.sha }}
         
-        ## 🛡️ Security Scan Results
+        ## Security Scan Results
         
-        ### ✅ Completed Checks
+        ### Completed Checks
         - Secret Detection Scan
         - Dependency Vulnerability Analysis
         - Static Code Analysis
@@ -734,39 +677,36 @@ jobs:
         - Application Security Configuration
         - Runtime Security Testing
         
-        ### 📈 Security Score
+        ### Security Score
         Based on automated analysis: **IN PROGRESS**
         
-        ### 🎯 Recommendations
+        ### Recommendations
         1. Regularly update dependencies
         2. Review and rotate secrets
         3. Implement additional security headers
         4. Add comprehensive security tests
         5. Set up security monitoring
         
-        ### 📋 Next Steps
+        ### Next Steps
         - [ ] Address any critical vulnerabilities
         - [ ] Review security warnings
         - [ ] Update security documentation
         - [ ] Schedule next security review
         
-        ## 📊 Summary
+        ## Summary
         Security pipeline completed successfully with comprehensive checks.
         EOF
         
-        echo "📄 Security report generated successfully"
-        echo "📋 Report location: security-report.md"
+        echo "Security report generated successfully"
+        echo "Report location: security-report.md"
 
-    - name: 🏆 Security Badge Generation
+    - name: Security Badge Generation
       run: |
-        echo "🏆 Generating security compliance badge..."
+        echo "Generating security compliance badge..."
         
-        # Calculate security score based on job results
         TOTAL_JOBS=6
         PASSED_JOBS=0
         
-        # This would normally check job statuses
-        # For now, we'll assume all passed if we reach this point
         SECURITY_SCORE=$((PASSED_JOBS * 100 / TOTAL_JOBS))
         
         if [ $SECURITY_SCORE -ge 90 ]; then
@@ -783,61 +723,60 @@ jobs:
           BADGE_STATUS="needs-work"
         fi
         
-        echo "🎖️ Security Status: $BADGE_STATUS ($SECURITY_SCORE%)"
+        echo "Security Status: $BADGE_STATUS ($SECURITY_SCORE%)"
 
-  # 🌲 SUCCESS/FAILURE REPORTING
   pipeline-success:
-    name: ✅ Pipeline Success
+    name: Pipeline Success
     runs-on: ubuntu-latest
     needs: [security-foundation, dependency-security, code-security, infrastructure-security, runtime-security, security-compliance]
     if: success()
     
     steps:
-    - name: 🎉 All Security Checks Passed
+    - name: All Security Checks Passed
       run: |
-        echo "🎉 ===== SECURITY PIPELINE SUCCESS ===== 🎉"
+        echo "===== SECURITY PIPELINE SUCCESS ====="
         echo ""
-        echo "🛡️ All security checks completed successfully!"
+        echo "All security checks completed successfully!"
         echo ""
-        echo "✅ Security Foundation: PASSED"
-        echo "✅ Dependency Security: PASSED"
-        echo "✅ Code Security: PASSED"
-        echo "✅ Application Security: PASSED"
-        echo "✅ Runtime Security: PASSED"
-        echo "✅ Security Compliance: PASSED"
+        echo "Security Foundation: PASSED"
+        echo "Dependency Security: PASSED"
+        echo "Code Security: PASSED"
+        echo "Application Security: PASSED"
+        echo "Runtime Security: PASSED"
+        echo "Security Compliance: PASSED"
         echo ""
-        echo "🚀 Code is ready for deployment"
-        echo "🔒 Security posture: EXCELLENT"
+        echo "Code is ready for deployment"
+        echo "Security posture: EXCELLENT"
         echo ""
-        echo "🎯 Next steps:"
+        echo "Next steps:"
         echo "   • Review security report"
         echo "   • Continue monitoring"
         echo "   • Schedule next security review"
 
   pipeline-failure:
-    name: ❌ Pipeline Failed
+    name: Pipeline Failed
     runs-on: ubuntu-latest
     needs: [security-foundation, dependency-security, code-security, infrastructure-security, runtime-security, security-compliance]
     if: failure()
     
     steps:
-    - name: 🚨 Security Pipeline Failed
+    - name: Security Pipeline Failed
       run: |
-        echo "🚨 ===== SECURITY PIPELINE FAILURE ===== 🚨"
+        echo "===== SECURITY PIPELINE FAILURE ====="
         echo ""
-        echo "❌ One or more security checks failed!"
+        echo "One or more security checks failed!"
         echo ""
-        echo "🔍 Common failure causes:"
+        echo "Common failure causes:"
         echo "   • High/Critical severity vulnerabilities"
         echo "   • Secrets detected in code"
         echo "   • Security policy violations"
         echo "   • Weak cryptographic implementations"
         echo "   • Missing security controls"
         echo ""
-        echo "⚡ Immediate actions required:"
+        echo "Immediate actions required:"
         echo "   • Review failed job logs above"
         echo "   • Address critical security issues"
         echo "   • Re-run pipeline after fixes"
         echo ""
-        echo "🆘 For urgent security issues, contact the security team"
+        echo "For urgent security issues, contact the security team"
         exit 1
