@@ -93,7 +93,8 @@ export function invalidateOverviewQueries(queryClient) {
     "leasedPercentage", 
     "maintenanceCount",
     "highPriorityMaintenanceCount",
-    "recentActivities"
+    "recentActivities", 
+    "revenueTrend"
   ];
 
   overviewQueries.forEach(queryKey => {

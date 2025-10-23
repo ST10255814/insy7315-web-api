@@ -29,6 +29,7 @@ import { getRecentActivities } from "./activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
 import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries, invalidateOverviewQueries } from "./cacheUtils.js";
+import { getRevenueTrend } from "./revenue.api.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
 export const useLeasesQuery = (adminId) => {
@@ -272,4 +273,16 @@ export const useInvalidateOverview = () => {
   return React.useCallback(() => {
     invalidateOverviewQueries(queryClient);
   }, [queryClient]);
+};
+
+// Revenue trend query
+export const useRevenueTrendQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("revenueTrend", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getRevenueTrend();
+    },
+    ...CACHE_CONFIGS.DYNAMIC,
+  }, queryClient);
 };

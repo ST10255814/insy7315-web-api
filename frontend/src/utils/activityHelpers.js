@@ -89,12 +89,12 @@ export const getActivityColor = (action) => {
     
     // User activities - Gray (default)
     'User Login': {
-      color: '#6B7280', // gray-500
-      bgColor: 'rgba(107, 114, 128, 0.1)'
+      color: '#42ebdf',
+      bgColor: 'rgba(66, 235, 223, 0.1)'
     },
     'User Logout': {
-      color: '#6B7280', // gray-500
-      bgColor: 'rgba(107, 114, 128, 0.1)'
+      color: '#42ebdf',
+      bgColor: 'rgba(66, 235, 223, 0.1)'
     }
   };
 
