@@ -9,3 +9,17 @@ export async function getBookingsByAdminId() {
         throw error;
     }
 }
+
+// Get current month revenue for the logged-in admin
+export async function getCurrentMonthRevenue() {
+    try {
+        const response = await api.get('/api/bookings/current-month-revenue', {
+            withCredentials: true
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+

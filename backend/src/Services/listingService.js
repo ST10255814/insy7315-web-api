@@ -82,5 +82,17 @@ async function getListingsByAdminId(adminId) {
   }
 }
 
-const listingService = { createListing, getListingsByAdminId };
+async function countNumberOfListingsByAdminId(adminId) {
+  try{
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const count = await listingsCollection.countDocuments({ "landlordInfo.userId": toObjectId(adminId) });
+    return count;
+  } catch (error) {
+    throw new Error(`Error counting listings: ${error.message}`);
+  }
+}
+
+const listingService = { createListing, getListingsByAdminId, countNumberOfListingsByAdminId };
 export default listingService;

@@ -12,6 +12,24 @@ async function getBookings(req, res){
     }
 }
 
+async function getCurrentMonthRevenue(req, res) {
+    const adminId = req.user.userId; // Get admin ID from the authenticated user
+
+    try {
+        const revenue = await bookingService.getCurrentMonthRevenue(adminId);
+        res.status(200).json({ 
+            totalRevenue: revenue,
+            month: new Date().toLocaleString('default', { month: 'long' }),
+            year: new Date().getFullYear(),
+            adminId: adminId // Include admin ID for debugging
+        });
+    } catch (error) {
+        console.error("Error in getCurrentMonthRevenue controller:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
 export default {
-    getBookings
+    getBookings,
+    getCurrentMonthRevenue,
 };

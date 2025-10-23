@@ -99,6 +99,7 @@ app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPass
 //lease routes
 app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
 app.post('/api/leases/create', checkAuth, leaseController.createLease);
+app.get('api/leases/count', checkAuth, leaseController.countActiveLeasesByAdminId);
 
 //invoice routes
 app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);
@@ -110,12 +111,16 @@ app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.r
 //listing routes
 app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
 app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
+app.get('/api/listings/count', checkAuth, listingController.countNumberOfListingsByAdminId);
 
 //booking routes
 app.get('/api/bookings', checkAuth, bookingController.getBookings);
+app.get('/api/bookings/current-month-revenue', checkAuth, bookingController.getCurrentMonthRevenue);
 
 //maintenance routes
 app.get('/api/maintenance', checkAuth, maintenanceController.getAllMaintenanceRequests);
+
+
 
 // Start server
 app.listen(PORT, () => {

@@ -243,11 +243,30 @@ async function updateAllLeaseStatuses() {
   }
 }
 
+//get total active leases for adminId
+async function countActiveLeasesByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+
+    const count = await leasesCollection.countDocuments({ 
+      adminId: toObjectId(adminId),
+      status: "Active"
+    });
+
+    return count;
+  } catch (error) {
+    console.error(`Error counting active leases for adminId=${adminId}:`, error);
+    throw error;
+  }
+}
+
 const leaseService = {
     getLeasesByAdminId,
     createLease,
     generateLeaseId,
     generateBookingId,
+    countActiveLeasesByAdminId,
     validateDate,
     updateLeaseStatusesByAdmin,
     updateAllLeaseStatuses

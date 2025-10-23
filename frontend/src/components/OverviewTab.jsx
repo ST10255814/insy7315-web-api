@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Line, Pie } from "react-chartjs-2";
 import {
@@ -21,6 +21,8 @@ import {
   FaWrench,
 } from "react-icons/fa";
 import StatsCard from "../pages/StatsCard";
+import { getCurrentMonthRevenue } from "../utils/bookings.api";
+import Toast from "../lib/toast";
 
 // Register ChartJS components
 ChartJS.register(
@@ -37,6 +39,51 @@ ChartJS.register(
 
 //FIXME: Replace hardcoded data with dynamic data from API
 export default function OverviewTab() {
+  // State for current month revenue
+  const [monthlyRevenue, setMonthlyRevenue] = useState({
+    amount: 0,
+    month: '',
+    year: '',
+    loading: true,
+    error: null
+  });
+
+  // Fetch current month revenue on component mount
+  useEffect(() => {
+    const fetchMonthlyRevenue = async () => {
+      try {
+        setMonthlyRevenue(prev => ({ ...prev, loading: true, error: null }));
+        const data = await getCurrentMonthRevenue();
+        setMonthlyRevenue({
+          amount: data.totalRevenue || 0,
+          month: data.month || '',
+          year: data.year || '',
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching monthly revenue:', error);
+        setMonthlyRevenue(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load revenue data'
+        }));
+        Toast.error('Failed to load monthly revenue data');
+      }
+    };
+
+    fetchMonthlyRevenue();
+  }, []);
+
+  // Format currency for display
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
   // Revenue Line Chart
   const revenueData = React.useMemo(
     () => ({
@@ -203,8 +250,20 @@ export default function OverviewTab() {
         />
         <StatsCard
           title="Monthly Revenue"
-          value="R912,500"
-          subtitle="↗ +12% from last month"
+          value={
+            monthlyRevenue.loading 
+              ? "Loading..." 
+              : monthlyRevenue.error 
+                ? "Error" 
+                : formatCurrency(monthlyRevenue.amount)
+          }
+          subtitle={
+            monthlyRevenue.loading 
+              ? "Fetching data..." 
+              : monthlyRevenue.error 
+                ? "Failed to load" 
+                : `${monthlyRevenue.month} ${monthlyRevenue.year}`
+          }
           color="green"
           icon={<FaMoneyBillWave />}
         />

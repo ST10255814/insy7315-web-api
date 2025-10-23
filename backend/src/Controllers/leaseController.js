@@ -58,10 +58,22 @@ export const triggerGlobalStatusUpdate = async (req, res) => {
     }
 }
 
+export const countActiveLeasesByAdminId = async (req, res) => {
+    try {
+        const adminId = req.user.userId;
+        const count = await leaseService.countActiveLeasesByAdminId(adminId);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting active leases:", error);
+        res.status(500).json({ error: "Error counting active leases" });
+    }
+}
+
 const leaseController = {
     getAdminLeases,
     createLease,
     updateLeaseStatuses,
+    countActiveLeasesByAdminId,
     triggerGlobalStatusUpdate
 };
 

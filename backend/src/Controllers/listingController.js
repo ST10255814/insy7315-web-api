@@ -35,7 +35,21 @@ async function getListingsByAdminId(req, res) {
     }
 }
 
+async function countNumberOfListingsByAdminId(req, res) {
+    const id = req.user.userId;
+    console.log(`[countNumberOfListingsByAdminId] Entry: adminId="${id}"`);
+    try {
+        const count = await listingService.countNumberOfListingsByAdminId(id);
+        console.log(`[countNumberOfListingsByAdminId] Exit: Counted ${count} listings`);
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error(`[countNumberOfListingsByAdminId] Error: ${error.message}`);
+        res.status(400).json({ error: error.message });
+    }
+}
+
 export default {
     createListing,
-    getListingsByAdminId
+    getListingsByAdminId,
+    countNumberOfListingsByAdminId
 };
