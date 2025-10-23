@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 export default function Home() {
   const [offsetY, setOffsetY] = useState(0);
   const user = JSON.parse(localStorage.getItem("user"));
-  const userId = JSON.parse(localStorage.getItem("userId"))
+  const userId = JSON.parse(localStorage.getItem("userId"));
   const navigate = useNavigate();
 
   useEffect(() => {

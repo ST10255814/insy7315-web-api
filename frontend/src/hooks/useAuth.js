@@ -34,6 +34,7 @@ export function useAuth() {
       
       const userData = response.data.data.user;
       localStorage.setItem("user", JSON.stringify(userData.fullname));
+      localStorage.setItem("userId", JSON.stringify(userData._id));
       Toast.success(response.data.message);
       
       // Navigate to dashboard after a short delay
