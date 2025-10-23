@@ -8,6 +8,7 @@ async function createListing(data, adminId) {
         const db = client.db('RentWise');
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
+        const activityCollection = db.collection("User-Activity-Logs");
 
         const { title, address, description, imagesURL = [], price} = data;
 
@@ -60,8 +61,17 @@ async function createListing(data, adminId) {
             createdAt: new Date()
         };
 
+        const activityLog = {
+            action: 'Create Listing',
+            adminId: toObjectId(adminId),
+            detail: `Created listing ${listingId} with title "${title}"`,
+            timestamp: new Date()
+        };
+        await activityCollection.insertOne(activityLog);
+
         const result = await listingsCollection.insertOne(newListing);
         return { message: 'Listing created', listingId: result.insertedId };
+
   } catch (error) {
     throw new Error(`Error creating listing: ${error.message}`);
   }
@@ -82,5 +92,54 @@ async function getListingsByAdminId(adminId) {
   }
 }
 
-const listingService = { createListing, getListingsByAdminId };
+async function countNumberOfListingsByAdminId(adminId) {
+  try{
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const count = await listingsCollection.countDocuments({ "landlordInfo.userId": toObjectId(adminId) });
+    return count;
+  } catch (error) {
+    throw new Error(`Error counting listings: ${error.message}`);
+  }
+}
+
+async function countListingsAddedThisMonth(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    // Get current month and year
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-indexed (0 = January, 11 = December)
+
+    // Create start and end dates for current month
+    const startOfMonth = new Date(currentYear, currentMonth, 1);
+    const endOfMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999); // Last day of current month
+
+    console.log(`Counting listings added between ${startOfMonth} and ${endOfMonth} for admin ${adminId}`);
+
+    const count = await listingsCollection.countDocuments({ 
+      "landlordInfo.userId": toObjectId(adminId),
+      "createdAt": {
+        $gte: startOfMonth,
+        $lte: endOfMonth
+      }
+    });
+
+    console.log(`Found ${count} listings added this month for admin ${adminId}`);
+    return count;
+  } catch (error) {
+    console.error(`Error counting listings added this month: ${error.message}`);
+    throw new Error(`Error counting listings added this month: ${error.message}`);
+  }
+}
+
+const listingService = { 
+  createListing, 
+  getListingsByAdminId, 
+  countNumberOfListingsByAdminId, 
+  countListingsAddedThisMonth 
+};
 export default listingService;

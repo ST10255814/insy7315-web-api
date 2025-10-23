@@ -10,10 +10,12 @@ import {
   FaUsers,
   FaCheck,
   FaTimes,
+  FaDownload
 } from "react-icons/fa";
 import { formatDateUS, formatAmount } from "../utils/formatters";
 import { statusClasses } from "../constants/constants.js";
 import HoverActionButton from "../components/ui/HoverActionButton.jsx";
+import { downloadFiles } from "../utils/fileDownload.js";
 
 export default function BookingCard({ booking, onAction }) {
   // Use the utility function to format amount
@@ -21,16 +23,21 @@ export default function BookingCard({ booking, onAction }) {
 
   return (
     <motion.div
-      className="relative bg-white rounded-2xl shadow-lg p-5 flex flex-col justify-between overflow-hidden group cursor-pointer"
+      className="relative bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl p-5 flex flex-col justify-between overflow-hidden group cursor-pointer border border-white/20"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
+      whileHover={{ 
+        scale: 1.02, 
+        boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+        backgroundColor: "rgba(255,255,255,0.95)"
+      }}
     >
       {/* Card Info */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">Tenant:{" "}
-          {booking.tenantInfo.name}
+        <h4 className="font-bold text-blue-800 text-lg truncate">
+          Tenant: {booking.tenantInfo.name}
         </h4>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaEnvelope className="text-gray-400" /> Booking ID:{" "}
@@ -50,13 +57,20 @@ export default function BookingCard({ booking, onAction }) {
         </div>
         <div className="flex items-center text-gray-600 text-sm gap-2">
           <FaUsers className="text-gray-400" /> Guests:{" "}
-          <span className="font-medium">{booking.guests} • {booking.nights} night{booking.nights !== 1 ? 's' : ''}</span>
+          <span className="font-medium">
+            {booking.guests} • {booking.nights} night
+            {booking.nights !== 1 ? "s" : ""}
+          </span>
         </div>
-        <div className="flex items-center text-blue-700 text-md font-bold gap-2 mt-1">
-          <FaMoneyBillWave className="text-green-500" /> R{formattedAmount}
+        <div className="flex items-baseline text-blue-700 font-bold gap-1.5 mt-1">
+          <FaMoneyBillWave className="text-green-500 text-sm" />
+          <span className="text-lg">R{formattedAmount}</span>
+          <span className="text-xs text-gray-500 font-normal">/ per night</span>
         </div>
         {booking.specialRequests && (
-          <p className="text-gray-500 text-sm italic mt-1">Notes: {booking.specialRequests}</p>
+          <p className="text-gray-500 text-sm italic mt-1">
+            Notes: {booking.specialRequests}
+          </p>
         )}
         <span
           className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
@@ -83,17 +97,17 @@ export default function BookingCard({ booking, onAction }) {
         />
 
         <HoverActionButton
-          icon={<FaTrash size={18} />}
-          label="Delete"
-          onClick={() => onAction("Delete", booking)}
-          className="text-red-600 hover:bg-red-50"
-        />
-
-        <HoverActionButton
           icon={<FaEye size={18} />}
           label="View"
           onClick={() => onAction("View", booking)}
           className="text-yellow-600 hover:bg-yellow-50"
+        />
+
+        <HoverActionButton
+          icon={<FaTrash size={18} />}
+          label="Delete"
+          onClick={() => onAction("Delete", booking)}
+          className="text-red-600 hover:bg-red-50"
         />
 
         {/* Status-specific Buttons */}
@@ -114,6 +128,19 @@ export default function BookingCard({ booking, onAction }) {
           </>
         )}
       </motion.div>
+
+      {/* Bottom Right Corner Button */}
+      {booking.supportDocuments && booking.supportDocuments.length > 0 && (
+        <motion.button
+          className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => downloadFiles(booking.supportDocuments)}
+        >
+          <FaDownload size={12} />
+          <span className="text-xs font-medium">Download Attached Docs ({booking.supportDocuments.length})</span>
+        </motion.button>
+      )}
     </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaCreditCard,
@@ -35,7 +35,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/20 to-slate-100 text-gray-900 overflow-x-hidden">
       <section className="relative flex flex-col items-center justify-center text-center px-6 pt-36 pb-24 md:pt-40 md:pb-28 bg-blue-700 text-white overflow-hidden">
         <div
           className="absolute top-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full"
@@ -101,7 +101,10 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </section>
-      <section className="flex flex-col items-center text-center px-6 py-16 gap-10 bg-gray-50">
+      <section className="flex flex-col items-center text-center px-6 py-16 gap-10 bg-gradient-to-br from-slate-50/50 to-blue-50/30 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-0 left-0 w-40 h-40 bg-blue-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-100/15 rounded-full blur-2xl"></div>
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -156,7 +159,7 @@ export default function Home() {
                 boxShadow: "0 0 15px rgba(59,130,246,0.4)",
                 borderColor: "#3B82F6",
               }}
-              className="bg-gradient-to-br from-blue-50 to-white rounded-3xl shadow-md p-8 w-full border border-blue-100 transition-all duration-300 text-center"
+              className="bg-gradient-to-br from-white/80 via-blue-50/30 to-white/70 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 w-full border border-white/40 transition-all duration-300 text-center relative overflow-hidden"
             >
               {feature.icon}
               <h3 className="text-2xl font-semibold text-blue-700 mb-2">
@@ -167,7 +170,10 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="flex flex-col items-center text-center px-6 py-16 gap-10 bg-white">
+      <section className="flex flex-col items-center text-center px-6 py-16 gap-10 bg-gradient-to-br from-slate-50/50 to-blue-50/30 relative overflow-hidden backdrop-blur-sm">
+        {/* Background decorative elements */}
+        <div className="absolute top-1/3 left-1/4 w-28 h-28 bg-green-100/20 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-36 h-36 bg-orange-100/15 rounded-full blur-3xl"></div>
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -222,7 +228,7 @@ export default function Home() {
                 boxShadow: "0 0 15px rgba(59,130,246,0.4)",
                 borderColor: "#3B82F6",
               }}
-              className="bg-blue-50 rounded-3xl shadow-md p-6 w-full border border-blue-100 transition-all duration-300 text-center"
+              className="bg-gradient-to-br from-white/85 via-blue-50/40 to-white/75 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-6 w-full border border-white/40 transition-all duration-300 text-center relative overflow-hidden"
             >
               {step.icon}
               <h3 className="text-xl font-semibold text-blue-700 mb-2">
@@ -233,7 +239,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <footer className="w-full bg-white text-blue-700 text-center py-8 border-t border-blue-200">
+      <footer className="w-full bg-gradient-to-br from-slate-50/50 to-blue-50/30 backdrop-blur-sm text-blue-700 text-center py-8 border-t border-blue-200/50">
         <p className="mb-2 font-semibold">
           RentWise – Smart Rentals, Simple Management
         </p>

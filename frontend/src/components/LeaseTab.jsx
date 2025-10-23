@@ -20,7 +20,7 @@ export default function LeasesTab() {
     errors: { isBookingId: false },
   });
 
-  const { status, data: leases } = useLeasesQuery(adminId);
+  const { isLoading, isError, data: leases } = useLeasesQuery(adminId);
   const createLeaseMutation = useCreateLeaseMutation();
 
   // Add Lease Submit
@@ -55,21 +55,25 @@ export default function LeasesTab() {
   const handleLeaseAction = (action, lease) => {
     switch (action) {
       case "Edit":
+        //TODO: Implement edit functionality
         setSelectedLease(lease);
         setShowEditModal(true);
         break;
       case "Delete":
-        if (window.confirm("Are you sure you want to delete this lease?"))
-          console.log("Deleting", lease._id);
+        //TODO: Implement delete functionality
+        Toast.warning(`Deleting lease ${lease.leaseId}`);
         break;
       case "Activate":
-        console.log("Activating", lease._id);
+        //TODO: Implement activate functionality
+        Toast.info(`Activating lease ${lease.leaseId}`);
         break;
       case "Cancel":
-        console.log("Cancelling", lease._id);
+        //TODO: Implement cancel functionality
+        Toast.warning(`Cancelling lease ${lease.leaseId}`);
         break;
       case "Renew":
-        console.log("Renewing", lease._id);
+        //TODO: Implement renew functionality
+        Toast.info(`Renewing lease ${lease.leaseId}`);
         break;
       default:
         break;
@@ -78,13 +82,18 @@ export default function LeasesTab() {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto space-y-6 p-2 sm:p-6"
+      className="w-full space-y-6 relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-1/4 w-36 h-36 bg-gradient-to-br from-green-100/30 to-blue-100/20 rounded-full blur-3xl -z-10 animate-float"></div>
+      <div className="absolute bottom-1/4 right-1/3 w-28 h-28 bg-gradient-to-br from-purple-100/25 to-pink-100/15 rounded-full blur-2xl -z-10" style={{animationDelay: '3s'}}></div>
+      
       {/* Add Lease Button */}
-      <motion.button
+      <div className="flex justify-start">
+        <motion.button
         onClick={() => setShowAddModal(true)}
         whileHover={{
           scale: 1.07,
@@ -97,21 +106,22 @@ export default function LeasesTab() {
           damping: 18,
           mass: 0.8,
         }}
-        disabled={status === "pending"}
-        className="flex items-center justify-center gap-2 
-             bg-gradient-to-r from-blue-500 to-blue-600 
-             text-white px-6 py-3 rounded-2xl shadow-md 
-             font-semibold text-md 
-             hover:from-blue-600 hover:to-blue-700 
-             transition-all duration-300 ease-out
-             focus:outline-none focus:ring-4 focus:ring-blue-300"
+        disabled={isLoading}
+        className="flex items-center justify-center gap-2
+            bg-gradient-to-r from-blue-500 to-blue-600
+          text-white px-6 py-3 rounded-2xl shadow-md
+            font-semibold text-md
+          hover:from-blue-600 hover:to-blue-700
+            transition-all duration-300 ease-out
+            focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         <FaPlusCircle className="text-lg" />
         Add Lease
       </motion.button>
+      </div>
 
       {/* Lease Cards / Loading / Error */}
-      {status === "pending" && (
+      {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <LoadingSkeleton key={i} />
@@ -119,30 +129,42 @@ export default function LeasesTab() {
         </div>
       )}
 
-      {status === "error" && (
+      {isError && (
         <div className="text-red-600 font-semibold text-center mt-10">
           Failed to load leases. Please try again.
         </div>
       )}
 
-      {status === "success" && leases?.length === 0 && (
+      {leases && leases?.length === 0 && (
         <div className="text-gray-500 text-center mt-10 font-medium">
           No leases found. Add a new lease to get started.
         </div>
       )}
 
-      {status === "success" && leases?.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {leases && leases?.length > 0 && (
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <AnimatePresence>
-            {leases.map((lease) => (
-              <LeaseCard
-                key={lease._id}
-                lease={lease}
-                onAction={handleLeaseAction}
-              />
+            {leases.map((lease, index) => (
+              <motion.div
+                key={lease.leaseId}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <LeaseCard
+                  lease={lease}
+                  onAction={handleLeaseAction}
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
 
       {/* Add Lease Modal */}
@@ -164,7 +186,6 @@ export default function LeasesTab() {
         }}
         lease={selectedLease}
         onSubmit={handleEditSubmit}
-        //isPending={updateLeaseMutation.isPending}
         setSelectedLease={setSelectedLease}
       />
     </motion.div>

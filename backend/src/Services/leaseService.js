@@ -81,6 +81,7 @@ async function createLease(bookingID, adminId) {
     const listingCollection = db.collection("Listings");
     const userCollection = db.collection('System-Users');
     const leasesCollection = db.collection("Leases");
+    const activityCollection = db.collection("User-Activity-Logs");
 
     // Verify booking exists
     const booking = await bookingsCollection.findOne({ "newBooking.bookingId": bookingID });
@@ -136,6 +137,14 @@ async function createLease(bookingID, adminId) {
         status: "Pending",
         leaseCreatedAt: new Date()
     };
+
+    const activityLog = {
+        action: 'Create Lease',
+        adminId: toObjectId(adminId),
+        detail: `Created lease ${leaseId} for booking ${bookingID}`,
+        timestamp: new Date()
+    };
+    await activityCollection.insertOne(activityLog);
 
     const result = await leasesCollection.insertOne(lease);
     return leaseId;
@@ -243,14 +252,60 @@ async function updateAllLeaseStatuses() {
   }
 }
 
+//get total active leases for adminId
+async function countActiveLeasesByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+
+    const count = await leasesCollection.countDocuments({ 
+      adminId: toObjectId(adminId),
+      status: "Active"
+    });
+
+    return count;
+  } catch (error) {
+    console.error(`Error counting active leases for adminId=${adminId}:`, error);
+    throw error;
+  }
+}
+
+//get % of admin owned properties that are currently leased
+async function getLeasedPropertyPercentage(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+    const listingsCollection = db.collection("Listings");
+
+    const totalProperties = await listingsCollection.countDocuments({ "landlordInfo.userId": toObjectId(adminId) });
+    if (totalProperties === 0) {
+      return 0; // Avoid division by zero
+    }
+
+    //count leases that are active
+    const activeLeases = await leasesCollection.countDocuments({ 
+      adminId: toObjectId(adminId),
+      status: "Active"
+    });
+
+    const percentage = (activeLeases / totalProperties) * 100;
+    return percentage;
+  } catch (error) {
+    console.error(`Error calculating leased property percentage for adminId=${adminId}:`, error);
+    throw error;
+  }
+}
+
 const leaseService = {
     getLeasesByAdminId,
     createLease,
     generateLeaseId,
     generateBookingId,
+    countActiveLeasesByAdminId,
     validateDate,
     updateLeaseStatusesByAdmin,
-    updateAllLeaseStatuses
+    updateAllLeaseStatuses,
+    getLeasedPropertyPercentage
 };
 
 export default leaseService;

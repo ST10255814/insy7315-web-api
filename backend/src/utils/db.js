@@ -2,7 +2,13 @@ import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const connString = process.env.MONGO_URI;
+const connString = process.env.MONGO_URI || 'mongodb://localhost:27017/test-rentwise';
+
+// Handle undefined connection string gracefully
+if (!connString || connString === 'undefined') {
+    console.warn('MONGO_URI is not defined. Using default test database connection.');
+}
+
 const client = new MongoClient(connString, {
 });
 

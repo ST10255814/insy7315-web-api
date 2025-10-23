@@ -1,4 +1,4 @@
-// Animation layout when loading leases
+// Animation layout when loading data
 export default function LoadingSkeleton() {
   return (
     <div className="relative bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between overflow-hidden z-50">

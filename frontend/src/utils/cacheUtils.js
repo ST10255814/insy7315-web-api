@@ -77,3 +77,30 @@ export function invalidateEntityQueries(queryClient, entity, filters = {}) {
     ...filters
   });
 }
+
+/**
+ * Invalidate all overview dashboard statistics queries
+ * Call this whenever data changes that affects the overview stats
+ * @param {QueryClient} queryClient - React Query client
+ */
+export function invalidateOverviewQueries(queryClient) {
+  // Invalidate all overview statistics
+  const overviewQueries = [
+    "monthlyRevenue",
+    "totalPropertiesCount", 
+    "monthlyPropertiesCount",
+    "activeLeasesCount",
+    "leasedPercentage", 
+    "maintenanceCount",
+    "highPriorityMaintenanceCount",
+    "recentActivities", 
+    "revenueTrend"
+  ];
+
+  overviewQueries.forEach(queryKey => {
+    queryClient.invalidateQueries({
+      queryKey: [queryKey],
+      exact: false
+    });
+  });
+}

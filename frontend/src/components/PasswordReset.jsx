@@ -71,24 +71,29 @@ export default function PasswordReset() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#EFF6FF] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 p-4 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-200/25 to-purple-200/15 rounded-full blur-3xl animate-float"></div>
+      <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-br from-blue-100/30 to-cyan-100/20 rounded-full blur-3xl" style={{animationDelay: '1.5s'}}></div>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="backdrop-blur-md bg-white/80 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center"
+        className="backdrop-blur-lg bg-white/85 rounded-3xl shadow-2xl border border-white/30 p-8 w-full max-w-sm text-center relative z-10"
       >
-        <h1 className="text-2xl font-bold text-blue-700 mb-2">
+        {/* Subtle card background gradient */}
+        <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-100/20 to-transparent rounded-full blur-2xl"></div>
+        <h1 className="text-2xl font-bold text-blue-700 mb-2 relative z-10">
           {formData.success ? "Password Reset Successful!" : "Reset Your Password"}
         </h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 mb-6 relative z-10">
           {formData.success
             ? "Your password has been updated. You can now log in with your new password."
             : "Enter your new password below and confirm it to reset your account password."}
         </p>
 
         {!formData.success && (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left relative z-10">
             {/* Password */}
             <div className="flex flex-col gap-1 w-full">
               <label className="block text-blue-700 font-semibold mb-1">New Password</label>

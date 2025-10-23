@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -95,13 +95,10 @@ export default function Login() {
         prefLogin: formData.prefLogin,
         password: formData.password,
       });
+      const userData = response.data.data.user;
       localStorage.setItem(
         "user",
-        JSON.stringify(response.data.user.firstName + " " + response.data.user.surname)
-      );
-      localStorage.setItem(
-        "userId",
-        JSON.stringify(response.data.user._id)
+        JSON.stringify(userData.fullname)
       );
       Toast.success(response.data.message);
 
@@ -115,7 +112,7 @@ export default function Login() {
         errors: {},
       });
       // Navigate to dashboard
-      setTimeout(() => navigate(`/dashboard/${response.data.user._id}`), 500);
+      setTimeout(() => navigate(`/dashboard/${userData._id}`), 500);
     } catch (error) {
       const errorMsg = error.response?.data?.error || "Login failed";
       console.log("Login error:", errorMsg);
@@ -138,15 +135,20 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center bg-[#EFF6FF] overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('https://images.unsplash.com/photo-1601597114581-42f0b6e1a7f8?auto=format&fit=crop&w=1950&q=80')`,
-        backgroundAttachment: "fixed",
-        backgroundSize: "cover",
-        backgroundPositionY: offsetY * 0.5,
-      }}
-    >
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 overflow-hidden">
+      {/* Background decorative elements */}
+      <div 
+        className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200/30 to-purple-200/20 rounded-full blur-3xl animate-float"
+        style={{ transform: `translateY(${offsetY * 0.3}px)` }}
+      ></div>
+      <div 
+        className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-100/40 to-cyan-100/30 rounded-full blur-3xl"
+        style={{ transform: `translateY(-${offsetY * 0.2}px)` }}
+      ></div>
+      <div 
+        className="absolute top-1/2 left-1/3 w-40 h-40 bg-gradient-to-br from-purple-100/25 to-pink-100/15 rounded-full blur-2xl animate-float"
+        style={{ animationDelay: '2s', transform: `translateY(${offsetY * 0.1}px)` }}
+      ></div>
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.95 }}
         animate={
@@ -155,21 +157,33 @@ export default function Login() {
             : { opacity: 1, y: 0, scale: 1 }
         }
         transition={{ duration: 1 }}
-        className="backdrop-blur-md bg-white/70 rounded-2xl shadow-2xl p-8 w-[90%] sm:w-[400px] text-center"
+        className="backdrop-blur-lg bg-white/85 rounded-3xl shadow-2xl border border-white/30 p-4 sm:p-6 w-[90%] sm:w-[380px] text-center relative z-10"
       >
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-3xl font-bold text-blue-700 mb-6"
-        >
-          Welcome Back!
-        </motion.h1>
+        {/* Subtle card background gradient */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100/20 to-transparent rounded-full blur-2xl"></div>
+        <div className="mb-4 relative z-10">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-2xl sm:text-3xl font-bold text-blue-700"
+          >
+            Welcome Back!
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-xs sm:text-sm text-gray-600 mt-1"
+          >
+            Sign in to access your RentWise dashboard
+          </motion.p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left relative z-10">
           {/* Email */}
           <div>
-            <label className="block text-blue-700 font-semibold mb-1">
+            <label className="block text-blue-700 font-semibold mb-1 text-sm">
               Email or Username
             </label>
             <motion.input
@@ -178,7 +192,7 @@ export default function Login() {
               value={formData.prefLogin}
               onChange={handleChange}
               placeholder="Enter your email or username..."
-              className={`w-full p-3 border rounded-xl outline-none shadow-sm transition
+              className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm
                 ${
                   formData.errors.prefLogin && !formData.prefLogin
                     ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
@@ -201,7 +215,7 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col gap-1 w-full">
-            <label className="block text-blue-700 font-semibold mb-1">
+            <label className="block text-blue-700 font-semibold mb-1 text-sm">
               Password
             </label>
             <div className="relative w-full">
@@ -211,14 +225,14 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password..."
-                className={`w-full p-3 pr-10 border rounded-xl outline-none shadow-sm transition
+                className={`w-full px-3 py-2.5 pr-10 border rounded-xl outline-none shadow-sm transition text-sm
                     ${
                       formData.errors.password && !formData.password
                         ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
                         : "border-gray-300 focus:ring-2 focus:ring-blue-700"
                     }`}
                 disabled={formData.isLoading}
-                style={{ minHeight: "48px" }}
+                style={{ minHeight: "42px" }}
               />
 
               {/* Eye Icon */}
@@ -262,7 +276,7 @@ export default function Login() {
             transition={{ duration: 0.1, ease: "easeInOut" }}
             type="submit"
             disabled={formData.isLoading}
-            className={`mt-4 font-semibold py-3 rounded-xl shadow-md transition-colors duration-150 text-white ${
+            className={`mt-3 font-semibold py-2.5 rounded-xl shadow-md transition-colors duration-150 text-white text-sm ${
               formData.isLoading
                 ? "bg-blue-800/70 cursor-not-allowed"
                 : "bg-blue-700"
@@ -294,11 +308,11 @@ export default function Login() {
         <motion.div
           whileHover={{ scale: 1.03 }}
           transition={{ duration: 0.1 }}
-          className="text-center mt-4"
+          className="text-center mt-3"
         >
           <button
             onClick={handleEmailSending}
-            className="text-sm text-blue-700 hover:text-blue-800 hover:underline transition-all duration-100 bg-transparent border-none cursor-pointer"
+            className="text-xs sm:text-sm text-blue-700 hover:text-blue-800 hover:underline transition-all duration-100 bg-transparent border-none cursor-pointer"
           >
             Forgot Password?
           </button>
@@ -309,10 +323,10 @@ export default function Login() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-6 text-blue-700"
+          className="mt-4 text-blue-700"
         >
-          <p>
-            Don’t have an account?{" "}
+          <p className="text-xs sm:text-sm">
+            Don't have an account?{" "}
             <motion.span
               whileHover={{ scale: 1.05, color: "#1E40AF" }}
               transition={{ duration: 0.1 }}

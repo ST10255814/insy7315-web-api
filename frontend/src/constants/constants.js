@@ -1,4 +1,3 @@
-import React from "react";
 import { FaPlay, FaTimes } from "react-icons/fa";
 
 /**
@@ -79,3 +78,15 @@ export const maintenanceStatusMap = {
   "In Progress": { label: "In Progress", color: "text-yellow-600" },
   Completed: { label: "Completed", color: "text-green-600" },
 };
+
+// Maintenance request statuses
+export const statuses = ["Pending", "In Progress", "Completed"];
+
+/**
+ * Date and number formatting utilities
+ */
+
+export const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Regex pattern to match DD-MM-YYYY format
+export const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;

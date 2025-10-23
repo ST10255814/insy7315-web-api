@@ -123,12 +123,19 @@ describe('UserService', () => {
         role: 'landlord'
       };
 
-      const mockCollection = {
+      const mockUserCollection = {
         findOne: jest.fn().mockResolvedValue(mockUser)
       };
 
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ insertedId: 'activity123' })
+      };
+
       const mockDb = {
-        collection: jest.fn().mockReturnValue(mockCollection)
+        collection: jest.fn((collectionName) => {
+          if (collectionName === 'System-Users') return mockUserCollection;
+          if (collectionName === 'User-Activity-Logs') return mockActivityCollection;
+        })
       };
 
       const { client } = await import('../src/utils/db.js');

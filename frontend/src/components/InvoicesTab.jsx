@@ -25,12 +25,15 @@ export default function InvoicesTab() {
   const handleInvoiceAction = (action, invoice) => {
     switch (action) {
       case "Edit":
+        //TODO: Implement edit functionality
         Toast.info(`Editing ${invoice.invoiceId}`);
         break;
       case "Delete":
-        Toast.info(`Deleting ${invoice.invoiceId}`);
+        //TODO: Implement delete functionality
+        Toast.warning(`Deleting ${invoice.invoiceId}`);
         break;
       case "View":
+        //TODO: Implement view functionality
         Toast.info(`Viewing details for ${invoice.invoiceId}`);
         break;
       default:
@@ -49,13 +52,18 @@ export default function InvoicesTab() {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto space-y-6 p-2 sm:p-6"
+      className="w-full space-y-6 relative"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-1/4 w-32 h-32 bg-gradient-to-br from-blue-100/30 to-purple-100/20 rounded-full blur-3xl -z-10 animate-float"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-28 h-28 bg-gradient-to-br from-green-100/25 to-blue-100/15 rounded-full blur-2xl -z-10" style={{animationDelay: '3s'}}></div>
+      
       {/* Add Invoice Button */}
-      <motion.button
+      <div className="flex justify-start">
+        <motion.button
         onClick={() => setShowAddModal(true)}
         whileHover={{
           scale: 1.07,
@@ -80,6 +88,7 @@ export default function InvoicesTab() {
         <FaPlusCircle className="text-lg" />
         Add Invoice
       </motion.button>
+      </div>
 
       {/* Lease Cards / Loading / Error */}
       {isLoading && (
@@ -102,18 +111,30 @@ export default function InvoicesTab() {
         </div>
       )}
 
-      {!isLoading && invoices.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {!isLoading && !isError&& invoices.length > 0 && (
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <AnimatePresence>
-            {invoices.map((invoice) => (
-              <InvoiceCard
+            {invoices.map((invoice, index) => (
+              <motion.div
                 key={invoice.invoiceId}
-                invoice={invoice}
-                onAction={handleInvoiceAction}
-              />
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <InvoiceCard
+                  invoice={invoice}
+                  onAction={handleInvoiceAction}
+                />
+              </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
 
       {/* Add Invoice Modal */}

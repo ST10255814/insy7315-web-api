@@ -1,68 +1,118 @@
 import leaseService from '../Services/leaseService.js';
+import { sendSuccess, sendError, sendCreated, sendBadRequest } from '../utils/responseHandler.js';
+import { asyncHandler, getAdminId, validateRequiredFields, logControllerAction } from '../utils/controllerHelpers.js';
 
-export const getAdminLeases = async (req, res) => {
-    try {
-        const adminId = req.user.userId;
-        console.log(`Fetching leases for admin: ${adminId}`);
-        
-        if (!adminId) {
-            return res.status(400).json({ error: "Admin ID not found in request" });
-        }
-        
-        const leases = await leaseService.getLeasesByAdminId(adminId);
-        console.log(`Successfully fetched ${leases.length} leases for admin ${adminId}`);
-        res.status(200).json(leases);
-    }
-    catch (err) {
-        console.error("Error in getAdminLeases controller:", err);
-        res.status(500).json({ error: err.message });
-    }
-}
+/**
+ * Get all leases for the authenticated admin
+ */
+export const getAdminLeases = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Fetch Admin Leases', adminId);
+    
+    const leases = await leaseService.getLeasesByAdminId(adminId);
+    
+    console.log(`Successfully fetched ${leases.length} leases for admin ${adminId}`);
+    sendSuccess(res, leases, `Successfully fetched ${leases.length} leases`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
 
-export const createLease = async (req, res) => {
-    try{
-        const { bookingID } = req.body;
-        const adminId = req.user.userId;
-        const leaseId = await leaseService.createLease(bookingID, adminId);
-        res.status(201).json({ leaseId });
-    }catch(error){
-        console.error("Error creating lease:", error);
-        res.status(500).json({ error: "Error creating lease" });
-    }
-}
+/**
+ * Create a new lease from a booking
+ */
+export const createLease = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    // Validate required fields
+    validateRequiredFields(req.body, ['bookingID']);
+    
+    const { bookingID } = req.body;
+    
+    logControllerAction('Create Lease', adminId, { bookingID });
+    
+    const leaseId = await leaseService.createLease(bookingID, adminId);
+    
+    sendCreated(res, { leaseId }, 'Lease created successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
 
-export const updateLeaseStatuses = async (req, res) => {
-    try {
-        const adminId = req.user.userId;
-        const updatedCount = await leaseService.updateLeaseStatusesByAdmin(adminId);
-        res.status(200).json({ 
-            message: `Updated ${updatedCount} lease statuses`,
-            updatedCount 
-        });
-    } catch (error) {
-        console.error("Error updating lease statuses:", error);
-        res.status(500).json({ error: "Error updating lease statuses" });
-    }
-}
+/**
+ * Update lease statuses for a specific admin
+ */
+export const updateLeaseStatuses = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Update Lease Statuses', adminId);
+    
+    const updatedCount = await leaseService.updateLeaseStatusesByAdmin(adminId);
+    
+    sendSuccess(res, { updatedCount }, `Updated ${updatedCount} lease statuses`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
 
-export const triggerGlobalStatusUpdate = async (req, res) => {
-    try {
-        const updatedCount = await leaseService.updateAllLeaseStatuses();
-        res.status(200).json({ 
-            message: `Global status update completed. Updated ${updatedCount} leases`,
-            updatedCount 
-        });
-    } catch (error) {
-        console.error("Error triggering global status update:", error);
-        res.status(500).json({ error: "Error triggering global status update" });
-    }
-}
+/**
+ * Trigger global lease status update (admin only)
+ */
+export const triggerGlobalStatusUpdate = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Global Status Update', adminId);
+    
+    const updatedCount = await leaseService.updateAllLeaseStatuses();
+    
+    sendSuccess(res, { updatedCount }, `Global status update completed. Updated ${updatedCount} leases`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
+ * Count active leases for the authenticated admin
+ */
+export const countActiveLeasesByAdminId = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    const count = await leaseService.countActiveLeasesByAdminId(adminId);
+    
+    sendSuccess(res, { count }, 'Active leases count retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
+ * Get leased property percentage for the authenticated admin
+ */
+export const getLeasedPropertyPercentage = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    
+    const percentage = await leaseService.getLeasedPropertyPercentage(adminId);
+    
+    sendSuccess(res, { percentage }, 'Leased property percentage retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
 
 const leaseController = {
     getAdminLeases,
     createLease,
     updateLeaseStatuses,
-    triggerGlobalStatusUpdate
+    countActiveLeasesByAdminId,
+    triggerGlobalStatusUpdate,
+    getLeasedPropertyPercentage
 };
 
 export default leaseController;

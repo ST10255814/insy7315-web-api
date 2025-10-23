@@ -1,8 +1,4 @@
-/**
- * Date and number formatting utilities
- */
-
-const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+import { monthsShort, ddmmyyyyPattern } from "../constants/constants";
 
 /**
  * Format date string to DD-MMM-YYYY format
@@ -10,10 +6,7 @@ const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
  */
 export const formatDate = (dateStr) => {
   if (!dateStr) return "";
-  
-  // Check if the date is in DD-MM-YYYY format
-  const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
-  
+
   let d;
   if (ddmmyyyyPattern.test(dateStr)) {
     // Parse DD-MM-YYYY format manually
@@ -39,6 +32,28 @@ export const formatDate = (dateStr) => {
 export const formatDateUS = (dateStr) => {
   if (!dateStr) return "";
   
+  let d;
+  if (ddmmyyyyPattern.test(dateStr)) {
+    // Parse DD-MM-YYYY format manually
+    const [day, month, year] = dateStr.split('-').map(Number);
+    d = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+  } else {
+    // Use default Date parsing for other formats
+    d = new Date(dateStr);
+  }
+  
+  if (isNaN(d)) return "";
+  
+  return d.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+};
+
+export const formatDateTimeUS = (dateStr) => {
+  if (!dateStr) return "";
+  
   // Check if the date is in DD-MM-YYYY format
   const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
   
@@ -58,6 +73,10 @@ export const formatDateUS = (dateStr) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
   });
 };
 

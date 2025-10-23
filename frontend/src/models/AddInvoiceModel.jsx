@@ -82,10 +82,13 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
             transition={{ duration: 0.3, type: "spring" }}
             className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md border border-gray-200"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-blue-800">Add New Invoice</h3>
-              <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors">
-                <FaTimes />
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold text-blue-800">Add New Invoice</h3>
+                <p className="text-sm text-gray-600 mt-1">Create an invoice for an existing lease</p>
+              </div>
+              <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors ml-4">
+                <FaTimes size={18} />
               </button>
             </div>
 
