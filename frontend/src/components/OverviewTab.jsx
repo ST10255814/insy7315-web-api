@@ -1,6 +1,4 @@
-import React from "react";
 import { motion } from "framer-motion";
-
 import StatsCardContainer from "./overview/StatsCardContainer";
 import ActivityFeed from "./overview/ActivityFeed";
 import ChartContainer from "./overview/ChartContainer";
