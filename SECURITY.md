@@ -59,7 +59,7 @@ npm run security:full
 
 ### GitHub Actions
 The security pipeline runs automatically on:
-- Push to `main`, `pipeline`, or `develop` branches
+- Push to `main` branches
 - Pull requests to `main`
 - Weekly scheduled scans (Mondays at 6 AM UTC)
 - Manual workflow dispatch
