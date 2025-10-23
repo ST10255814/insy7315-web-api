@@ -1,5 +1,5 @@
-import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 import Toast from "../lib/toast.js";
 import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "./leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
@@ -260,7 +260,7 @@ export const useRecentActivitiesQuery = (adminId) => {
 export const useInvalidateOverview = () => {
   const queryClient = useQueryClient();
   
-  return React.useCallback(() => {
+  return useCallback(() => {
     invalidateOverviewQueries(queryClient);
   }, [queryClient]);
 };

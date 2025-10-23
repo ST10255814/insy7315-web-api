@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useRecentActivitiesQuery } from "../../utils/queries";
 import { getActivityColor, formatActivityTime } from "../../utils/activityHelpers";
@@ -9,7 +9,7 @@ export default function ActivityFeed() {
   const { data: activities, isLoading, isError } = useRecentActivitiesQuery(adminId);
 
   // Generate activity items based on the query state
-  const activityItems = React.useMemo(() => {
+  const activityItems = useMemo(() => {
     if (isLoading) {
       return [
         {

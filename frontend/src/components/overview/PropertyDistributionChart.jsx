@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
@@ -8,7 +8,7 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
 export default function PropertyDistributionChart() {
     // Property Distribution Pie Chart Data
-    const propertyData = React.useMemo(() => ({
+    const propertyData = useMemo(() => ({
         labels: ["Occupied", "Vacant", "Under Repair", "Reserved"],
         datasets: [
             {
@@ -31,7 +31,7 @@ export default function PropertyDistributionChart() {
     );
 
     // Property Chart Options
-    const propertyOptions = React.useMemo(
+    const propertyOptions = useMemo(
         () => ({
         responsive: true,
         plugins: {

@@ -3,7 +3,7 @@
  * Provides a mobile-responsive refresh button for the overview dashboard
  */
 
-import React from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaSyncAlt } from "react-icons/fa";
 import { useInvalidateOverview } from "../../utils/queries";
@@ -12,7 +12,7 @@ import Toast from "../../lib/toast";
 // Mobile-responsive refresh button component
 export const OverviewRefreshButton = () => {
   const invalidateOverview = useInvalidateOverview();
-  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

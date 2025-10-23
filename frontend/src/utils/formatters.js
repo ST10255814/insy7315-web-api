@@ -54,9 +54,6 @@ export const formatDateUS = (dateStr) => {
 export const formatDateTimeUS = (dateStr) => {
   if (!dateStr) return "";
   
-  // Check if the date is in DD-MM-YYYY format
-  const ddmmyyyyPattern = /^\d{2}-\d{2}-\d{4}$/;
-  
   let d;
   if (ddmmyyyyPattern.test(dateStr)) {
     // Parse DD-MM-YYYY format manually
@@ -90,10 +87,3 @@ export const formatAmount = (value, locale = "en-US") => {
   return Number.isFinite(num) ? num.toLocaleString(locale) : String(raw);
 };
 
-/**
- * Parse amount from string to number
- */
-export const parseAmount = (value) => {
-  if (typeof value === "number") return value;
-  return Number(String(value).replace(/[^0-9.-]+/g, ""));
-};

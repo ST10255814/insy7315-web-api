@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Line } from "react-chartjs-2";
 import {
@@ -40,7 +40,7 @@ export default function RevenueChart() {
   } = useRevenueTrendQuery(adminId);
 
   // Revenue Line Chart Data
-  const revenueData = React.useMemo(() => {
+  const revenueData = useMemo(() => {
     if (!revenueTrend || revenueTrend.length === 0) {
       return {
         labels: [],
@@ -90,7 +90,7 @@ export default function RevenueChart() {
   }, [revenueTrend]);
 
   // Revenue Chart Options
-  const revenueOptions = React.useMemo(
+  const revenueOptions = useMemo(
     () => ({
       responsive: true,
       maintainAspectRatio: false,

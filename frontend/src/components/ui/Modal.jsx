@@ -1,10 +1,9 @@
-import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 
 /**
  * Reusable modal wrapper component
- * 
+ *
  * @param {Object} props
  * @param {boolean} props.show - Whether the modal is visible
  * @param {Function} props.onClose - Function to call when modal should close
@@ -14,18 +13,18 @@ import { FaTimes } from "react-icons/fa";
  * @param {string} props.size - Modal size ('sm', 'md', 'lg', 'xl')
  * @param {boolean} props.closeOnBackdrop - Whether clicking backdrop closes modal
  */
-export default function Modal({ 
-  show, 
-  onClose, 
-  title, 
-  children, 
+export default function Modal({
+  show,
+  onClose,
+  title,
+  children,
   isPending = false,
   size = "md",
   closeOnBackdrop = true
 }) {
   const sizeClasses = {
     sm: "max-w-md",
-    md: "max-w-lg", 
+    md: "max-w-lg",
     lg: "max-w-2xl",
     xl: "max-w-4xl"
   };

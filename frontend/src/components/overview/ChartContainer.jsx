@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import RevenueChart from "./RevenueChart";
 import PropertyDistributionChart from "./PropertyDistributionChart";
