@@ -73,136 +73,16 @@ app.use(cors({
 // Connect to MongoDB
 mongoConnection();
 
-//controller declarations
-import userController from './Controllers/userController.js';
-import leaseController from './Controllers/leaseController.js';
-import invoiceController from './Controllers/invoiceController.js';
-import listingController from './Controllers/listingController.js';
-import bookingController from './Controllers/bookingController.js';
-import maintenanceController from './Controllers/maintenanceController.js';
-import activityController from './Controllers/activityController.js';
-import revenueController from './Controllers/revenueController.js';
-
-// Arcjet middleware import
-import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
+// Import organized routes
+import apiRoutes from './routes/index.js';
 
 // Test route
 app.get('/', (_, res) => {
   res.json({ message: 'API is running!' });
 });
 
-//user routes
-app.post('/api/user/login', arcjetMiddleware, userController.login);
-app.post('/api/user/register', arcjetMiddleware, userController.register);
-app.post('/api/user/logout', userController.logout);
-app.post('/api/user/forgot-password', arcjetMiddleware, userController.resetPassword);
-
-//lease routes
-app.get('/api/leases', checkAuth, leaseController.getAdminLeases);
-app.post('/api/leases/create', checkAuth, leaseController.createLease);
-app.get('/api/leases/count', checkAuth, leaseController.countActiveLeasesByAdminId);
-app.get('/api/leases/leased-percentage', checkAuth, leaseController.getLeasedPropertyPercentage);
-
-//invoice routes
-app.post('/api/invoices/create', checkAuth, invoiceController.createInvoice);
-app.get('/api/invoices', checkAuth, invoiceController.getInvoicesByAdminId);
-app.get('/api/invoices/stats', checkAuth, invoiceController.getInvoiceStats);
-app.patch('/api/invoices/:invoiceId/pay', checkAuth, invoiceController.markInvoiceAsPaid);
-app.post('/api/invoices/regenerate-descriptions', checkAuth, invoiceController.regenerateInvoiceDescriptions);
-
-//listing routes
-app.post('/api/listings/create', checkAuth, upload.array('imageURL', 10), listingController.createListing);
-app.get('/api/listings', checkAuth, listingController.getListingsByAdminId);
-app.get('/api/listings/count', checkAuth, listingController.countNumberOfListingsByAdminId);
-app.get('/api/listings/count-this-month', checkAuth, listingController.countListingsAddedThisMonth);
-
-//booking routes
-app.get('/api/bookings', checkAuth, bookingController.getBookings);
-app.get('/api/bookings/current-month-revenue', checkAuth, bookingController.getCurrentMonthRevenue);
-
-//maintenance routes
-app.get('/api/maintenance', checkAuth, maintenanceController.getAllMaintenanceRequests);
-app.get('/api/maintenance/count', checkAuth, maintenanceController.countMaintenanceRequestsByAdminId);
-app.get('/api/maintenance/count-high-priority', checkAuth, maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);
-
-//activity routes
-app.get('/api/activity-logs', checkAuth, activityController.getRecentActivities);
-
-//revenue routes
-app.get('/api/revenue/monthly', checkAuth, revenueController.getMonthlyRevenue);
-app.get('/api/revenue/trend', checkAuth, revenueController.getRevenueTrend);
-app.get('/api/revenue/current-month', checkAuth, revenueController.getCurrentMonthRevenue);
-app.get('/api/revenue/summary', checkAuth, revenueController.getRevenueSummary);
-app.post('/api/revenue/calculate', checkAuth, revenueController.calculateRevenue);
-
-// Test endpoint for revenue system (remove in production)
-app.get('/api/revenue/test-calculation', checkAuth, async (req, res) => {
-  try {
-    const { manualRevenueCalculation } = await import('./Schedule_Updates/scheduledTasks.js');
-    const currentDate = new Date();
-    const testMonth = currentDate.getMonth() || 12; // Previous month
-    const testYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
-    
-    const results = await manualRevenueCalculation(testMonth, testYear);
-    res.json({
-      success: true,
-      message: `Test revenue calculation completed for ${testMonth}/${testYear}`,
-      data: results
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Test revenue calculation failed',
-      error: error.message
-    });
-  }
-});
-
-// Test endpoint for historical revenue calculation (remove in production)
-app.get('/api/revenue/calculate-historical', checkAuth, async (req, res) => {
-  try {
-    const { calculateHistoricalRevenue } = await import('./Schedule_Updates/scheduledTasks.js');
-    
-    console.log('API: Starting historical revenue calculation...');
-    const results = await calculateHistoricalRevenue();
-    
-    res.json({
-      success: true,
-      message: 'Historical revenue calculation completed successfully',
-      data: results
-    });
-  } catch (error) {
-    console.error('API: Historical revenue calculation failed:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Historical revenue calculation failed',
-      error: error.message
-    });
-  }
-});
-
-// Test endpoint for cleaning up zero-revenue records (remove in production)
-app.get('/api/revenue/cleanup-zero-records', checkAuth, async (req, res) => {
-  try {
-    const { cleanupZeroRevenueRecords } = await import('./Schedule_Updates/scheduledTasks.js');
-    
-    console.log('API: Starting zero-revenue records cleanup...');
-    const deletedCount = await cleanupZeroRevenueRecords();
-    
-    res.json({
-      success: true,
-      message: `Successfully removed ${deletedCount} zero-revenue records`,
-      deletedCount: deletedCount
-    });
-  } catch (error) {
-    console.error('API: Zero-revenue cleanup failed:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Zero-revenue cleanup failed',
-      error: error.message
-    });
-  }
-});
+// Mount all API routes
+app.use('/api', apiRoutes);
 
 
 // Start server

@@ -1,74 +1,96 @@
 import invoiceService from "../Services/invoiceService.js";
+import { sendSuccess, sendError, sendCreated, sendBadRequest, sendNotFound } from '../utils/responseHandler.js';
+import { asyncHandler, getAdminId, validateRequiredFields, logControllerAction } from '../utils/controllerHelpers.js';
 
-// Controller to handle invoice creation
-async function createInvoice(req, res) {
-  try {
-    const adminId = req.user.userId; // Get admin ID from the authenticated user
-    const invoiceId = await invoiceService.createInvoice(adminId, req.body);
-    res.status(201).json({ invoiceId });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+/**
+ * Controller to handle invoice creation
+ */
+const createInvoice = asyncHandler(async (req, res) => {
+  const adminId = getAdminId(req);
+  
+  // Validate required fields
+  validateRequiredFields(req.body, ['leaseId', 'date', 'amount']);
+  
+  logControllerAction('Create Invoice', adminId, { 
+    leaseId: req.body.leaseId,
+    amount: req.body.amount 
+  });
+  
+  const invoiceId = await invoiceService.createInvoice(adminId, req.body);
+  
+  sendCreated(res, { invoiceId }, 'Invoice created successfully');
+});
+
+/**
+ * Controller to handle fetching invoices by admin ID
+ */
+const getInvoicesByAdminId = asyncHandler(async (req, res) => {
+  const adminId = getAdminId(req);
+  
+  logControllerAction('Fetch Admin Invoices', adminId);
+  
+  const invoices = await invoiceService.getInvoicesByAdminId(adminId);
+  
+  sendSuccess(res, { invoices }, `Successfully fetched ${invoices.length} invoices`);
+});
+
+/**
+ * Controller to handle marking an invoice as paid
+ */
+const markInvoiceAsPaid = asyncHandler(async (req, res) => {
+  const adminId = getAdminId(req);
+  const { invoiceId } = req.params;
+  
+  // Validate invoice ID parameter
+  if (!invoiceId) {
+    return sendBadRequest(res, "Invoice ID is required");
   }
-}
-
-// Controller to handle fetching invoices by admin ID
-async function getInvoicesByAdminId(req, res) {
-  try {
-    const adminId = req.user.userId; // Get admin ID from the authenticated user
-    const invoices = await invoiceService.getInvoicesByAdminId(adminId);
-    res.status(200).json({ invoices });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  
+  logControllerAction('Mark Invoice Paid', adminId, { invoiceId });
+  
+  const success = await invoiceService.markInvoiceAsPaid(invoiceId, adminId);
+  
+  if (success) {
+    sendSuccess(res, null, "Invoice marked as paid successfully");
+  } else {
+    sendNotFound(res, "Invoice not found or no changes made");
   }
-}
+});
 
-// Controller to handle marking an invoice as paid
-async function markInvoiceAsPaid(req, res) {
-  try {
-    const adminId = req.user.userId; // Get admin ID from the authenticated user
-    const { invoiceId } = req.params;
-    
-    if (!invoiceId) {
-      return res.status(400).json({ error: "Invoice ID is required" });
-    }
+/**
+ * Controller to handle fetching invoice statistics
+ */
+const getInvoiceStats = asyncHandler(async (req, res) => {
+  const adminId = getAdminId(req);
+  
+  const stats = await invoiceService.getInvoiceStats(adminId);
+  
+  sendSuccess(res, { stats }, 'Invoice statistics retrieved successfully');
+});
 
-    const success = await invoiceService.markInvoiceAsPaid(invoiceId, adminId);
-    
-    if (success) {
-      res.status(200).json({ message: "Invoice marked as paid successfully" });
-    } else {
-      res.status(404).json({ error: "Invoice not found or no changes made" });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+/**
+ * Controller to regenerate invoice descriptions
+ */
+const regenerateInvoiceDescriptions = asyncHandler(async (req, res) => {
+  const adminId = getAdminId(req);
+  
+  logControllerAction('Regenerate Invoice Descriptions', adminId);
+  
+  const updatedCount = await invoiceService.regenerateAllInvoiceDescriptions(adminId);
+  
+  sendSuccess(res, { updatedCount }, 'Invoice descriptions regenerated successfully');
+});
 
-// Controller to handle fetching invoice statistics
-async function getInvoiceStats(req, res) {
-  try {
-    const adminId = req.user.userId; // Get admin ID from the authenticated user
-    const stats = await invoiceService.getInvoiceStats(adminId);
-    res.status(200).json({ stats });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+// Export individual functions for named imports
+export { 
+  createInvoice,
+  getInvoicesByAdminId,
+  markInvoiceAsPaid,
+  getInvoiceStats,
+  regenerateInvoiceDescriptions
+};
 
-// Controller to regenerate invoice descriptions
-async function regenerateInvoiceDescriptions(req, res) {
-  try {
-    const adminId = req.user.userId; // Get admin ID from the authenticated user
-    const updatedCount = await invoiceService.regenerateAllInvoiceDescriptions(adminId);
-    res.status(200).json({ 
-      message: "Invoice descriptions regenerated successfully",
-      updatedCount 
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
+// Export default object for backward compatibility
 export default {
   createInvoice,
   getInvoicesByAdminId,

@@ -5,193 +5,241 @@ import dotenv from 'dotenv';
 dotenv.config();
 import * as validation from '../utils/validation.js';
 import { sendResetPasswordEmail } from '../emails/emailHandler.js';
+import { serviceHandler, getCollection, validateServiceParams, logActivity } from '../utils/serviceHelpers.js';
 
-//Service to handle user registration
-async function register(data){
-    try{
-        const db = client.db('RentWise');
-        const systemUsers = db.collection('System-Users');
+/**
+ * Helper function to parse fullname into firstName and surname
+ * @param {string} fullname - Full name to parse
+ * @returns {Object} - Object containing firstName and surname
+ */
+const parseFullname = (fullname) => {
+    const nameParts = fullname.trim().split(/\s+/);
+    
+    if (nameParts.length === 1) {
+        return { firstName: nameParts[0], surname: "" };
+    } else if (nameParts.length >= 2) {
+        return { 
+            firstName: nameParts[0], 
+            surname: nameParts.slice(1).join(" ") 
+        };
+    } else {
+        throw new Error("Please provide a valid name");
+    }
+};
 
-        const {email, password, username, fullname} = data;
+/**
+ * Helper function to validate user input
+ * @param {Object} userData - User data to validate
+ */
+const validateUserData = (userData) => {
+    const { email, password, username, firstName, surname } = userData;
+    
+    // Sanitize inputs
+    validation.sanitizeInput(email);
+    validation.sanitizeInput(password);
+    validation.sanitizeInput(username);
+    validation.sanitizeInput(firstName);
+    validation.sanitizeInput(surname);
 
-        //check if all fields are provided
-        if(!email || !password || !username || !fullname){
+    // Validate inputs
+    if (!validation.validateEmail(email.toLowerCase())) {
+        throw new Error("Invalid email format or contains inappropriate content");
+    }
+    
+    if (!validation.validatePassword(password)) {
+        throw new Error("Password must be at least 8 characters with letters and numbers, and cannot contain inappropriate content");
+    }
+    
+    if (!validation.validateUsername(username.toLowerCase())) {
+        throw new Error("Username contains inappropriate content or invalid format");
+    }
+};
+
+/**
+ * Check if user already exists
+ * @param {Object} systemUsers - Users collection
+ * @param {string} email - Email to check
+ * @param {string} username - Username to check
+ */
+const checkUserExists = async (systemUsers, email, username) => {
+    const existingUsername = await systemUsers.findOne({ username: username });
+    if (existingUsername) {
+        throw new Error("Username already taken");
+    }
+
+    const existingUser = await systemUsers.findOne({ email: email });
+    if (existingUser) {
+        throw new Error("User already exists with this email");
+    }
+};
+
+/**
+ * Service to handle user registration
+ */
+const register = async (data) => {
+    try {
+        const { email, password, username, fullname } = data;
+
+        // Check if all fields are provided (preserve original validation)
+        if (!email || !password || !username || !fullname) {
             throw new Error("Please provide all required fields");
         }
-
-        // Split fullname into firstName and surname
-        const nameParts = fullname.trim().split(/\s+/);
-        let firstName, surname;
         
-        if (nameParts.length === 1) {
-            // If only one name provided, use it as firstName and set surname as empty
-            firstName = nameParts[0];
-            surname = "";
-        } else if (nameParts.length >= 2) {
-            // If multiple names, first is firstName, rest combined as surname
-            firstName = nameParts[0];
-            surname = nameParts.slice(1).join(" ");
-        } else {
-            throw new Error("Please provide a valid name");
-        }
+        const systemUsers = getCollection('System-Users');
 
-        validation.sanitizeInput(email);
-        validation.sanitizeInput(password);
-        validation.sanitizeInput(username);
-        validation.sanitizeInput(firstName);
-        validation.sanitizeInput(surname);
+    // Parse fullname into firstName and surname
+    const { firstName, surname } = parseFullname(fullname);
 
-        // Validate inputs and throw errors if validation fails
-        if (!validation.validateEmail(email.toLowerCase())) {
-            throw new Error("Invalid email format or contains inappropriate content");
-        }
-        
-        if (!validation.validatePassword(password)) {
-            throw new Error("Password must be at least 8 characters with letters and numbers, and cannot contain inappropriate content");
-        }
-        
-        if (!validation.validateUsername(username.toLowerCase())) {
-            throw new Error("Username contains inappropriate content or invalid format");
-        }
+    // Validate user data
+    validateUserData({ email, password, username, firstName, surname });
 
-        //check if username already exists
-        const existingUsername = await systemUsers.findOne({ username: username });
-        if(existingUsername){
-            throw new Error("Username already taken");
-        }
+    // Check if user already exists
+    await checkUserExists(systemUsers, email, username);
 
-        //check if user already exists
-        const existingUser = await systemUsers.findOne({ email: email });
-        if(existingUser){
-            throw new Error("User already exists with this email");
-        }
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-        //salt & hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+    // Create new user object
+    const newUser = {
+        email: email,
+        password: hashedPassword,
+        username: username,
+        firstName: firstName,
+        surname: surname,
+        role: 'landlord', // Default role for website registration
+        createdAt: new Date(),
+        updatedAt: new Date()
+    };
 
-        //assign default role value
-        const role = 'landlord';
+    // Insert new user into database
+    await systemUsers.insertOne(newUser);
 
-        //create new user
-        const newUser = {
-            email: email,
-            password: hashedPassword,
-            username: username,
-            firstName: firstName,
-            surname: surname,
-            role: role, //default value when registering on the website
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-
-        //insert new user into database
-        await systemUsers.insertOne(newUser);
-
-        // Create fullname for response
-        const fullnameResponse = `${firstName} ${surname}`.trim();
-
-        return { fullname: fullnameResponse, email: newUser.email, createdAt: newUser.createdAt };
-    }
-    catch(err){
+    // Create response data
+    const fullnameResponse = `${firstName} ${surname}`.trim();
+    
+    return { 
+        fullname: fullnameResponse, 
+        email: newUser.email, 
+        createdAt: newUser.createdAt 
+    };
+    } catch (err) {
         throw new Error("Registration failed: " + err.message);
     }
-}
+};
 
-async function login(data){
-    try{
-        const db = client.db('RentWise');
-        const systemUsers = db.collection('System-Users');
-        const activityCollection = db.collection("User-Activity-Logs");
+/**
+ * Helper function to validate login credentials
+ * @param {string} prefLogin - Email or username
+ * @param {string} password - Password
+ */
+const validateLoginData = (prefLogin, password) => {
+    validation.sanitizeInput(prefLogin);
+    validation.sanitizeInput(password);
 
-        const {prefLogin, password} = data;
+    // Validate email/username
+    if (prefLogin.includes('@')) {
+        if (!validation.validateEmail(prefLogin.toLowerCase())) {
+            throw new Error("Invalid email format or contains inappropriate content");
+        }
+    } else {
+        if (!validation.validateUsername(prefLogin.toLowerCase())) {
+            throw new Error("Username contains inappropriate content or invalid format");
+        }
+    }
+    
+    if (!validation.validatePassword(password)) {
+        throw new Error("Invalid password format");
+    }
+};
 
-        //check if all fields are provided
-        if(!prefLogin || !password){
+/**
+ * Helper function to find user by email or username
+ * @param {Object} systemUsers - Users collection
+ * @param {string} prefLogin - Email or username
+ * @returns {Object} - User object or null
+ */
+const findUserByCredentials = async (systemUsers, prefLogin) => {
+    if (prefLogin.includes('@')) {
+        return await systemUsers.findOne({ email: prefLogin });
+    } else {
+        return await systemUsers.findOne({ username: prefLogin });
+    }
+};
+
+/**
+ * Service to handle user login
+ */
+const login = async (data) => {
+    try {
+        const { prefLogin, password } = data;
+
+        // Check if all fields are provided (preserve original validation)
+        if (!prefLogin || !password) {
             throw new Error("Please provide all required fields");
         }
-
-        validation.sanitizeInput(prefLogin);
-        validation.sanitizeInput(password);
-
-        //validate email/username
-        if(prefLogin.includes('@')){
-            if (!validation.validateEmail(prefLogin.toLowerCase())) {
-                throw new Error("Invalid email format or contains inappropriate content");
-            }
-        }else{
-            if (!validation.validateUsername(prefLogin.toLowerCase())) {
-                throw new Error("Username contains inappropriate content or invalid format");
-            }
-        }
         
-        if (!validation.validatePassword(password)) {
-            throw new Error("Invalid password format");
-        }
+        const systemUsers = getCollection('System-Users');
 
-        //check if user exists
-        if(prefLogin.includes('@')){
-            var user = await systemUsers.findOne({ email: prefLogin});
-        }else{
-            var user = await systemUsers.findOne({ username: prefLogin});
-        }
+    // Validate login data
+    validateLoginData(prefLogin, password);
 
-        if(!user){
-            throw new Error("Invalid email or password");
-        }
-
-        //compare passwords
-        const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch){
-            throw new Error("Invalid email or password");
-        }
-
-        // Create fullname from firstName and surname for JWT token
-        const fullname = `${user.firstName || ''} ${user.surname || ''}`.trim();
-
-        //create and sign JWT token
-        const token = jwt.sign(
-            { userId: user._id, fullname: fullname, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-        
-        // Add fullname to user object for response
-        const userResponse = {
-            ...user,
-            fullname: fullname
-        };
-
-        const activityLog = {
-            action: 'User Login',
-            adminId: user._id,
-            detail: `User ${user.username} logged in`,
-            timestamp: new Date()
-        };
-        await activityCollection.insertOne(activityLog);
-        
-        return { token, user: userResponse };
-
+    // Find user by email or username
+    const user = await findUserByCredentials(systemUsers, prefLogin);
+    if (!user) {
+        throw new Error("Invalid email or password");
     }
-    catch(err){
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        throw new Error("Invalid email or password");
+    }
+
+    // Create fullname from firstName and surname
+    const fullname = `${user.firstName || ''} ${user.surname || ''}`.trim();
+
+    // Create and sign JWT token
+    const token = jwt.sign(
+        { userId: user._id, fullname: fullname, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+    
+    // Add fullname to user object for response
+    const userResponse = {
+        ...user,
+        fullname: fullname
+    };
+
+    // Log activity
+    await logActivity('User Login', user._id, `User ${user.username} logged in`);
+    
+    return { token, user: userResponse };
+    } catch (err) {
         throw new Error("Login failed: " + err.message);
     }
-}
+};
 
-async function resetPassword(data) {
+/**
+ * Service to handle password reset
+ */
+const resetPassword = async (data) => {
     try {
         const { email, name } = data;
 
-        if(!email || !name) {
+        if (!email || !name) {
             throw new Error("No email was found");
         }
 
         // Send password reset email
         await sendResetPasswordEmail(email, name, process.env.RESET_PASSWORD_URL);
+        
+        return { message: 'Password reset email sent successfully' };
     } catch (err) {
         throw new Error("Failed to send reset email: " + err.message);
     }
-}
+};
 
 const userService = { register, login, resetPassword };
 export default userService;

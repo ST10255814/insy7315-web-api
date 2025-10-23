@@ -1,66 +1,83 @@
 import listingService from '../Services/listingService.js';
+import { sendSuccess, sendError, sendCreated, sendBadRequest } from '../utils/responseHandler.js';
+import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
 
-async function createListing(req, res) {
-    const id = req.user.userId;
-  console.log(`[createListing] Entry: landlordId="${id}"`);
-  try {
+/**
+ * Create a new property listing with image uploads
+ */
+const createListing = asyncHandler(async (req, res) => {
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Create Listing', adminId);
+    
+    // Handle uploaded files
     const files = req.files || [];
-
+    
     if (!files.length) {
-      console.log("[createListing] No files uploaded");
+        console.log(`[createListing] No files uploaded for admin ${adminId}`);
     }
-
+    
+    // Map file paths to image URLs
     const imageUrls = files.map(file => file.path);
     const data = { ...req.body, imagesURL: imageUrls };
+    
+    const newListing = await listingService.createListing(data, adminId);
+    
+    console.log(`[createListing] Listing created with id="${newListing?.listingId}" for admin ${adminId}`);
+    
+    sendCreated(res, newListing, 'Listing created successfully');
+});
 
-    const newListing = await listingService.createListing(data, id);
-    console.log(`[createListing] Exit: Listing created with id="${newListing?.listingId}"`);
-    res.status(201).json(newListing);
-  } catch (error) {
-    console.error(`[createListing] Error: ${error.message}`);
-    res.status(400).json({ error: error.message });
-  }
-}
+/**
+ * Get all listings for the authenticated admin
+ */
+const getListingsByAdminId = asyncHandler(async (req, res) => {
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Fetch Admin Listings', adminId);
+    
+    const listings = await listingService.getListingsByAdminId(adminId);
+    
+    console.log(`[getListingsByAdminId] Retrieved ${listings.length} listings for admin ${adminId}`);
+    
+    sendSuccess(res, listings, `Successfully retrieved ${listings.length} listings`);
+});
 
-async function getListingsByAdminId(req, res) {
-    const id = req.user.userId;
-  console.log(`[getListingsByAdminId] Entry: adminId="${id}"`);
-    try {
-        const listings = await listingService.getListingsByAdminId(id);
-        console.log(`[getListingsByAdminId] Exit: Retrieved ${listings.length} listings`);
-        res.status(200).json(listings);
-    } catch (error) {
-        console.error(`[getListingsByAdminId] Error: ${error.message}`);
-        res.status(400).json({ error: error.message });
-    }
-}
+/**
+ * Count total number of listings for the authenticated admin
+ */
+const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
+    const adminId = getAdminId(req);
+    
+    const count = await listingService.countNumberOfListingsByAdminId(adminId);
+    
+    console.log(`[countNumberOfListingsByAdminId] Counted ${count} listings for admin ${adminId}`);
+    
+    sendSuccess(res, { count }, 'Listings count retrieved successfully');
+});
 
-async function countNumberOfListingsByAdminId(req, res) {
-    const id = req.user.userId;
-    console.log(`[countNumberOfListingsByAdminId] Entry: adminId="${id}"`);
-    try {
-        const count = await listingService.countNumberOfListingsByAdminId(id);
-        console.log(`[countNumberOfListingsByAdminId] Exit: Counted ${count} listings`);
-        res.status(200).json({ count });
-    } catch (error) {
-        console.error(`[countNumberOfListingsByAdminId] Error: ${error.message}`);
-        res.status(400).json({ error: error.message });
-    }
-}
+/**
+ * Count listings added this month for the authenticated admin
+ */
+const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
+    const adminId = getAdminId(req);
+    
+    const count = await listingService.countListingsAddedThisMonth(adminId);
+    
+    console.log(`[countListingsAddedThisMonth] Counted ${count} listings added this month for admin ${adminId}`);
+    
+    sendSuccess(res, { count }, 'This month listings count retrieved successfully');
+});
 
-async function countListingsAddedThisMonth(req, res) {
-    const id = req.user.userId;
-    console.log(`[countListingsAddedThisMonth] Entry: adminId="${id}"`);
-    try {
-        const count = await listingService.countListingsAddedThisMonth(id);
-        console.log(`[countListingsAddedThisMonth] Exit: Counted ${count} listings added this month`);
-        res.status(200).json({ count });
-    } catch (error) {
-        console.error(`[countListingsAddedThisMonth] Error: ${error.message}`);
-        res.status(400).json({ error: error.message });
-    }
-}
+// Export individual functions for named imports
+export { 
+    createListing,
+    getListingsByAdminId,
+    countNumberOfListingsByAdminId,
+    countListingsAddedThisMonth
+};
 
+// Export default object for backward compatibility
 export default {
     createListing,
     getListingsByAdminId,
