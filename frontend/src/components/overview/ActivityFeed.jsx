@@ -32,7 +32,7 @@ export default function ActivityFeed() {
       ];
     }
 
-    if (!activities || activities.length === 0) {
+    if (!activities || !Array.isArray(activities) || activities.length === 0) {
       return [
         {
           color: "#6B7280", // gray-500
@@ -68,7 +68,7 @@ export default function ActivityFeed() {
       <div className="space-y-4 relative z-10">
         {activityItems.map((item, i) => (
           <motion.div
-            key={i}
+            key={`activity-${item.title}-${i}`}
             className="flex items-center space-x-4 p-4 rounded-2xl cursor-pointer hover:shadow-md backdrop-blur-sm border border-white/10"
             style={{ backgroundColor: item.bgColor }}
             whileHover={{ scale: 1.02 }}

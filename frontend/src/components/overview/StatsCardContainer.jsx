@@ -83,7 +83,7 @@ export default function StatsCardContainer() {
         ? "Calculating..." 
         : percentageError 
           ? "Failed to load" 
-          : `${leasedPercentage?.percentage?.toFixed(0) || 0}% occupancy`,
+          : `${leasedPercentage.toFixed(0) || 0}% occupancy`,
       color: "purple",
       icon: <FaClipboardList />
     },
