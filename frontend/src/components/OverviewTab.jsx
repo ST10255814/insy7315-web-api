@@ -1,35 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  Filler,
-} from "chart.js";
 
 import StatsCardContainer from "./overview/StatsCardContainer";
 import ActivityFeed from "./overview/ActivityFeed";
 import ChartContainer from "./overview/ChartContainer";
 import { OverviewRefreshButton } from "./overview/OverviewRefreshUtils";
-
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  Filler
-);
 
 export default function OverviewTab() {
   return (

@@ -1,12 +1,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
+
+// Register ChartJS components for Pie chart
+ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
 export default function PropertyDistributionChart() {
     // Property Distribution Pie Chart Data
     const propertyData = React.useMemo(() => ({
         labels: ["Occupied", "Vacant", "Under Repair", "Reserved"],
-        datasets: [{
+        datasets: [
+            {
             label: "Properties",
             data: [18, 6, 2, 3], // example values
             backgroundColor: [
@@ -19,36 +24,41 @@ export default function PropertyDistributionChart() {
             borderWidth: 2,
             borderRadius: 10,
             spacing: 4, // space between slices
-        },
+            },
         ],
-    }), []);
+        }),
+        []
+    );
 
     // Property Chart Options
-    const propertyOptions = React.useMemo(() => ({
+    const propertyOptions = React.useMemo(
+        () => ({
         responsive: true,
         plugins: {
             legend: {
-                position: "bottom",
-                labels: {
-                    boxWidth: 20,
-                    padding: 15,
-                    color: "#374151", // text-gray-700
-                    font: { size: 14, weight: "500" },
-                },
+            position: "bottom",
+            labels: {
+                boxWidth: 20,
+                padding: 15,
+                color: "#374151", // text-gray-700
+                font: { size: 14, weight: "500" },
+            },
             },
             tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        return `${context.label}: ${context.raw} units`;
-                    },
+            callbacks: {
+                label: function (context) {
+                return `${context.label}: ${context.raw} units`;
                 },
+            },
             },
         },
         animation: {
             animateRotate: true,
             animateScale: true,
         },
-    }), []);
+        }),
+        []
+    );
 
     return (
         <motion.div
@@ -65,4 +75,4 @@ export default function PropertyDistributionChart() {
         </div>
         </motion.div>
     );
-};
+}
