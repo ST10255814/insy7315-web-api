@@ -266,6 +266,14 @@ describe('Revenue Service Tests', () => {
                             }))
                         };
                     }
+                    if (name === 'Listings') {
+                        return {
+                            distinct: jest.fn().mockResolvedValue(['507f1f77bcf86cd799439011']),
+                            find: jest.fn(() => ({
+                                toArray: jest.fn().mockResolvedValue([])
+                            }))
+                        };
+                    }
                     return {
                         find: jest.fn(() => ({
                             toArray: jest.fn().mockResolvedValue([])
