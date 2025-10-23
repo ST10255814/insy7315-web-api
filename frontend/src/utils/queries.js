@@ -1,22 +1,3 @@
-/**
- * React Query hooks and mutations for the RentWise application
- * 
- * OVERVIEW INVALIDATION STRATEGY:
- * =============================
- * When data changes that affects the overview dashboard statistics, we automatically
- * invalidate the relevant overview queries so they refetch with updated data.
- * 
- * The following mutations automatically update overview statistics:
- * - Creating/updating/deleting properties → affects property counts
- * - Creating/updating/deleting leases → affects lease counts and occupancy percentage  
- * - Creating/updating invoices → affects revenue data
- * - Creating/updating maintenance requests → affects maintenance counts
- * - Any action that creates activity → affects recent activities
- * 
- * Use the invalidateOverviewQueries() utility in any mutation that should
- * trigger overview data updates.
- */
-
 import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Toast from "../lib/toast.js";

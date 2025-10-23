@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useScrollAnimation } from "../../hooks/useScrollAnimation";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation.js";
 
 /**
  * Shared layout component for authentication pages (login/register)
