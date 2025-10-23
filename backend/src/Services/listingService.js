@@ -8,6 +8,7 @@ async function createListing(data, adminId) {
         const db = client.db('RentWise');
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
+        const activityCollection = db.collection("User-Activity-Logs");
 
         const { title, address, description, imagesURL = [], price} = data;
 
@@ -60,8 +61,17 @@ async function createListing(data, adminId) {
             createdAt: new Date()
         };
 
+        const activityLog = {
+            action: 'Create Listing',
+            adminId: toObjectId(adminId),
+            detail: `Created listing ${listingId} with title "${title}"`,
+            timestamp: new Date()
+        };
+        await activityCollection.insertOne(activityLog);
+
         const result = await listingsCollection.insertOne(newListing);
         return { message: 'Listing created', listingId: result.insertedId };
+
   } catch (error) {
     throw new Error(`Error creating listing: ${error.message}`);
   }

@@ -81,6 +81,7 @@ import invoiceController from './Controllers/invoiceController.js';
 import listingController from './Controllers/listingController.js';
 import bookingController from './Controllers/bookingController.js';
 import maintenanceController from './Controllers/maintenanceController.js';
+import activityController from './Controllers/activityController.js';
 
 // Arcjet middleware import
 import { arcjetMiddleware } from './middleware/arcjet.middleware.js';
@@ -124,6 +125,8 @@ app.get('/api/maintenance', checkAuth, maintenanceController.getAllMaintenanceRe
 app.get('/api/maintenance/count', checkAuth, maintenanceController.countMaintenanceRequestsByAdminId);
 app.get('/api/maintenance/count-high-priority', checkAuth, maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);
 
+//activity routes
+app.get('/api/activity-logs', checkAuth, activityController.getRecentActivities);
 
 
 // Start server

@@ -18,6 +18,9 @@ const { toObjectId } = Object;
 //create invoice
 async function createInvoice(adminId, data){
     try{
+        const db = client.db("RentWise");
+        const activityCollection = db.collection("User-Activity-Logs");
+
         const {leaseId, description, date, amount } = data;
 
         //validate inputs - description is now optional as we'll auto-generate it
@@ -64,6 +67,14 @@ async function createInvoice(adminId, data){
             createdAt: new Date(),
             lastStatusUpdate: new Date()
         }
+
+        const activityLog = {
+            action: 'Create Invoice',
+            adminId: toObjectId(adminId),
+            detail: `Created invoice ${invoiceId} for lease ${leaseId}`,
+            timestamp: new Date()
+        };
+        await activityCollection.insertOne(activityLog);
 
         //insert invoice into collection
         await createInvoiceInDB(invoice);

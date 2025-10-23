@@ -25,6 +25,8 @@ import { getCurrentMonthRevenue } from "../utils/bookings.api";
 import { countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../utils/listings.api";
 import { countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../utils/leases.api";
 import { countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../utils/maintenance.api";
+import { getRecentActivities } from "../utils/activity.api";
+import { getActivityColor, formatActivityTime } from "../utils/activityHelpers";
 import Toast from "../lib/toast";
 
 // Register ChartJS components
@@ -89,6 +91,13 @@ export default function OverviewTab() {
   // State for high priority maintenance requests count
   const [highPriorityMaintenanceRequests, setHighPriorityMaintenanceRequests] = useState({
     count: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for recent activities
+  const [recentActivities, setRecentActivities] = useState({
+    activities: [],
     loading: true,
     error: null
   });
@@ -237,6 +246,28 @@ export default function OverviewTab() {
       }
     };
 
+    const fetchRecentActivities = async () => {
+      try {
+        console.log('Fetching recent activities...');
+        setRecentActivities(prev => ({ ...prev, loading: true, error: null }));
+        const activities = await getRecentActivities();
+        console.log('Recent activities data:', activities);
+        setRecentActivities({
+          activities: activities || [],
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching recent activities:', error);
+        setRecentActivities(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load recent activities'
+        }));
+        Toast.error('Failed to load recent activities');
+      }
+    };
+
     fetchMonthlyRevenue();
     fetchTotalProperties();
     fetchMonthlyProperties();
@@ -244,6 +275,7 @@ export default function OverviewTab() {
     fetchLeasedPercentage();
     fetchMaintenanceRequests();
     fetchHighPriorityMaintenanceRequests();
+    fetchRecentActivities();
   }, []);
 
   // Format currency for display
@@ -371,27 +403,54 @@ export default function OverviewTab() {
     []
   );
 
-  // Recent Activity
-  const recentActivity = [
-    {
-      color: "#22C55E", // green-500
-      bgColor: "rgba(34,197,94,0.1)",
-      title: "Invoice #INV-001 paid by John Smith",
-      subtitle: "2 hours ago • R22,500",
-    },
-    {
-      color: "#3B82F6", // blue-500
-      bgColor: "rgba(59,130,246,0.1)",
-      title: "New maintenance request submitted",
-      subtitle: "4 hours ago • Unit 4A - Leaky Faucet",
-    },
-    {
-      color: "#A855F7", // purple-500
-      bgColor: "rgba(168,85,247,0.1)",
-      title: "Lease agreement signed for Unit 4B",
-      subtitle: "1 day ago • 12-month lease",
-    },
-  ];
+  // Recent Activity - Dynamic data with color coding
+  const recentActivity = React.useMemo(() => {
+    if (recentActivities.loading) {
+      // Return loading state
+      return [
+        {
+          color: "#6B7280", // gray-500
+          bgColor: "rgba(107, 114, 128, 0.1)",
+          title: "Loading activities...",
+          subtitle: "Please wait while we fetch your recent activities",
+        },
+      ];
+    }
+
+    if (recentActivities.error) {
+      // Return error state
+      return [
+        {
+          color: "#EF4444", // red-500
+          bgColor: "rgba(239, 68, 68, 0.1)",
+          title: "Failed to load activities",
+          subtitle: recentActivities.error,
+        },
+      ];
+    }
+
+    if (!recentActivities.activities || recentActivities.activities.length === 0) {
+      // Return empty state
+      return [
+        {
+          color: "#6B7280", // gray-500
+          bgColor: "rgba(107, 114, 128, 0.1)",
+          title: "No recent activities",
+          subtitle: "Your recent activities will appear here",
+        },
+      ];
+    }
+
+    return recentActivities.activities.map(activity => {
+      const colors = getActivityColor(activity.action);
+      return {
+        color: colors.color,
+        bgColor: colors.bgColor,
+        title: activity.detail || activity.action,
+        subtitle: formatActivityTime(activity.timestamp),
+      };
+    });
+  }, [recentActivities]);
 
   return (
     <motion.div

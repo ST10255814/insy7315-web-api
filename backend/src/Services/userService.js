@@ -102,6 +102,7 @@ async function login(data){
     try{
         const db = client.db('RentWise');
         const systemUsers = db.collection('System-Users');
+        const activityCollection = db.collection("User-Activity-Logs");
 
         const {prefLogin, password} = data;
 
@@ -160,6 +161,14 @@ async function login(data){
             ...user,
             fullname: fullname
         };
+
+        const activityLog = {
+            action: 'User Login',
+            adminId: user._id,
+            detail: `User ${user.username} logged in`,
+            timestamp: new Date()
+        };
+        await activityCollection.insertOne(activityLog);
         
         return { token, user: userResponse };
 

@@ -81,6 +81,7 @@ async function createLease(bookingID, adminId) {
     const listingCollection = db.collection("Listings");
     const userCollection = db.collection('System-Users');
     const leasesCollection = db.collection("Leases");
+    const activityCollection = db.collection("User-Activity-Logs");
 
     // Verify booking exists
     const booking = await bookingsCollection.findOne({ "newBooking.bookingId": bookingID });
@@ -136,6 +137,14 @@ async function createLease(bookingID, adminId) {
         status: "Pending",
         leaseCreatedAt: new Date()
     };
+
+    const activityLog = {
+        action: 'Create Lease',
+        adminId: toObjectId(adminId),
+        detail: `Created lease ${leaseId} for booking ${bookingID}`,
+        timestamp: new Date()
+    };
+    await activityCollection.insertOne(activityLog);
 
     const result = await leasesCollection.insertOne(lease);
     return leaseId;
