@@ -1,48 +1,48 @@
-# 🔒 Security Pipeline Documentation
+# Security Pipeline Documentation
 
 ## Overview
 This repository now includes a comprehensive security pipeline with multiple layers of protection:
 
-## 🌳 Security Workflow Tree Structure
+## Security Workflow Tree Structure
 
 ```
-🔒 Comprehensive Security Pipeline
-├── 🛡️ Security Foundation Layer
-│   ├── 📥 Repository Checkout
-│   ├── 🔍 Environment Security Scan
-│   ├── 🕵️ Advanced Secret Detection
-│   └── 🔐 Cryptographic Security Check
+Comprehensive Security Pipeline
+├── Security Foundation Layer
+│   ├── Repository Checkout
+│   ├── Environment Security Scan
+│   ├── Advanced Secret Detection
+│   └── Cryptographic Security Check
 │
-├── 📦 Dependency Security Layer (Matrix: Backend/Frontend)
-│   ├── 📊 Dependency Tree Analysis
-│   ├── 🔍 Vulnerability Deep Scan
-│   └── 📋 License Compliance Check
+├── Dependency Security Layer (Matrix: Backend/Frontend)
+│   ├── Dependency Tree Analysis
+   ├── Vulnerability Deep Scan
+   └── License Compliance Check
 │
-├── 🔍 Code Security Layer (Matrix: Static/Linting/OWASP)
-│   ├── 🔍 Static Code Analysis
-│   ├── 🔍 Security-Focused Linting
-│   └── 🔍 OWASP Top 10 Scanning
+├── Code Security Layer (Matrix: Static/Linting/OWASP)
+│   ├── Static Code Analysis
+│   ├── Security-Focused Linting
+│   └── OWASP Top 10 Scanning
 │
-├── 🏗️ Infrastructure Security Layer
-│   ├── 🐳 Docker Security Scan
-│   ├── 🌐 Network Security Configuration
-│   └── 🔐 SSL/TLS Configuration Check
+├── Infrastructure Security Layer
+│   ├── Docker Security Scan
+│   ├── Network Security Configuration
+│   └── SSL/TLS Configuration Check
 │
-├── 🚀 Runtime Security Layer
-│   ├── 🧪 Security Unit Tests
-│   ├── 🔒 Authentication & Authorization Tests
-│   └── 🌐 API Endpoint Security Tests
+├── Runtime Security Layer
+│   ├── Security Unit Tests
+│   ├── Authentication & Authorization Tests
+│   └── API Endpoint Security Tests
 │
-├── 📊 Security Compliance & Reporting
-│   ├── 📊 Generate Security Report
-│   └── 🏆 Security Badge Generation
+├── Security Compliance & Reporting
+│   ├── Generate Security Report
+   └── Security Badge Generation
 │
-└── 🎯 Final Status (Success/Failure)
-    ├── ✅ Pipeline Success
-    └── ❌ Pipeline Failure
+└── Final Status (Success/Failure)
+    ├── Pipeline Success
+    └── Pipeline Failure
 ```
 
-## 🔧 Usage
+## Usage
 
 ### Local Development
 ```bash
@@ -64,39 +64,39 @@ The security pipeline runs automatically on:
 - Weekly scheduled scans (Mondays at 6 AM UTC)
 - Manual workflow dispatch
 
-## 🛡️ Security Checks Included
+## Security Checks Included
 
-### 1. 🌐 Environment Security
+### 1. Environment Security
 - Environment variable validation
 - .env file security
 - Git configuration security
 - Secrets exposure prevention
 
-### 2. 📦 Dependency Security
+### 2. Dependency Security
 - Known vulnerability scanning
 - Deprecated package detection
 - License compliance checking
 - Dependency tree analysis
 
-### 3. 🔍 Code Security
+### 3. Code Security
 - Advanced secret detection
 - Dangerous code pattern analysis
 - Cryptographic implementation review
 - OWASP Top 10 verification
 
-### 4. 🏗️ Infrastructure Security
+### 4. Infrastructure Security
 - Docker configuration security
 - Network security settings
 - CORS configuration analysis
 - Security headers verification
 
-### 5. 🚀 Runtime Security
+### 5. Runtime Security
 - Authentication mechanism testing
 - Authorization flow validation
 - API endpoint security testing
 - JWT security verification
 
-## 📊 Security Scoring
+## Security Scoring
 
 The pipeline calculates a security score based on:
 - **Critical Issues**: -20 points each
@@ -105,30 +105,30 @@ The pipeline calculates a security score based on:
 - **Low Issues**: -2 points each
 
 ### Score Ranges:
-- **90-100**: 🏆 Excellent
-- **75-89**: 🥉 Good
-- **50-74**: ⚠️ Needs Improvement
-- **0-49**: 🚨 Critical Attention Required
+- **90-100**: Excellent
+- **75-89**: Good
+- **50-74**: Needs Improvement
+- **0-49**: Critical Attention Required
 
-## 🎯 Security Features
+## Security Features
 
 ### Current Security Implementations
-- ✅ Arcjet protection (rate limiting, bot detection, email validation)
-- ✅ JWT authentication
-- ✅ bcrypt password hashing
-- ✅ Helmet security headers
-- ✅ CORS configuration
-- ✅ Input validation and sanitization
+- Arcjet protection (rate limiting, bot detection, email validation)
+- JWT authentication
+- bcrypt password hashing
+- Helmet security headers
+- CORS configuration
+- Input validation and sanitization
 
 ### Enhanced Security Measures Added
-- 🔍 Comprehensive secret scanning
-- 📊 Advanced dependency analysis
-- 🔐 Cryptographic security verification
-- 🛡️ OWASP Top 10 compliance checking
-- 📋 Security logging and monitoring
-- 🚨 Real-time threat detection
+- Comprehensive secret scanning
+- Advanced dependency analysis
+- Cryptographic security verification
+- OWASP Top 10 compliance checking
+- Security logging and monitoring
+- Real-time threat detection
 
-## 🚨 Alert Thresholds
+## Alert Thresholds
 
 The pipeline will fail if:
 - Any critical security issues are found
@@ -137,7 +137,7 @@ The pipeline will fail if:
 - Dangerous code patterns are present
 - Security misconfigurations are detected
 
-## 🔄 Continuous Monitoring
+## Continuous Monitoring
 
 ### Automated Checks
 - Weekly dependency vulnerability scans
@@ -151,7 +151,7 @@ The pipeline will fail if:
 - Security policy updates
 - Incident response planning
 
-## 📚 Security Resources
+## Security Resources
 
 ### Documentation
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
@@ -165,7 +165,7 @@ The pipeline will fail if:
 - Custom security scanners
 - OWASP compliance checkers
 
-## 🛠️ Customization
+## Customization
 
 ### Adding New Security Checks
 1. Update the GitHub workflow file
@@ -179,7 +179,7 @@ The pipeline will fail if:
 - `backend/.eslintrc.security.js` - Security-focused linting rules
 - `backend/package.json` - Security scripts and dependencies
 
-## 📞 Support
+## Support
 
 For security concerns or questions:
 1. Review the security pipeline logs
@@ -189,4 +189,4 @@ For security concerns or questions:
 
 ---
 
-**Security is everyone's responsibility!** 🔐
+**Security is everyone's responsibility!**
