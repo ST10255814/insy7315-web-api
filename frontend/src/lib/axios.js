@@ -53,6 +53,9 @@ api.interceptors.response.use(
         // Use React Router navigation to preserve toast messages
         navigateTo("/login");
       }
+      
+      // Mark error as handled to prevent duplicate toasts
+      error.isHandledBy401Interceptor = true;
     }
     return Promise.reject(error);
   }

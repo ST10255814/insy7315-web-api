@@ -28,6 +28,9 @@ export default function Navbar() {
         navigate("/login");
       }
     } catch (error) {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      
       if (error.response) {
         const msg = error.response.data.error;
         Toast.error(msg);
