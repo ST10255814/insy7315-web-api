@@ -1,13 +1,34 @@
+/**
+ * React Query hooks and mutations for the RentWise application
+ * 
+ * OVERVIEW INVALIDATION STRATEGY:
+ * =============================
+ * When data changes that affects the overview dashboard statistics, we automatically
+ * invalidate the relevant overview queries so they refetch with updated data.
+ * 
+ * The following mutations automatically update overview statistics:
+ * - Creating/updating/deleting properties → affects property counts
+ * - Creating/updating/deleting leases → affects lease counts and occupancy percentage  
+ * - Creating/updating invoices → affects revenue data
+ * - Creating/updating maintenance requests → affects maintenance counts
+ * - Any action that creates activity → affects recent activities
+ * 
+ * Use the invalidateOverviewQueries() utility in any mutation that should
+ * trigger overview data updates.
+ */
+
+import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Toast from "../lib/toast.js";
-import { getLeasesByAdminId, createLeaseForBookingID } from "./leases.api.js";
+import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "./leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
-import { getListingsByAdminId, createListing } from "./listings.api.js";
-import { getMaintenanceRequestsByAdminId } from "./maintenance.api.js";
-import { getBookingsByAdminId } from "./bookings.api.js";
+import { getListingsByAdminId, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "./listings.api.js";
+import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "./maintenance.api.js";
+import { getBookingsByAdminId, getCurrentMonthRevenue } from "./bookings.api.js";
+import { getRecentActivities } from "./activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
-import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries } from "./cacheUtils.js";
+import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries, invalidateOverviewQueries } from "./cacheUtils.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
 export const useLeasesQuery = (adminId) => {
@@ -38,6 +59,8 @@ export const useCreateLeaseMutation = () => {
       );
       // Use efficient invalidation utility
       invalidateEntityQueries(queryClient, "leases");
+      // Invalidate overview queries since lease count and occupancy changed
+      invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
       const msg =
@@ -74,6 +97,8 @@ export const useCreateInvoiceMutation = () => {
       Toast.success(`Invoice created successfully: Invoice ID: ${invoiceID}`);
       // Use efficient invalidation utility
       invalidateEntityQueries(queryClient, "invoices");
+      // Invalidate overview queries since revenue data may have changed
+      invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
       const msg =
@@ -109,6 +134,8 @@ export const useCreateListingMutation = () => {
       const listingID = response?.listingId || response;
       Toast.success(`Property created successfully!${listingID ? ` Listing ID: ${listingID}` : ''}`);
       invalidateEntityQueries(queryClient, "listings");
+      // Invalidate overview queries since property counts have changed
+      invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
       console.error('Create listing mutation error:', error);
@@ -147,3 +174,102 @@ export const useMaintenanceRequestsQuery = (adminId) => {
     ...CACHE_CONFIGS.MEDIUM,
   }, queryClient);
 }
+
+// Overview-specific queries for dashboard statistics
+export const useMonthlyRevenueQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("monthlyRevenue", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getCurrentMonthRevenue();
+    },
+    ...CACHE_CONFIGS.DYNAMIC,
+  }, queryClient);
+};
+
+export const useTotalPropertiesCountQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("totalPropertiesCount", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return countNumberOfListingsByAdminId();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useMonthlyPropertiesCountQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("monthlyPropertiesCount", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return countListingsAddedThisMonth();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useActiveLeasesCountQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("activeLeasesCount", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return countActiveLeasesByAdminId();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useLeasedPercentageQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("leasedPercentage", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getLeasedPropertyPercentage();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useMaintenanceCountQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("maintenanceCount", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return countMaintenanceRequestsByAdminId();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useHighPriorityMaintenanceCountQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("highPriorityMaintenanceCount", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return countHighPriorityMaintenanceRequestsByAdminId();
+    },
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
+
+export const useRecentActivitiesQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("recentActivities", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getRecentActivities(adminId);
+    },
+    ...CACHE_CONFIGS.DYNAMIC,
+  }, queryClient);
+};
+
+// Utility function to manually invalidate overview data
+// Use this in components when you know overview data has changed
+export const useInvalidateOverview = () => {
+  const queryClient = useQueryClient();
+  
+  return React.useCallback(() => {
+    invalidateOverviewQueries(queryClient);
+  }, [queryClient]);
+};

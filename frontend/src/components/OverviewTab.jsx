@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Line, Pie } from "react-chartjs-2";
 import {
@@ -14,20 +14,9 @@ import {
   Filler,
 } from "chart.js";
 
-import {
-  FaHome,
-  FaMoneyBillWave,
-  FaClipboardList,
-  FaWrench,
-} from "react-icons/fa";
-import StatsCard from "../pages/StatsCard";
-import { getCurrentMonthRevenue } from "../utils/bookings.api";
-import { countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../utils/listings.api";
-import { countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../utils/leases.api";
-import { countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../utils/maintenance.api";
-import { getRecentActivities } from "../utils/activity.api";
-import { getActivityColor, formatActivityTime } from "../utils/activityHelpers";
-import Toast from "../lib/toast";
+import StatsCardContainer from "./overview/StatsCardContainer";
+import ActivityFeed from "./overview/ActivityFeed";
+import { OverviewRefreshButton } from "./overview/OverviewRefreshUtils";
 
 // Register ChartJS components
 ChartJS.register(
@@ -42,251 +31,7 @@ ChartJS.register(
   Filler
 );
 
-//FIXME: Replace hardcoded data with dynamic data from API
 export default function OverviewTab() {
-  // State for current month revenue
-  const [monthlyRevenue, setMonthlyRevenue] = useState({
-    amount: 0,
-    month: '',
-    year: '',
-    loading: true,
-    error: null
-  });
-
-  // State for total properties count
-  const [totalProperties, setTotalProperties] = useState({
-    count: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for properties added this month
-  const [monthlyProperties, setMonthlyProperties] = useState({
-    count: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for active leases count
-  const [activeLeases, setActiveLeases] = useState({
-    count: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for leased property percentage
-  const [leasedPercentage, setLeasedPercentage] = useState({
-    percentage: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for maintenance requests count
-  const [maintenanceRequests, setMaintenanceRequests] = useState({
-    count: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for high priority maintenance requests count
-  const [highPriorityMaintenanceRequests, setHighPriorityMaintenanceRequests] = useState({
-    count: 0,
-    loading: true,
-    error: null
-  });
-
-  // State for recent activities
-  const [recentActivities, setRecentActivities] = useState({
-    activities: [],
-    loading: true,
-    error: null
-  });
-
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchMonthlyRevenue = async () => {
-      try {
-        setMonthlyRevenue(prev => ({ ...prev, loading: true, error: null }));
-        const data = await getCurrentMonthRevenue();
-        setMonthlyRevenue({
-          amount: data.totalRevenue || 0,
-          month: data.month || '',
-          year: data.year || '',
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching monthly revenue:', error);
-        setMonthlyRevenue(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load revenue data'
-        }));
-        Toast.error('Failed to load monthly revenue data');
-      }
-    };
-
-    const fetchTotalProperties = async () => {
-      try {
-        setTotalProperties(prev => ({ ...prev, loading: true, error: null }));
-        const count = await countNumberOfListingsByAdminId();
-        setTotalProperties({
-          count: count || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching total properties:', error);
-        setTotalProperties(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load properties count'
-        }));
-        Toast.error('Failed to load properties count');
-      }
-    };
-
-    const fetchMonthlyProperties = async () => {
-      try {
-        setMonthlyProperties(prev => ({ ...prev, loading: true, error: null }));
-        const count = await countListingsAddedThisMonth();
-        setMonthlyProperties({
-          count: count || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching monthly properties:', error);
-        setMonthlyProperties(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load monthly properties count'
-        }));
-        Toast.error('Failed to load monthly properties count');
-      }
-    };
-
-    const fetchActiveLeases = async () => {
-      try {
-        setActiveLeases(prev => ({ ...prev, loading: true, error: null }));
-        const count = await countActiveLeasesByAdminId();
-        setActiveLeases({
-          count: count || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching active leases:', error);
-        setActiveLeases(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load active leases count'
-        }));
-        Toast.error('Failed to load active leases count');
-      }
-    };
-
-    const fetchLeasedPercentage = async () => {
-      try {
-        setLeasedPercentage(prev => ({ ...prev, loading: true, error: null }));
-        const data = await getLeasedPropertyPercentage();
-        setLeasedPercentage({
-          percentage: data.percentage || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching leased percentage:', error);
-        setLeasedPercentage(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load leased percentage'
-        }));
-        Toast.error('Failed to load leased percentage');
-      }
-    };
-
-    const fetchMaintenanceRequests = async () => {
-      try {
-        setMaintenanceRequests(prev => ({ ...prev, loading: true, error: null }));
-        const count = await countMaintenanceRequestsByAdminId();
-        setMaintenanceRequests({
-          count: count || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching maintenance requests:', error);
-        setMaintenanceRequests(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load maintenance requests count'
-        }));
-        Toast.error('Failed to load maintenance requests count');
-      }
-    };
-
-    const fetchHighPriorityMaintenanceRequests = async () => {
-      try {
-        setHighPriorityMaintenanceRequests(prev => ({ ...prev, loading: true, error: null }));
-        const count = await countHighPriorityMaintenanceRequestsByAdminId();
-        setHighPriorityMaintenanceRequests({
-          count: count || 0,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching high priority maintenance requests:', error);
-        setHighPriorityMaintenanceRequests(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load high priority maintenance requests count'
-        }));
-        Toast.error('Failed to load high priority maintenance requests count');
-      }
-    };
-
-    const fetchRecentActivities = async () => {
-      try {
-        console.log('Fetching recent activities...');
-        setRecentActivities(prev => ({ ...prev, loading: true, error: null }));
-        const activities = await getRecentActivities();
-        console.log('Recent activities data:', activities);
-        setRecentActivities({
-          activities: activities || [],
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error fetching recent activities:', error);
-        setRecentActivities(prev => ({
-          ...prev,
-          loading: false,
-          error: 'Failed to load recent activities'
-        }));
-        Toast.error('Failed to load recent activities');
-      }
-    };
-
-    fetchMonthlyRevenue();
-    fetchTotalProperties();
-    fetchMonthlyProperties();
-    fetchActiveLeases();
-    fetchLeasedPercentage();
-    fetchMaintenanceRequests();
-    fetchHighPriorityMaintenanceRequests();
-    fetchRecentActivities();
-  }, []);
-
-  // Format currency for display
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-ZA', {
-      style: 'currency',
-      currency: 'ZAR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
   // Revenue Line Chart
   const revenueData = React.useMemo(
     () => ({
@@ -402,56 +147,7 @@ export default function OverviewTab() {
     }),
     []
   );
-
-  // Recent Activity - Dynamic data with color coding
-  const recentActivity = React.useMemo(() => {
-    if (recentActivities.loading) {
-      // Return loading state
-      return [
-        {
-          color: "#6B7280", // gray-500
-          bgColor: "rgba(107, 114, 128, 0.1)",
-          title: "Loading activities...",
-          subtitle: "Please wait while we fetch your recent activities",
-        },
-      ];
-    }
-
-    if (recentActivities.error) {
-      // Return error state
-      return [
-        {
-          color: "#EF4444", // red-500
-          bgColor: "rgba(239, 68, 68, 0.1)",
-          title: "Failed to load activities",
-          subtitle: recentActivities.error,
-        },
-      ];
-    }
-
-    if (!recentActivities.activities || recentActivities.activities.length === 0) {
-      // Return empty state
-      return [
-        {
-          color: "#6B7280", // gray-500
-          bgColor: "rgba(107, 114, 128, 0.1)",
-          title: "No recent activities",
-          subtitle: "Your recent activities will appear here",
-        },
-      ];
-    }
-
-    return recentActivities.activities.map(activity => {
-      const colors = getActivityColor(activity.action);
-      return {
-        color: colors.color,
-        bgColor: colors.bgColor,
-        title: activity.detail || activity.action,
-        subtitle: formatActivityTime(activity.timestamp),
-      };
-    });
-  }, [recentActivities]);
-
+  
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -464,92 +160,21 @@ export default function OverviewTab() {
       <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-green-100/30 to-blue-100/20 rounded-full blur-2xl -z-10" style={{animationDelay: '2s'}}></div>
       <div className="absolute bottom-1/4 right-1/3 w-28 h-28 bg-gradient-to-br from-orange-100/25 to-pink-100/20 rounded-full blur-2xl -z-10 animate-float" style={{animationDelay: '4s'}}></div>
       
-      {/* Stats Cards */}
-      <motion.div 
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-      >
-        <StatsCard
-          title="Total Properties"
-          value={
-            totalProperties.loading 
-              ? "Loading..." 
-              : totalProperties.error 
-                ? "Error" 
-                : totalProperties.count.toString()
-          }
-          subtitle={
-            monthlyProperties.loading 
-              ? "Fetching data..." 
-              : monthlyProperties.error 
-                ? "Failed to load" 
-                : monthlyProperties.count > 0 
-                  ? `↗ +${monthlyProperties.count} this month`
-                  : "No new properties this month"
-          }
-          color="blue"
-          icon={<FaHome />}
-        />
-        <StatsCard
-          title="Monthly Revenue"
-          value={
-            monthlyRevenue.loading 
-              ? "Loading..." 
-              : monthlyRevenue.error 
-                ? "Error" 
-                : formatCurrency(monthlyRevenue.amount)
-          }
-          subtitle={
-            monthlyRevenue.loading 
-              ? "Fetching data..." 
-              : monthlyRevenue.error 
-                ? "Failed to load" 
-                : `${monthlyRevenue.month} ${monthlyRevenue.year}`
-          }
-          color="green"
-          icon={<FaMoneyBillWave />}
-        />
-        <StatsCard
-          title="Active Leases"
-          value={
-            activeLeases.loading 
-              ? "Loading..." 
-              : activeLeases.error 
-                ? "Error" 
-                : activeLeases.count.toString()
-          }
-          subtitle={
-            leasedPercentage.loading 
-              ? "Calculating..." 
-              : leasedPercentage.error 
-                ? "Failed to load" 
-                : `${leasedPercentage.percentage.toFixed(0)}% occupancy`
-          }
-          color="purple"
-          icon={<FaClipboardList />}
-        />
-        <StatsCard
-          title="Pending Tasks"
-          value={
-            maintenanceRequests.loading 
-              ? "Loading..." 
-              : maintenanceRequests.error 
-                ? "Error" 
-                : maintenanceRequests.count.toString()
-          }
-          subtitle={
-            highPriorityMaintenanceRequests.loading 
-              ? "Calculating..." 
-              : highPriorityMaintenanceRequests.error 
-                ? "Failed to load" 
-                : `${highPriorityMaintenanceRequests.count} urgent items`
-          }
-          color="orange"
-          icon={<FaWrench />}
-        />
-      </motion.div>
+      {/* Stats Cards with Refresh Button */}
+      <div className="space-y-4">
+        {/* Section Header with Refresh Button */}
+        <motion.div 
+          className="flex items-center justify-between"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h2 className="text-2xl font-extrabold text-blue-700">Dashboard Overview</h2>
+          <OverviewRefreshButton />
+        </motion.div>
+        
+        <StatsCardContainer />
+      </div>
 
       {/* Charts */}
       <motion.div 
@@ -590,40 +215,7 @@ export default function OverviewTab() {
       </motion.div>
 
       {/* Recent Activity */}
-      <motion.div
-        className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 border border-white/20 relative overflow-hidden"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
-      >
-        <div className="absolute top-0 left-1/2 w-24 h-24 bg-gradient-to-br from-green-100/20 to-transparent rounded-full blur-2xl"></div>
-        <h3 className="text-xl font-bold text-blue-600 mb-4 relative z-10">
-          Recent Activity
-        </h3>
-        <div className="space-y-4 relative z-10">
-          {recentActivity.map((item, i) => (
-            <motion.div
-              key={i}
-              className="flex items-center space-x-4 p-4 rounded-2xl cursor-pointer hover:shadow-md backdrop-blur-sm border border-white/10"
-              style={{ backgroundColor: item.bgColor }}
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              whileInView={{ transition: { delay: i * 0.1 } }}
-            >
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: item.color }}
-              ></div>
-              <div>
-                <p className="font-semibold text-gray-800">{item.title}</p>
-                <p className="text-gray-600 text-sm">{item.subtitle}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+      <ActivityFeed />
     </motion.div>
   );
 }
