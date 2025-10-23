@@ -115,6 +115,17 @@ export default function Register() {
       // Navigate to login after a short delay
       setTimeout(() => navigate("/login"), 500);
     } catch (error) {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) {
+        // Still reset form state for UI purposes
+        setFormData((prev) => ({
+          ...prev,
+          isLoading: false,
+          registerText: "Register",
+        }));
+        return;
+      }
+      
       const errorMsg = error.response?.data?.error || "Registration failed";
       console.log("Registration error:", errorMsg);
 

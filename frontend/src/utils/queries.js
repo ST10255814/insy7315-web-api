@@ -64,6 +64,9 @@ export const useCreateLeaseMutation = () => {
       invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      
       const msg =
         error?.response?.data?.error ||
         error?.message ||
@@ -102,6 +105,9 @@ export const useCreateInvoiceMutation = () => {
       invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      
       const msg =
         error?.response?.data?.error ||
         error?.message ||
@@ -140,6 +146,9 @@ export const useCreateListingMutation = () => {
     },
     onError: (error) => {
       console.error('Create listing mutation error:', error);
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      
       const msg =
         error?.response?.data?.error ||
         error?.error ||

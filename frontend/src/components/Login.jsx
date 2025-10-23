@@ -50,6 +50,9 @@ export default function Login() {
         });
         navigate("/forgot-password", { state: { email: userEmail } });
       } catch (error) {
+        // Don't show toast if error was already handled by 401 interceptor
+        if (error.isHandledBy401Interceptor) return;
+        
         const errorMsg = error.response?.data?.error || "Request failed";
         console.log("Request error:", errorMsg);
         Toast.error(errorMsg);
@@ -114,6 +117,17 @@ export default function Login() {
       // Navigate to dashboard
       setTimeout(() => navigate(`/dashboard/${userData._id}`), 500);
     } catch (error) {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) {
+        // Still reset form state for UI purposes
+        setFormData((prev) => ({
+          ...prev,
+          isLoading: false,
+          loginText: "Login",
+        }));
+        return;
+      }
+      
       const errorMsg = error.response?.data?.error || "Login failed";
       console.log("Login error:", errorMsg);
 
