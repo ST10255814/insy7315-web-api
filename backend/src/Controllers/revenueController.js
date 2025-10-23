@@ -9,6 +9,7 @@ import { asyncHandler, getAdminId, validateRequiredFields, logControllerAction }
  * - year: specific year - optional (defaults to current year)
  */
 const getMonthlyRevenue = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     const { month, year } = req.query;
     
@@ -38,23 +39,31 @@ const getMonthlyRevenue = asyncHandler(async (req, res) => {
         `Revenue data for ${targetYear}`;
         
     sendSuccess(res, revenueData, message);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Get revenue trend for the last 12 months for the logged-in admin
  */
 const getRevenueTrend = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     const trendData = await revenueService.getRevenueTrend(adminId);
     
     sendSuccess(res, trendData, 'Revenue trend data for the last 12 months');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Get current month revenue for the logged-in admin
  */
 const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
@@ -71,6 +80,9 @@ const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
     }
     
     sendSuccess(res, revenueData, `Current month revenue (${currentMonth}/${currentYear})`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
@@ -78,6 +90,7 @@ const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
  * (Useful for testing or recalculating past data)
  */
 const calculateRevenue = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     // Validate required fields
@@ -91,12 +104,16 @@ const calculateRevenue = asyncHandler(async (req, res) => {
     const storedData = await revenueService.storeMonthlyRevenue(revenueData);
     
     sendSuccess(res, storedData, `Revenue calculated and stored for ${month}/${year}`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Get revenue summary statistics for the admin
  */
 const getRevenueSummary = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
@@ -153,6 +170,9 @@ const getRevenueSummary = asyncHandler(async (req, res) => {
     };
     
     sendSuccess(res, summary, 'Revenue summary statistics');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 const revenueController = {

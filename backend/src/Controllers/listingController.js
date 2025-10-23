@@ -6,6 +6,7 @@ import { asyncHandler, getAdminId, logControllerAction } from '../utils/controll
  * Create a new property listing with image uploads
  */
 const createListing = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     logControllerAction('Create Listing', adminId);
@@ -26,12 +27,16 @@ const createListing = asyncHandler(async (req, res) => {
     console.log(`[createListing] Listing created with id="${newListing?.listingId}" for admin ${adminId}`);
     
     sendCreated(res, newListing, 'Listing created successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Get all listings for the authenticated admin
  */
 const getListingsByAdminId = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     logControllerAction('Fetch Admin Listings', adminId);
@@ -41,12 +46,16 @@ const getListingsByAdminId = asyncHandler(async (req, res) => {
     console.log(`[getListingsByAdminId] Retrieved ${listings.length} listings for admin ${adminId}`);
     
     sendSuccess(res, listings, `Successfully retrieved ${listings.length} listings`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Count total number of listings for the authenticated admin
  */
 const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     const count = await listingService.countNumberOfListingsByAdminId(adminId);
@@ -54,12 +63,16 @@ const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
     console.log(`[countNumberOfListingsByAdminId] Counted ${count} listings for admin ${adminId}`);
     
     sendSuccess(res, { count }, 'Listings count retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Count listings added this month for the authenticated admin
  */
 const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     const count = await listingService.countListingsAddedThisMonth(adminId);
@@ -67,6 +80,9 @@ const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
     console.log(`[countListingsAddedThisMonth] Counted ${count} listings added this month for admin ${adminId}`);
     
     sendSuccess(res, { count }, 'This month listings count retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 // Export individual functions for named imports

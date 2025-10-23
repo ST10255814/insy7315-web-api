@@ -1,11 +1,12 @@
 import bookingService from "../Services/bookingService.js";
-import { sendSuccess, sendError } from '../utils/responseHandler.js';
+import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
 import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
 
 /**
  * Get bookings for the authenticated admin (landlord)
  */
 const getBookings = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     logControllerAction('Fetch Admin Bookings', adminId);
@@ -13,12 +14,16 @@ const getBookings = asyncHandler(async (req, res) => {
     const bookings = await bookingService.getBookings(adminId);
     
     sendSuccess(res, bookings, `Successfully fetched ${bookings.length} bookings`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 /**
  * Get current month revenue for the authenticated admin
  */
 const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
+  try {
     const adminId = getAdminId(req);
     
     const revenue = await bookingService.getCurrentMonthRevenue(adminId);
@@ -31,6 +36,9 @@ const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
     };
     
     sendSuccess(res, responseData, 'Current month revenue retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
 });
 
 // Export individual functions for named imports

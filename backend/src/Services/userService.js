@@ -167,6 +167,19 @@ const findUserByCredentials = async (systemUsers, prefLogin) => {
     }
 };
 
+//helper function to check role of user
+async function checkUserRole(userId, requiredRole) {
+    const systemUsers = getCollection('System-Users');
+    const user = await systemUsers.findOne({ _id: userId });
+    if (!user) {
+        throw new Error("User not found");
+    }
+    if (user.role !== requiredRole) {
+        throw new Error("User does not have the required role");
+    }
+    return true;
+};
+
 /**
  * Service to handle user login
  */
@@ -188,6 +201,13 @@ const login = async (data) => {
     const user = await findUserByCredentials(systemUsers, prefLogin);
     if (!user) {
         throw new Error("Invalid email or password");
+    }
+
+    const requiredRole = 'landlord'; // Example role check
+    const hasRole = await checkUserRole(user._id, requiredRole);
+    
+    if (!hasRole) {
+        throw new Error("User does not have the required role");
     }
 
     // Compare passwords
