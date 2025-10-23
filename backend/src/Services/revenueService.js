@@ -35,8 +35,14 @@ async function calculateMonthlyRevenue(adminId, month, year) {
         }
 
         // Get all bookings for this admin's properties
+        const listingIds = adminListings.map(listing => listing._id.toString());
+        
+        // Try both string and ObjectId versions to be safe
         const allBookings = await bookingsCollection.find({ 
-            "listingDetail.listingID": { $in: adminListings.map(listing => listing._id.toString()) } 
+            $or: [
+                { "listingDetail.listingID": { $in: listingIds } },
+                { "listingDetail.listingID": { $in: adminListings.map(l => l._id) } }
+            ]
         }).toArray();
 
         console.log(`Found ${allBookings.length} total bookings for admin's properties`);
@@ -270,14 +276,12 @@ async function processAllAdminRevenue(month, year) {
         const db = client.db('RentWise');
         const userCollection = db.collection('System-Users');
 
-        // Get all admin users (assuming admins have a specific role or flag)
+        // Get all users who have listings (property owners/landlords)
+        const listingCollection = db.collection("Listings");
+        const uniqueLandlords = await listingCollection.distinct("landlordInfo.userId");
+        
         const admins = await userCollection.find({ 
-            $or: [
-                { role: 'admin' },
-                { role: 'landlord' },
-                { isAdmin: true },
-                { userType: 'admin' }
-            ]
+            _id: { $in: uniqueLandlords }
         }).toArray();
 
         console.log(`Found ${admins.length} admin users to process revenue for`);
@@ -296,12 +300,18 @@ async function processAllAdminRevenue(month, year) {
                 console.log(`Processing revenue for admin: ${adminId} (${admin.firstName} ${admin.surname})`);
                 
                 const revenueData = await calculateMonthlyRevenue(adminId, month, year);
-                await storeMonthlyRevenue(revenueData);
+                
+                // Only store revenue data if there's actual revenue > 0
+                if (revenueData.totalRevenue > 0) {
+                    await storeMonthlyRevenue(revenueData);
+                    console.log(`✓ Stored revenue for admin ${adminId}: R${revenueData.totalRevenue} from ${revenueData.bookingCount} bookings`);
+                } else {
+                    console.log(`⚪ Skipped admin ${adminId}: R0 (no bookings/revenue for ${month}/${year})`);
+                }
                 
                 results.processedAdmins++;
                 results.totalRevenue += revenueData.totalRevenue;
                 
-                console.log(`Processed admin ${adminId}: R${revenueData.totalRevenue} from ${revenueData.bookingCount} bookings`);
             } catch (adminError) {
                 console.error(`Error processing admin ${admin._id}:`, adminError);
                 results.errors.push({

@@ -158,6 +158,52 @@ app.get('/api/revenue/test-calculation', checkAuth, async (req, res) => {
   }
 });
 
+// Test endpoint for historical revenue calculation (remove in production)
+app.get('/api/revenue/calculate-historical', checkAuth, async (req, res) => {
+  try {
+    const { calculateHistoricalRevenue } = await import('./Schedule_Updates/scheduledTasks.js');
+    
+    console.log('API: Starting historical revenue calculation...');
+    const results = await calculateHistoricalRevenue();
+    
+    res.json({
+      success: true,
+      message: 'Historical revenue calculation completed successfully',
+      data: results
+    });
+  } catch (error) {
+    console.error('API: Historical revenue calculation failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Historical revenue calculation failed',
+      error: error.message
+    });
+  }
+});
+
+// Test endpoint for cleaning up zero-revenue records (remove in production)
+app.get('/api/revenue/cleanup-zero-records', checkAuth, async (req, res) => {
+  try {
+    const { cleanupZeroRevenueRecords } = await import('./Schedule_Updates/scheduledTasks.js');
+    
+    console.log('API: Starting zero-revenue records cleanup...');
+    const deletedCount = await cleanupZeroRevenueRecords();
+    
+    res.json({
+      success: true,
+      message: `Successfully removed ${deletedCount} zero-revenue records`,
+      deletedCount: deletedCount
+    });
+  } catch (error) {
+    console.error('API: Zero-revenue cleanup failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Zero-revenue cleanup failed',
+      error: error.message
+    });
+  }
+});
+
 
 // Start server
 app.listen(PORT, async () => {

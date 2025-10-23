@@ -104,15 +104,17 @@ async function calculateMonthlyRevenueForAllAdmins() {
     console.log('Starting monthly revenue calculation for all admins...');
     
     const currentDate = new Date();
-    // Calculate for the previous month since we're running this at the beginning of each month
-    let targetMonth = currentDate.getMonth(); // 0-indexed, so this gives us last month
+    // For testing purposes, calculate for the current month
+    // In production, you might want to calculate for the previous month
+    let targetMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed (1-12)
     let targetYear = currentDate.getFullYear();
     
-    if (targetMonth === 0) {
-      // If current month is January, calculate for December of previous year
-      targetMonth = 12;
-      targetYear -= 1;
-    }
+    // If you want to calculate for previous month instead, uncomment below:
+    // targetMonth = currentDate.getMonth(); // 0-indexed month
+    // if (targetMonth === 0) {
+    //   targetMonth = 12;
+    //   targetYear -= 1;
+    // }
 
     console.log(`Calculating revenue for month: ${targetMonth}, year: ${targetYear}`);
 
@@ -137,6 +139,103 @@ async function calculateMonthlyRevenueForAllAdmins() {
   }
 }
 
+// Function to clean up zero-revenue records from the database
+async function cleanupZeroRevenueRecords() {
+  try {
+    console.log('Starting cleanup of zero-revenue records...');
+    
+    const db = client.db("RentWise");
+    const revenueCollection = db.collection("MonthlyRevenue");
+    
+    // Find and delete all records with totalRevenue = 0
+    const deleteResult = await revenueCollection.deleteMany({ 
+      totalRevenue: 0 
+    });
+    
+    console.log(`Cleanup completed: Removed ${deleteResult.deletedCount} zero-revenue records`);
+    return deleteResult.deletedCount;
+  } catch (error) {
+    console.error('Error during zero-revenue cleanup:', error);
+    throw error;
+  }
+}
+
+// Function to calculate historical revenue for all missing months
+async function calculateHistoricalRevenue() {
+  try {
+    console.log('Starting historical revenue calculation...');
+    
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // 1-indexed
+    
+    // Calculate revenue for all months in 2025 up to the current month
+    const monthsToCalculate = [];
+    for (let month = 1; month <= currentMonth; month++) {
+      monthsToCalculate.push({ month, year: currentYear });
+    }
+    
+    console.log(`Will calculate revenue for ${monthsToCalculate.length} months: ${monthsToCalculate.map(m => `${m.month}/${m.year}`).join(', ')}`);
+    
+    const allResults = {
+      totalMonthsProcessed: 0,
+      totalRevenue: 0,
+      monthlyResults: [],
+      errors: []
+    };
+    
+    for (const { month, year } of monthsToCalculate) {
+      try {
+        console.log(`\n--- Calculating revenue for ${month}/${year} ---`);
+        const results = await revenueService.processAllAdminRevenue(month, year);
+        
+        allResults.totalMonthsProcessed++;
+        allResults.totalRevenue += results.totalRevenue;
+        allResults.monthlyResults.push({
+          month,
+          year,
+          revenue: results.totalRevenue,
+          adminsProcessed: results.processedAdmins
+        });
+        
+        if (results.errors.length > 0) {
+          allResults.errors.push(...results.errors);
+        }
+        
+        if (results.totalRevenue > 0) {
+          console.log(`✓ ${month}/${year}: R${results.totalRevenue} from ${results.processedAdmins} admins`);
+        } else {
+          console.log(`⚪ ${month}/${year}: R0 - skipped (no revenue to record)`);
+        }
+      } catch (monthError) {
+        console.error(`Error calculating revenue for ${month}/${year}:`, monthError);
+        allResults.errors.push({
+          month,
+          year,
+          error: monthError.message
+        });
+      }
+    }
+    
+    console.log('\n--- Historical Revenue Calculation Summary ---');
+    console.log(`Total months processed: ${allResults.totalMonthsProcessed}`);
+    console.log(`Total revenue calculated: R${allResults.totalRevenue}`);
+    console.log('Monthly breakdown:');
+    allResults.monthlyResults.forEach(result => {
+      console.log(`  ${result.month}/${result.year}: R${result.revenue} (${result.adminsProcessed} admins)`);
+    });
+    
+    if (allResults.errors.length > 0) {
+      console.log(`Errors encountered: ${allResults.errors.length}`);
+    }
+    
+    return allResults;
+  } catch (error) {
+    console.error('Error during historical revenue calculation:', error);
+    throw error;
+  }
+}
+
 // Function to start the scheduled tasks
 function startStatusScheduler() {
   // PRIMARY SCHEDULE: Run every day at midnight (00:00)
@@ -152,7 +251,7 @@ function startStatusScheduler() {
   });
   
   // MONTHLY REVENUE SCHEDULE: Run on the 1st of every month at 02:00 AM
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 2 1 * *', async () => {
     console.log('Running monthly revenue calculation...');
     try {
       await calculateMonthlyRevenueForAllAdmins();
@@ -185,8 +284,11 @@ async function manualRevenueCalculation(month = null, year = null) {
     console.log('Starting manual revenue calculation...');
     
     const currentDate = new Date();
-    const targetMonth = month || (currentDate.getMonth() === 0 ? 12 : currentDate.getMonth());
-    const targetYear = year || (currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear());
+    // Default to current month for testing
+    const targetMonth = month || (currentDate.getMonth() + 1); // Convert to 1-indexed
+    const targetYear = year || currentDate.getFullYear();
+    
+    console.log(`Manual calculation for month: ${targetMonth}, year: ${targetYear}`);
     
     const results = await revenueService.processAllAdminRevenue(targetMonth, targetYear);
     console.log(`Manual revenue calculation completed - Processed: ${results.processedAdmins} admins, Total: R${results.totalRevenue}`);
@@ -203,5 +305,7 @@ export {
   manualRevenueCalculation,
   updateAllLeaseStatuses, 
   updateAllInvoiceStatuses,
-  calculateMonthlyRevenueForAllAdmins
+  calculateMonthlyRevenueForAllAdmins,
+  calculateHistoricalRevenue,
+  cleanupZeroRevenueRecords
 };
