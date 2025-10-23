@@ -34,7 +34,12 @@ export default function MaintenanceColumn({ status, requests }) {
             </p>
           </div>
         ) : (
-          requests.map((req, i) => <MaintenanceCard key={i} request={req} />)
+          requests.map((req, i) => (
+            <MaintenanceCard 
+              key={req.maintenanceID} 
+              request={req} 
+            />
+          ))
         )}
       </div>
     </motion.div>

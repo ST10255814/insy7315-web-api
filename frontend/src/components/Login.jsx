@@ -95,9 +95,10 @@ export default function Login() {
         prefLogin: formData.prefLogin,
         password: formData.password,
       });
+      const userData = response.data.data.user;
       localStorage.setItem(
         "user",
-        JSON.stringify(response.data.user.firstName + " " + response.data.user.surname)
+        JSON.stringify(userData.fullname)
       );
       Toast.success(response.data.message);
 
@@ -111,7 +112,7 @@ export default function Login() {
         errors: {},
       });
       // Navigate to dashboard
-      setTimeout(() => navigate(`/dashboard/${response.data.user._id}`), 500);
+      setTimeout(() => navigate(`/dashboard/${userData._id}`), 500);
     } catch (error) {
       const errorMsg = error.response?.data?.error || "Login failed";
       console.log("Login error:", errorMsg);

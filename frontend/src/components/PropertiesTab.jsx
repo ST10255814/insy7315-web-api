@@ -116,7 +116,7 @@ export default function PropertiesTab() {
         <AnimatePresence>
           {properties.map((property, index) => (
             <motion.div
-              key={property.id}
+              key={property.listingId}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}

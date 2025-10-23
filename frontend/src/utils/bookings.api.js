@@ -4,7 +4,7 @@ import api from "../lib/axios";
 export async function getBookingsByAdminId() {
     try{
         const response = await api.get('/api/bookings', { withCredentials: true });
-        return response.data;
+        return response.data.data;
     } catch (error) {
         throw error;
     }
@@ -16,7 +16,7 @@ export async function getCurrentMonthRevenue() {
         const response = await api.get('/api/bookings/current-month-revenue', {
             withCredentials: true
         });
-        return response.data;
+        return response.data.data;
     } catch (error) {
         throw error;
     }
