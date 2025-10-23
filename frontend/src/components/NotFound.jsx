@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaHome,
-  FaSearch,
   FaExclamationTriangle,
   FaArrowLeft,
 } from "react-icons/fa";
@@ -27,10 +26,6 @@ export default function NotFound() {
 
   const handleGoBack = () => {
     navigate(-1);
-  };
-
-  const handleGoHome = () => {
-    navigate("/");
   };
 
   const handleGoToDashboard = () => {
@@ -192,19 +187,6 @@ export default function NotFound() {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="flex gap-4 flex-wrap justify-center"
           >
-            <motion.button
-              onClick={handleGoHome}
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:from-white hover:to-gray-50 hover:text-blue-700 transition-all duration-300 flex items-center gap-2 group"
-            >
-              <FaHome className="group-hover:animate-bounce" />
-              Go Home
-            </motion.button>
-
             {user && userId && (
               <motion.button
                 onClick={handleGoToDashboard}
@@ -215,7 +197,7 @@ export default function NotFound() {
                 whileTap={{ scale: 0.95 }}
                 className="bg-gradient-to-r from-white to-gray-50 text-blue-700 font-bold px-8 py-3 rounded-full shadow-lg hover:from-gray-100 hover:to-gray-200 hover:text-blue-800 transition-all duration-300 flex items-center gap-2 group"
               >
-                <FaSearch className="group-hover:animate-pulse" />
+                <FaHome />
                 Go Home
               </motion.button>
             )}

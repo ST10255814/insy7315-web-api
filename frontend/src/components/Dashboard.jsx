@@ -1,14 +1,14 @@
 import { useParams, useLocation, NavLink, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaHome, 
-  FaBuilding, 
-  FaFileContract, 
-  FaFileInvoice, 
-  FaWrench, 
-  FaCalendarCheck, 
-  FaBars, 
+import {
+  FaHome,
+  FaBuilding,
+  FaFileContract,
+  FaFileInvoice,
+  FaWrench,
+  FaCalendarCheck,
+  FaBars,
   FaTimes,
   FaChevronLeft,
   FaChevronRight
@@ -19,6 +19,7 @@ import LeasesTab from "./LeaseTab.jsx";
 import InvoicesTab from "./InvoicesTab.jsx";
 import MaintenanceTab from "./MaintenanceTab.jsx";
 import BookingsTab from "./BookingsTab.jsx";
+import DashboardNotFound from "./DashboardNotFound.jsx";
 
 export default function Dashboard() {
   const { userId } = useParams();
@@ -55,6 +56,11 @@ export default function Dashboard() {
   const pathParts = location.pathname.split("/");
   const activeTab = pathParts[3] || "overview";
   const currentTab = tabs.find((t) => t.key === activeTab) || tabs[0];
+  
+  // Check if current route is valid (exact match and no extra path segments)
+  const expectedPath = `/dashboard/${userId}/${activeTab}`;
+  const isValidRoute = tabs.some((tab) => tab.key === activeTab) && 
+                      (location.pathname === expectedPath || location.pathname === `/dashboard/${userId}`);
 
   return (
     <div className="flex h-screen bg-white pt-16">
@@ -171,20 +177,22 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto relative z-10">
-        <div className="p-6">
-          {/* Page Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-              <h1 className="text-3xl font-extrabold text-blue-700 mb-2">
-                {currentTab.label}
-              </h1>
-              <p className="text-gray-600">{currentTab.description}</p>
-            </div>
-          </motion.div>
+        <div className={isValidRoute ? "p-6" : ""}>
+          {/* Page Header - Only show for valid routes */}
+          {isValidRoute && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                <h1 className="text-3xl font-extrabold text-blue-700 mb-2">
+                  {currentTab.label}
+                </h1>
+                <p className="text-gray-600">{currentTab.description}</p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Tab Content */}
           <Routes>
@@ -195,7 +203,8 @@ export default function Dashboard() {
             <Route path="invoices" element={<InvoicesTab />} />
             <Route path="maintenance" element={<MaintenanceTab />} />
             <Route path="bookings" element={<BookingsTab />} />
-            <Route path="*" element={<Navigate to="overview" replace />} />
+            {/* Catch-all route for invalid dashboard paths */}
+            <Route path="*" element={<DashboardNotFound />} />
           </Routes>
         </div>
       </main>

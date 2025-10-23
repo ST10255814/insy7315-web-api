@@ -50,6 +50,7 @@ export default function PropertiesTab() {
     imageURL: [],
     imageFiles: [],
     price: "",
+    status: "",
   });
 
   const handleAddSubmit = (e) => {
@@ -62,7 +63,7 @@ export default function PropertiesTab() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6 w-full relative"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -99,7 +100,7 @@ export default function PropertiesTab() {
       )}
       {isError && (
         <div className="text-red-600 font-semibold text-center mt-10">
-          Failed to load invoices. Please try again.
+          Failed to load properties. Please try again.
         </div>
       )}
       {!isLoading && !isError && properties.length === 0 && (
