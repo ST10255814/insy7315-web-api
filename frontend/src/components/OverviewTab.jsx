@@ -24,6 +24,7 @@ import StatsCard from "../pages/StatsCard";
 import { getCurrentMonthRevenue } from "../utils/bookings.api";
 import { countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../utils/listings.api";
 import { countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../utils/leases.api";
+import { countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../utils/maintenance.api";
 import Toast from "../lib/toast";
 
 // Register ChartJS components
@@ -74,6 +75,20 @@ export default function OverviewTab() {
   // State for leased property percentage
   const [leasedPercentage, setLeasedPercentage] = useState({
     percentage: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for maintenance requests count
+  const [maintenanceRequests, setMaintenanceRequests] = useState({
+    count: 0,
+    loading: true,
+    error: null
+  });
+
+  // State for high priority maintenance requests count
+  const [highPriorityMaintenanceRequests, setHighPriorityMaintenanceRequests] = useState({
+    count: 0,
     loading: true,
     error: null
   });
@@ -182,11 +197,53 @@ export default function OverviewTab() {
       }
     };
 
+    const fetchMaintenanceRequests = async () => {
+      try {
+        setMaintenanceRequests(prev => ({ ...prev, loading: true, error: null }));
+        const count = await countMaintenanceRequestsByAdminId();
+        setMaintenanceRequests({
+          count: count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching maintenance requests:', error);
+        setMaintenanceRequests(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load maintenance requests count'
+        }));
+        Toast.error('Failed to load maintenance requests count');
+      }
+    };
+
+    const fetchHighPriorityMaintenanceRequests = async () => {
+      try {
+        setHighPriorityMaintenanceRequests(prev => ({ ...prev, loading: true, error: null }));
+        const count = await countHighPriorityMaintenanceRequestsByAdminId();
+        setHighPriorityMaintenanceRequests({
+          count: count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching high priority maintenance requests:', error);
+        setHighPriorityMaintenanceRequests(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load high priority maintenance requests count'
+        }));
+        Toast.error('Failed to load high priority maintenance requests count');
+      }
+    };
+
     fetchMonthlyRevenue();
     fetchTotalProperties();
     fetchMonthlyProperties();
     fetchActiveLeases();
     fetchLeasedPercentage();
+    fetchMaintenanceRequests();
+    fetchHighPriorityMaintenanceRequests();
   }, []);
 
   // Format currency for display
@@ -416,8 +473,20 @@ export default function OverviewTab() {
         />
         <StatsCard
           title="Pending Tasks"
-          value="7"
-          subtitle="3 urgent items"
+          value={
+            maintenanceRequests.loading 
+              ? "Loading..." 
+              : maintenanceRequests.error 
+                ? "Error" 
+                : maintenanceRequests.count.toString()
+          }
+          subtitle={
+            highPriorityMaintenanceRequests.loading 
+              ? "Calculating..." 
+              : highPriorityMaintenanceRequests.error 
+                ? "Failed to load" 
+                : `${highPriorityMaintenanceRequests.count} urgent items`
+          }
           color="orange"
           icon={<FaWrench />}
         />

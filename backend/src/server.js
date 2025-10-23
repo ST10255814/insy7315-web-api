@@ -121,6 +121,8 @@ app.get('/api/bookings/current-month-revenue', checkAuth, bookingController.getC
 
 //maintenance routes
 app.get('/api/maintenance', checkAuth, maintenanceController.getAllMaintenanceRequests);
+app.get('/api/maintenance/count', checkAuth, maintenanceController.countMaintenanceRequestsByAdminId);
+app.get('/api/maintenance/count-high-priority', checkAuth, maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);
 
 
 

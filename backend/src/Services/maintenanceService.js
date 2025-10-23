@@ -60,7 +60,42 @@ async function getAllMaintenanceRequests(adminId) {
   }
 }
 
+//count total maintenance requests for an admin
+async function countMaintenanceRequestsByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const MaintenanceCollection = db.collection("Maintenance-Requests");
+
+    const count = await MaintenanceCollection.countDocuments({
+      "listingDetail.landlordID": toObjectId(adminId),
+    });
+
+    return count;
+  } catch (error) {
+    throw new Error(`Error counting maintenance requests: ${error.message}`);
+  }
+}
+
+//count all maintenance requests with high priority for an admin
+async function countHighPriorityMaintenanceRequestsByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const MaintenanceCollection = db.collection("Maintenance-Requests");
+
+    const count = await MaintenanceCollection.countDocuments({
+      "listingDetail.landlordID": toObjectId(adminId),
+      "newMaintenanceRequest.priority": { $in: ["high", "High"] },
+    });
+
+    return count;
+  } catch (error) {
+    throw new Error(`Error counting high priority maintenance requests: ${error.message}`);
+  }
+}
+
 const maintenanceService = {
   getAllMaintenanceRequests,
+  countMaintenanceRequestsByAdminId,
+  countHighPriorityMaintenanceRequestsByAdminId,
 };
 export default maintenanceService;
