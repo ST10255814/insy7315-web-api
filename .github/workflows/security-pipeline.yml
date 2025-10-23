@@ -2,7 +2,14 @@ name: 🔒 Comprehensive Security & Testing Pipeline
 
 on:
   push:
-    branches: [ main, pipeline, develop ]
+    branches: 
+      - main
+      - pipeline
+      - develop
+      - 'pipeline-*'    # Match pipeline-test, pipeline-dev, etc.
+      - 'PIPELINE_*'    # Match PIPELINE_SECURTY, etc.
+      - 'feature/*'     # Match feature branches
+      - 'security/*'    # Match security branches
   pull_request:
     branches: [ main ]
   schedule:
