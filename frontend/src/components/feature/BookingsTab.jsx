@@ -1,8 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import Toast from "../lib/toast.js";
-import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
-import BookingCard from "../pages/BookingCard.jsx";
-import { useBookingsQuery } from "../utils/queries.js";
+import Toast from "../../lib/toast.js";
+import { TabWrapper, StateHandler, SectionHeading, BookingCard } from "../common/index.js";
+import { useBookingsQuery } from "../../utils/queries.js";
 import { useParams } from "react-router-dom";
 
 export default function BookingsTab() {
@@ -37,48 +36,18 @@ export default function BookingsTab() {
   };
 
   return (
-    <motion.div
-      className="w-full space-y-6 relative"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* Background decorative elements */}
-      <div className="absolute top-0 right-1/4 w-32 h-32 bg-gradient-to-br from-blue-100/30 to-green-100/20 rounded-full blur-3xl -z-10 animate-float"></div>
-      <div className="absolute bottom-1/3 left-1/4 w-28 h-28 bg-gradient-to-br from-purple-100/25 to-blue-100/15 rounded-full blur-2xl -z-10" style={{animationDelay: '2s'}}></div>
+    <TabWrapper decorativeElements="blue-green">
+      <SectionHeading title="Current Bookings:" />
       
-      {/* Section Heading */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="relative z-10"
+      <StateHandler
+        isLoading={isLoading}
+        isError={isError}
+        data={bookings}
+        errorMessage="Failed to load bookings. Please try again."
+        emptyMessage="No bookings found. Add a new booking to get started."
+        gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+        loadingCount={6}
       >
-        <h2 className="text-2xl font-extrabold text-blue-700 mb-6">Current Bookings:</h2>
-      </motion.div>
-
-      {/* Booking Cards / Loading / Error */}
-      {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <LoadingSkeleton key={i} />
-          ))}
-        </div>
-      )}
-
-      {isError && (
-        <div className="text-red-600 font-semibold text-center mt-10">
-          Failed to load bookings. Please try again.
-        </div>
-      )}
-
-      {!isLoading && !isError && bookings.length === 0 && (
-        <div className="text-gray-500 text-center mt-10 font-medium">
-          No bookings found. Add a new booking to get started.
-        </div>
-      )}
-
-      {!isLoading && bookings.length > 0 && (
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
           initial={{ opacity: 0 }}
@@ -88,7 +57,7 @@ export default function BookingsTab() {
           <AnimatePresence>
             {bookings.map((booking, index) => (
               <motion.div
-                key={booking.bookingID}
+                key={booking.bookingID || booking.bookingId || index}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
@@ -102,7 +71,7 @@ export default function BookingsTab() {
             ))}
           </AnimatePresence>
         </motion.div>
-      )}
-    </motion.div>
+      </StateHandler>
+    </TabWrapper>
   );
 }

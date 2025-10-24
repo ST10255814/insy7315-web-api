@@ -7,8 +7,8 @@ import {
   FaMoneyBillWave,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import HoverActionButton from "../components/ui/HoverActionButton.jsx";
-import { formatAmount } from "../utils/formatters";
+import HoverActionButton from "./HoverActionButton.jsx";
+import { formatAmount } from "../../utils/formatters";
 
 export default function PropertyCard({ property, getStatusClasses, onAction }) {
   // Get the first image from the imagesURL array, or use a placeholder

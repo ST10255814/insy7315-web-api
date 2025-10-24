@@ -9,8 +9,8 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { logoutUser } from "../utils/user.api.js";
-import Toast from "../lib/toast.js";
+import { logoutUser } from "../../services/user.api.js";
+import Toast from "../../lib/toast.js";
 
 export default function Navbar() {
   const navigate = useNavigate();

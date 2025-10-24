@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams } from "react-router-dom";
-import { useLeasesQuery, useCreateLeaseMutation } from "../utils/queries";
+import { useLeasesQuery, useCreateLeaseMutation } from "../../utils/queries";
 import { FaPlusCircle } from "react-icons/fa";
-import LeaseCard from "../pages/LeaseCard.jsx";
-import LoadingSkeleton from "../pages/LoadingSkeleton.jsx";
-import AddLeaseModal from "../models/AddLeaseModel.jsx";
-import EditLeaseModal from "../models/EditLeaseModel.jsx";
-import Toast from "../lib/toast.js";
+import { TabWrapper, StateHandler, ActionButton, LeaseCard } from "../common/index.js";
+import AddLeaseModal from "../../models/AddLeaseModel.jsx";
+import EditLeaseModal from "../../models/EditLeaseModel.jsx";
+import Toast from "../../lib/toast.js";
 
 export default function LeasesTab() {
   const { userId: adminId } = useParams();
@@ -20,7 +19,7 @@ export default function LeasesTab() {
     errors: { isBookingId: false },
   });
 
-  const { isLoading, isError, data: leases } = useLeasesQuery(adminId);
+  const { isLoading, isError, data: leases = [] } = useLeasesQuery(adminId);
   const createLeaseMutation = useCreateLeaseMutation();
 
   // Add Lease Submit
@@ -81,67 +80,28 @@ export default function LeasesTab() {
   };
 
   return (
-    <motion.div
-      className="w-full space-y-6 relative"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-1/4 w-36 h-36 bg-gradient-to-br from-green-100/30 to-blue-100/20 rounded-full blur-3xl -z-10 animate-float"></div>
-      <div className="absolute bottom-1/4 right-1/3 w-28 h-28 bg-gradient-to-br from-purple-100/25 to-pink-100/15 rounded-full blur-2xl -z-10" style={{animationDelay: '3s'}}></div>
-      
+    <TabWrapper decorativeElements="purple-green">
       {/* Add Lease Button */}
       <div className="flex justify-start">
-        <motion.button
-        onClick={() => setShowAddModal(true)}
-        whileHover={{
-          scale: 1.07,
-          boxShadow: "0 8px 25px rgba(59,130,246,0.45)",
-        }}
-        whileTap={{ scale: 0.96 }}
-        transition={{
-          type: "spring",
-          stiffness: 220,
-          damping: 18,
-          mass: 0.8,
-        }}
-        disabled={isLoading}
-        className="flex items-center justify-center gap-2
-            bg-gradient-to-r from-blue-500 to-blue-600
-          text-white px-6 py-3 rounded-2xl shadow-md
-            font-semibold text-md
-          hover:from-blue-600 hover:to-blue-700
-            transition-all duration-300 ease-out
-            focus:outline-none focus:ring-4 focus:ring-blue-300"
-      >
-        <FaPlusCircle className="text-lg" />
-        Add Lease
-      </motion.button>
+        <ActionButton
+          onClick={() => setShowAddModal(true)}
+          icon={FaPlusCircle}
+          disabled={isLoading}
+          size="medium"
+        >
+          Add Lease
+        </ActionButton>
       </div>
 
-      {/* Lease Cards / Loading / Error */}
-      {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <LoadingSkeleton key={i} />
-          ))}
-        </div>
-      )}
-
-      {isError && (
-        <div className="text-red-600 font-semibold text-center mt-10">
-          Failed to load leases. Please try again.
-        </div>
-      )}
-
-      {leases && leases?.length === 0 && (
-        <div className="text-gray-500 text-center mt-10 font-medium">
-          No leases found. Add a new lease to get started.
-        </div>
-      )}
-
-      {leases && leases?.length > 0 && (
+      <StateHandler
+        isLoading={isLoading}
+        isError={isError}
+        data={leases}
+        errorMessage="Failed to load leases. Please try again."
+        emptyMessage="No leases found. Add a new lease to get started."
+        gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+        loadingCount={6}
+      >
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
           initial={{ opacity: 0 }}
@@ -149,7 +109,7 @@ export default function LeasesTab() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <AnimatePresence>
-            {leases.map((lease, index) => (
+            {(leases || []).map((lease, index) => (
               <motion.div
                 key={lease.leaseId}
                 initial={{ opacity: 0, y: 30 }}
@@ -165,7 +125,7 @@ export default function LeasesTab() {
             ))}
           </AnimatePresence>
         </motion.div>
-      )}
+      </StateHandler>
 
       {/* Add Lease Modal */}
       <AddLeaseModal
@@ -188,6 +148,6 @@ export default function LeasesTab() {
         onSubmit={handleEditSubmit}
         setSelectedLease={setSelectedLease}
       />
-    </motion.div>
+    </TabWrapper>
   );
 }

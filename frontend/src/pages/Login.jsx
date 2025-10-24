@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import Toast from "../lib/toast.js";
 import { useFormValidation } from "../hooks/useFormValidation.js";
 import { useAuth } from "../hooks/useAuth.js";
-import AuthLayout from "./ui/AuthLayout.jsx";
-import FormField from "./ui/FormField.jsx";
-import FormInput from "./ui/FormInput.jsx";
-import PasswordInput from "./ui/PasswordInput.jsx";
-import LoadingButton from "./ui/LoadingButton.jsx";
+import AuthLayout from "../components/common/AuthLayout.jsx";
+import FormField from "../components/common/FormField.jsx";
+import FormInput from "../components/common/FormInput.jsx";
+import PasswordInput from "../components/common/PasswordInput.jsx";
+import LoadingButton from "../components/common/LoadingButton.jsx";
 
 export default function Login() {
   const { isLoading, isShaking, login, handleForgotPasswordFromStorage } = useAuth();

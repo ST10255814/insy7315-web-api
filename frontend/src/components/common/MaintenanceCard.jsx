@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { priorityColor } from "../constants/status.js";
+import { priorityColor } from "../../constants/status.js";
 import {
   FaDownload,
   FaUser,
@@ -11,8 +11,8 @@ import {
   FaIdBadge,
   FaFileAlt,
 } from "react-icons/fa";
-import { downloadFiles } from "../utils/fileDownload.js";
-import { formatDateTimeUS } from "../utils/formatters.js";
+import { downloadFiles } from "../../utils/fileDownload.js";
+import { formatDateTimeUS } from "../../utils/formatters.js";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 15 },

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { useRecentActivitiesQuery } from "../../utils/queries";
-import { getActivityColor, formatActivityTime } from "../../utils/activityHelpers";
+import { useRecentActivitiesQuery } from "../../../utils/queries";
+import { getActivityColor, formatActivityTime } from "../../../utils/activityHelpers";
 import { useParams } from "react-router-dom";
 
 export default function ActivityFeed() {

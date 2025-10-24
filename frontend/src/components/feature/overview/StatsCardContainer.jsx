@@ -5,7 +5,7 @@ import {
   FaClipboardList,
   FaWrench,
 } from "react-icons/fa";
-import StatsCard from "../../pages/StatsCard";
+import StatsCard from "../../common/StatsCard";
 import { 
   useMonthlyRevenueQuery,
   useTotalPropertiesCountQuery,
@@ -14,7 +14,7 @@ import {
   useLeasedPercentageQuery,
   useMaintenanceCountQuery,
   useHighPriorityMaintenanceCountQuery,
-} from "../../utils/queries";
+} from "../../../utils/queries";
 import { useParams } from "react-router-dom";
 
 export default function StatsCardContainer() {

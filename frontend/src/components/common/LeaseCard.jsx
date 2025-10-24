@@ -8,9 +8,9 @@ import {
   FaMoneyBillWave,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { formatDate, formatAmount } from "../utils/formatters";
-import { statusClasses, statusActions } from "../constants/constants.js";
-import HoverActionButton from "../components/ui/HoverActionButton.jsx";
+import { formatDate, formatAmount } from "../../utils/formatters";
+import { statusClasses, statusActions } from "../../constants/constants.js";
+import HoverActionButton from "./HoverActionButton.jsx";
 
 export default function LeaseCard({ lease, onAction }) {
   const [showOverlay, setShowOverlay] = useState(false);

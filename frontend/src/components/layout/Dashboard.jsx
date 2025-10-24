@@ -13,13 +13,13 @@ import {
   FaChevronLeft,
   FaChevronRight
 } from "react-icons/fa";
-import OverviewTab from "./OverviewTab.jsx";
-import PropertiesTab from "./PropertiesTab.jsx";
-import LeasesTab from "./LeaseTab.jsx";
-import InvoicesTab from "./InvoicesTab.jsx";
-import MaintenanceTab from "./MaintenanceTab.jsx";
-import BookingsTab from "./BookingsTab.jsx";
-import DashboardNotFound from "./DashboardNotFound.jsx";
+import OverviewTab from "../feature/OverviewTab.jsx";
+import PropertiesTab from "../feature/PropertiesTab.jsx";
+import LeasesTab from "../feature/LeaseTab.jsx";
+import InvoicesTab from "../feature/InvoicesTab.jsx";
+import MaintenanceTab from "../feature/MaintenanceTab.jsx";
+import BookingsTab from "../feature/BookingsTab.jsx";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function Dashboard() {
   const { userId } = useParams();

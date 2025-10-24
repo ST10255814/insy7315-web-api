@@ -1,7 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../lib/toast";
+import { 
+  ModalContainer, 
+  ModalHeader, 
+  ModalForm, 
+  ModalButtons, 
+  ModalFormField 
+} from "../components/modals/index.js";
 
 // Initial form state - defined outside component to avoid re-creation
 const INITIAL_FORM_STATE = {
@@ -11,8 +17,6 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) {
-  const buttonHoverTransition = { type: "spring", stiffness: 300, damping: 20 };
-
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [errors, setErrors] = useState({});
 
@@ -67,118 +71,65 @@ export default function AddInvoiceModal({ show, onClose, onSubmit, isPending }) 
   };
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/30 backdrop-blur-md p-4"
-        >
-          <motion.div
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{ duration: 0.3, type: "spring" }}
-            className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md border border-gray-200"
-          >
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-blue-800">Add New Invoice</h3>
-                <p className="text-sm text-gray-600 mt-1">Create an invoice for an existing lease</p>
-              </div>
-              <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors ml-4">
-                <FaTimes size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Lease ID */}
-              <div>
-                <label className="block text-sm font-semibold text-blue-700 mb-2">Lease ID</label>
-                <input
-                  type="text"
-                  name="leaseId"
-                  value={formData.leaseId}
-                  onChange={handleChange}
-                  placeholder="Enter Lease ID"
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
-                    errors.leaseId ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
-                  }`}
-                />
-                {errors.leaseId && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.leaseId}</p>}
-              </div>
-              
-              {/* Amount */}
-              <div>
-                <label className="block text-sm font-semibold text-blue-700 mb-2">Amount (R)</label>
-                <input
-                  type="number"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  placeholder="Enter Amount"
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
-                    errors.amount ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
-                  }`}
-                />
-                {errors.amount && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.amount}</p>}
-              </div>
-
-              {/* Due Date */}
-              <div>
-                <label className="block text-sm font-semibold text-blue-700 mb-2">Due Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:ring-2 transition outline-none ${
-                    errors.date ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-700"
-                  }`}
-                />
-                {errors.date && <p className="text-red-500 text-sm mt-1 font-semibold">{errors.date}</p>}
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-4 mt-2">
-                <motion.button
-                  type="button"
-                  onClick={handleClose}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={buttonHoverTransition}
-                  className="px-5 py-2 rounded-xl font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 shadow transition-colors"
-                >
-                  Cancel
-                </motion.button>
-                <motion.button
-                  type="submit"
-                  disabled={isPending}
-                  whileHover={!isPending ? { scale: 1.05 } : {}}
-                  whileTap={!isPending ? { scale: 0.95 } : {}}
-                  transition={buttonHoverTransition}
-                  className={`px-5 py-2 rounded-xl font-semibold text-white shadow flex items-center justify-center gap-2 ${
-                    isPending ? "bg-blue-400 cursor-not-allowed" : "bg-blue-700 hover:bg-blue-800"
-                  }`}
-                >
-                  {isPending ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                    />
-                  ) : (
-                    <>
-                      <FaPlusCircle /> Add Invoice
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <ModalContainer 
+      show={show} 
+      onClose={handleClose} 
+      size="md" 
+      maxHeight="mobile-safe"
+    >
+      <ModalHeader
+        title="Add New Invoice"
+        description="Create an invoice for an existing lease"
+        onClose={handleClose}
+        icon={FaPlusCircle}
+      />
+      
+      <ModalForm onSubmit={handleSubmit}>
+        <ModalFormField
+          label="Lease ID"
+          name="leaseId"
+          value={formData.leaseId}
+          onChange={handleChange}
+          placeholder="Enter Lease ID"
+          error={errors.leaseId}
+          required
+        />
+        
+        <ModalFormField
+          label="Amount (R)"
+          name="amount"
+          type="number"
+          value={formData.amount}
+          onChange={handleChange}
+          placeholder="Enter Amount"
+          error={errors.amount}
+          required
+        />
+        
+        <ModalFormField
+          label="Due Date"
+          name="date"
+          type="date"
+          value={formData.date}
+          onChange={handleChange}
+          error={errors.date}
+          required
+        />
+      </ModalForm>
+      
+      <ModalButtons
+        primaryAction={{
+          label: "Add Invoice",
+          icon: FaPlusCircle,
+          type: "submit",
+          onClick: handleSubmit
+        }}
+        secondaryAction={{
+          label: "Cancel",
+          onClick: handleClose
+        }}
+        isPending={isPending}
+      />
+    </ModalContainer>
   );
 }

@@ -12,10 +12,10 @@ import {
   FaTimes,
   FaDownload
 } from "react-icons/fa";
-import { formatDateUS, formatAmount } from "../utils/formatters";
-import { statusClasses } from "../constants/constants.js";
-import HoverActionButton from "../components/ui/HoverActionButton.jsx";
-import { downloadFiles } from "../utils/fileDownload.js";
+import { formatDateUS, formatAmount } from "../../utils/formatters";
+import { statusClasses } from "../../constants/constants.js";
+import HoverActionButton from "./HoverActionButton.jsx";
+import { downloadFiles } from "../../utils/fileDownload.js";
 
 export default function BookingCard({ booking, onAction }) {
   // Use the utility function to format amount

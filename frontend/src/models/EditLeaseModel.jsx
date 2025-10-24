@@ -1,6 +1,12 @@
-import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FaSave } from "react-icons/fa";
+import { 
+  ModalContainer, 
+  ModalHeader, 
+  ModalForm, 
+  ModalButtons, 
+  ModalFormField 
+} from "../components/modals/index.js";
 
 const statusColors = {
   Active: "bg-green-100 text-green-800",
@@ -16,7 +22,6 @@ export default function EditLeaseModal({
   onSubmit,
   isPending,
 }) {
-  const buttonHoverTransition = { type: "spring", stiffness: 300, damping: 20 };
   const [editData, setEditData] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -76,179 +81,108 @@ export default function EditLeaseModal({
 
   if (!lease) return null;
 
+  // Create status badge component
+  const statusBadge = (
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+        statusColors[lease.status] || "bg-gray-100 text-gray-700"
+      }`}
+    >
+      {lease.status}
+    </span>
+  );
+
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4"
-        >
-          <motion.div
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{ duration: 0.3, type: "spring" }}
-            className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg border border-gray-200"
+    <ModalContainer 
+      show={show} 
+      onClose={onClose} 
+      size="lg" 
+      maxHeight="mobile-safe"
+    >
+      <ModalHeader
+        title={`Editing Lease: ${lease.leaseId}`}
+        description="Update lease information and settings"
+        onClose={onClose}
+        icon={FaSave}
+        statusBadge={statusBadge}
+      />
+      
+      <ModalForm onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
+          <ModalFormField
+            label="Tenant Name"
+            name="tenantName"
+            value={editData.tenantName}
+            onChange={handleChange}
+            disabled={true}
+            className="lg:col-span-1"
+          />
+          
+          <ModalFormField
+            label="Property"
+            name="property"
+            value={editData.property}
+            onChange={handleChange}
+            disabled={true}
+            className="lg:col-span-1"
+          />
+          
+          <ModalFormField
+            label="Monthly Rent (R)"
+            name="rent"
+            type="number"
+            value={editData.rent}
+            onChange={handleChange}
+            className="lg:col-span-1"
+          />
+          
+          <ModalFormField
+            label="Status"
+            name="status"
+            type="select"
+            value={editData.status}
+            onChange={handleChange}
+            className="lg:col-span-1"
           >
-            {/* Header */}
-            <div className="mb-6 text-center">
-              <h3 className="text-2xl font-bold text-blue-800">
-                Editing:
-              </h3>
-              <p className="text-sm text-gray-500 mt-1">
-                Lease ID: <span className="font-mono">{lease.leaseId}</span>
-              </p>
-              <span
-                className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                  statusColors[lease.status] || "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {lease.status}
-              </span>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Tenant Name */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    Tenant Name
-                  </label>
-                  <input
-                    type="text"
-                    name="tenantName"
-                    value={editData.tenantName}
-                    onChange={handleChange}
-                    disabled={true}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  />
-                </div>
-
-                {/* Property */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    Property
-                  </label>
-                  <input
-                    type="text"
-                    name="property"
-                    value={editData.property}
-                    disabled={true}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  />
-                </div>
-
-                {/* Rent */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    Rent Amount
-                  </label>
-                  <input
-                    type="number"
-                    name="rent"
-                    value={editData.rent}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  />
-                </div>
-
-                {/* Status */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    Lease Status
-                  </label>
-                  <select
-                    name="status"
-                    value={editData.status}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Expired">Expired</option>
-                    <option value="Expiring Soon">Expiring Soon</option>
-                    <option value="Pending">Pending</option>
-                  </select>
-                </div>
-
-                {/* Start Date */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    Start Date
-                  </label>
-                  <input
-                    type="text"
-                    name="startDate"
-                    value={editData.startDate}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  />
-                </div>
-
-                {/* End Date */}
-                <div>
-                  <label className="block text-sm font-semibold text-blue-700 mb-1">
-                    End Date
-                  </label>
-                  <input
-                    type="text"
-                    name="endDate"
-                    value={editData.endDate}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-xl shadow-sm border-gray-300 focus:ring-2 focus:ring-blue-700 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-4 mt-4">
-                <motion.button
-                  type="button"
-                  onClick={onClose}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={buttonHoverTransition}
-                  className="px-5 py-2 rounded-xl font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 shadow"
-                >
-                  Cancel
-                </motion.button>
-
-                <motion.button
-                  type="submit"
-                  disabled={!hasChanges || isPending}
-                  whileHover={hasChanges && !isPending ? { scale: 1.05 } : {}}
-                  whileTap={hasChanges && !isPending ? { scale: 0.95 } : {}}
-                  transition={buttonHoverTransition}
-                  className={`px-5 py-2 rounded-xl font-semibold text-white shadow flex items-center justify-center gap-2 ${
-                    !hasChanges || isPending
-                      ? "bg-blue-300 cursor-not-allowed"
-                      : "bg-blue-700 hover:bg-blue-800"
-                  }`}
-                >
-                  {isPending ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1,
-                        ease: "linear",
-                      }}
-                      className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                    />
-                  ) : (
-                    <>
-                      <FaSave /> Save Changes
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+            <option value="Expiring Soon">Expiring Soon</option>
+            <option value="Expired">Expired</option>
+          </ModalFormField>
+          
+          <ModalFormField
+            label="Start Date"
+            name="startDate"
+            type="date"
+            value={editData.startDate}
+            onChange={handleChange}
+            className="lg:col-span-1"
+          />
+          
+          <ModalFormField
+            label="End Date"
+            name="endDate"
+            type="date"
+            value={editData.endDate}
+            onChange={handleChange}
+            className="lg:col-span-1"
+          />
+        </div>
+      </ModalForm>
+      
+      <ModalButtons
+        primaryAction={{
+          label: "Save Changes",
+          icon: FaSave,
+          type: "submit"
+        }}
+        secondaryAction={{
+          label: "Cancel",
+          onClick: onClose
+        }}
+        isPending={isPending}
+        disabled={!hasChanges}
+      />
+    </ModalContainer>
   );
 }

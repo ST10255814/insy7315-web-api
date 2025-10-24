@@ -12,7 +12,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { useRevenueTrendQuery } from "../../utils/queries";
+import { useRevenueTrendQuery } from "../../../utils/queries";
 import { useParams } from "react-router-dom";
 
 // Register ChartJS components for Line chart

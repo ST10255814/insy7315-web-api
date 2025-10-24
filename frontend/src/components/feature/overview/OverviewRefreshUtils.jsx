@@ -6,8 +6,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaSyncAlt } from "react-icons/fa";
-import { useInvalidateOverview } from "../../utils/queries";
-import Toast from "../../lib/toast";
+import { useInvalidateOverview } from "../../../utils/queries";
+import Toast from "../../../lib/toast";
 
 // Mobile-responsive refresh button component
 export const OverviewRefreshButton = () => {

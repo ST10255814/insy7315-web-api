@@ -1,16 +1,16 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import Toast from "../lib/toast.js";
-import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "./leases.api.js";
-import { getInvoicesByAdminId, createInvoice } from "./invoice.api.js";
-import { getListingsByAdminId, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "./listings.api.js";
-import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "./maintenance.api.js";
-import { getBookingsByAdminId, getCurrentMonthRevenue } from "./bookings.api.js";
-import { getRecentActivities } from "./activity.api.js";
+import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../services/leases.api.js";
+import { getInvoicesByAdminId, createInvoice } from "../services/invoice.api.js";
+import { getListingsByAdminId, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../services/listings.api.js";
+import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../services/maintenance.api.js";
+import { getBookingsByAdminId, getCurrentMonthRevenue } from "../services/bookings.api.js";
+import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import queryClient from "../lib/queryClient.js";
 import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries, invalidateOverviewQueries } from "./cacheUtils.js";
-import { getRevenueTrend } from "./revenue.api.js";
+import { getRevenueTrend } from "../services/revenue.api.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
 export const useLeasesQuery = (adminId) => {
