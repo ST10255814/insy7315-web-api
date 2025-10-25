@@ -1,20 +1,31 @@
-import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { TabWrapper, StateHandler, ActionButton, PropertyCard } from "../common/index.js";
-import AddPropertyModal from "../../models/AddPropertyModel.jsx";
 import { propertyStatusMap } from "../../constants/status.js";
-import Toast from "../../lib/toast.js";
-import {
-  useListingsQuery,
-  useCreateListingMutation,
-} from "../../utils/queries.js";
+import { useListingsQuery } from "../../utils/queries.js";
+import ViewProperty from "./properties/ViewProperty.jsx";
+import EditProperty from "./properties/EditProperty.jsx";
+import DeleteProperty from "./properties/DeleteProperty.jsx";
+import AddProperty from "./properties/AddProperty.jsx";
 
 export default function PropertiesTab() {
+  return (
+    <Routes>
+      <Route path="add" element={<AddProperty />} />
+      <Route path="view/:propertyId" element={<ViewProperty />} />
+      <Route path="edit/:propertyId" element={<EditProperty />} />
+      <Route path="delete/:propertyId" element={<DeleteProperty />} />
+      <Route index element={<PropertiesListView />} />
+    </Routes>
+  );
+}
+
+// Separate component for the main properties list view
+function PropertiesListView() {
   const { userId: adminId } = useParams();
+  const navigate = useNavigate();
   const { data: properties = [], isLoading, isError } = useListingsQuery(adminId);
-  const createPropertyMutation = useCreateListingMutation();
 
   // Create a function that uses the propertyStatusMap object
   const getStatusClasses = (status) => {
@@ -24,41 +35,21 @@ export default function PropertiesTab() {
   const handlePropertyAction = (action, property) => {
     switch (action) {
       case "edit":
-        //TODO: Implement edit functionality
-        Toast.info(`Editing property ${property.listingId}`);
+        navigate(`edit/${property.listingId}`);
         break;
       case "delete":
-        //TODO: Implement delete functionality
-        Toast.warning(`Deleting property ${property.listingId}`);
+        navigate(`delete/${property.listingId}`);
         break;
       case "view":
-        //TODO: Implement view functionality
-        Toast.info(`Viewing details for ${property.listingId}`);
+        navigate(`view/${property.listingId}`);
         break;
       default:
         break;
     }
   };
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    address: "",
-    description: "",
-    amenities: [],
-    imageURL: [],
-    imageFiles: [],
-    price: "",
-    status: "",
-  });
-
-  const handleAddSubmit = (e) => {
-    e.preventDefault();
-    createPropertyMutation.mutate(formData, {
-      onSuccess: () => {
-        setShowAddModal(false);
-      },
-    });
+  const handleAddProperty = () => {
+    navigate("add");
   };
 
   return (
@@ -66,7 +57,7 @@ export default function PropertiesTab() {
       {/* Add Property Button */}
       <div className="flex justify-start">
         <ActionButton
-          onClick={() => setShowAddModal(true)}
+          onClick={handleAddProperty}
           icon={FaPlusCircle}
           disabled={isLoading}
           size="medium"
@@ -109,16 +100,6 @@ export default function PropertiesTab() {
           </AnimatePresence>
         </motion.div>
       </StateHandler>
-
-      {/* Add Property Modal */}
-      <AddPropertyModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        isPending={createPropertyMutation.isPending}
-      />
     </TabWrapper>
   );
 }

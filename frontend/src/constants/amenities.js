@@ -1,3 +1,37 @@
+import { 
+  FaSwimmingPool, 
+  FaDumbbell, 
+  FaParking, 
+  FaShieldAlt, 
+  FaSnowflake, 
+  FaTree, 
+  FaSeedling, 
+  FaTshirt, 
+  FaDog, 
+  FaWifi, 
+  FaCouch, 
+  FaUtensils, 
+  FaBuilding, 
+  FaChild, 
+  FaFire, 
+  FaBox, 
+  FaCar, 
+  FaCut, 
+  FaTv, 
+  FaBus, 
+  FaShoppingCart, 
+  FaGraduationCap, 
+  FaHospital, 
+  FaFireAlt, 
+  FaBook, 
+  FaBolt, 
+  FaTint, 
+  FaEye, 
+  FaPhone, 
+  FaBroom, 
+  FaTools 
+} from 'react-icons/fa';
+
 /**
  * Available amenities for property listings
  */
@@ -36,6 +70,43 @@ export const availableAmenities = [
   "Intercom System",
   "Cleaning Service",
   "Maintenance Service"
+];
+
+/**
+ * Amenities with icons and structured data for dropdown
+ */
+export const amenitiesWithIcons = [
+  { id: 'swimming_pool', name: 'Swimming Pool', icon: FaSwimmingPool },
+  { id: 'gym', name: 'Gym/Fitness Center', icon: FaDumbbell },
+  { id: 'parking', name: 'Parking', icon: FaParking },
+  { id: 'security', name: '24/7 Security', icon: FaShieldAlt },
+  { id: 'air_conditioning', name: 'Air Conditioning', icon: FaSnowflake },
+  { id: 'balcony', name: 'Balcony/Patio', icon: FaTree },
+  { id: 'garden', name: 'Garden', icon: FaSeedling },
+  { id: 'laundry', name: 'Laundry Room', icon: FaTshirt },
+  { id: 'pet_friendly', name: 'Pet Friendly', icon: FaDog },
+  { id: 'wifi', name: 'WiFi', icon: FaWifi },
+  { id: 'furnished', name: 'Furnished', icon: FaCouch },
+  { id: 'kitchen_appliances', name: 'Kitchen Appliances', icon: FaUtensils },
+  { id: 'elevator', name: 'Elevator', icon: FaBuilding },
+  { id: 'playground', name: 'Playground', icon: FaChild },
+  { id: 'bbq_area', name: 'BBQ Area', icon: FaFire },
+  { id: 'storage', name: 'Storage Room', icon: FaBox },
+  { id: 'garage', name: 'Garage', icon: FaCar },
+  { id: 'dishwasher', name: 'Dishwasher', icon: FaCut },
+  { id: 'tv', name: 'TV', icon: FaTv },
+  { id: 'public_transport', name: 'Close to Public Transport', icon: FaBus },
+  { id: 'shopping', name: 'Shopping Mall Nearby', icon: FaShoppingCart },
+  { id: 'school', name: 'School Nearby', icon: FaGraduationCap },
+  { id: 'hospital', name: 'Hospital Nearby', icon: FaHospital },
+  { id: 'fireplace', name: 'Fire Place', icon: FaFireAlt },
+  { id: 'study_room', name: 'Study Room', icon: FaBook },
+  { id: 'generator', name: 'Backup Generator', icon: FaBolt },
+  { id: 'water_tank', name: 'Water Tank', icon: FaTint },
+  { id: 'cctv', name: 'CCTV Surveillance', icon: FaEye },
+  { id: 'intercom', name: 'Intercom System', icon: FaPhone },
+  { id: 'cleaning', name: 'Cleaning Service', icon: FaBroom },
+  { id: 'maintenance', name: 'Maintenance Service', icon: FaTools }
 ];
 
 export default availableAmenities;
