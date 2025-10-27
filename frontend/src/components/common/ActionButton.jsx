@@ -29,7 +29,6 @@ export default function ActionButton({
       onClick={onClick}
       whileHover={{
         scale: 1.07,
-        boxShadow: "0 8px 25px rgba(59,130,246,0.45)",
       }}
       whileTap={{ scale: 0.96 }}
       transition={{

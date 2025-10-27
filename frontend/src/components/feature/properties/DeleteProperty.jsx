@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaTrash, FaExclamationTriangle } from "react-icons/fa";
-import { TabWrapper, StateHandler, ActionButton } from "../../common/index.js";
+import { TabWrapper, StateHandler } from "../../common/index.js";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 
@@ -16,7 +16,7 @@ export default function DeleteProperty() {
     title: "Modern Downtown Apartment",
     address: "123 Main Street, City Center, NY 10001",
     price: "2500",
-    status: "Available",
+    status: "Vacant",
   };
   const isLoading = false;
   const isError = false;
@@ -51,25 +51,23 @@ export default function DeleteProperty() {
 
   return (
     <TabWrapper decorativeElements="default">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <ActionButton
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <button
             onClick={handleBack}
-            icon={FaArrowLeft}
-            variant="secondary"
-            size="small"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
+            <FaArrowLeft className="w-5 h-5" />
             Back to Properties
-          </ActionButton>
+          </button>
         </div>
 
-        <ActionButton
+        <button
           onClick={handleViewProperty}
-          variant="outline"
-          size="small"
+          className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
         >
           View Property
-        </ActionButton>
+        </button>
       </div>
 
       <StateHandler
@@ -87,36 +85,37 @@ export default function DeleteProperty() {
             className="max-w-2xl mx-auto"
           >
             {/* Warning Card */}
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6">
+            <div className="bg-gradient-to-br from-red-100 via-white to-red-50 border border-red-300 rounded-xl p-5 mb-6 shadow-md">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-red-100 rounded-full flex-shrink-0">
+                <div className="p-3 bg-gradient-to-br from-red-200 to-red-100 rounded-full flex-shrink-0 shadow">
                   <FaExclamationTriangle className="text-red-600 w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-red-900 mb-2">
+                  <h1 className="text-2xl font-bold text-red-800 mb-1 tracking-tight">
                     Delete Property
                   </h1>
-                  <p className="text-red-700 mb-4">
+                  <p className="text-red-700 mb-3 text-sm">
                     Are you absolutely sure you want to delete this property?
-                    This action cannot be undone.
+                    <br className="hidden md:block" />
+                    <span className="font-semibold">This action cannot be undone.</span>
                   </p>
 
-                  <div className="bg-white border border-red-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-red-900 mb-2">
+                  <div className="bg-white border border-red-200 rounded-lg p-3 shadow-sm">
+                    <h3 className="font-semibold text-red-900 mb-1 text-base">
                       Property to be deleted:
                     </h3>
                     <div className="space-y-1">
-                      <p className="text-gray-900">
-                        <strong>Title:</strong> {property.title}
+                      <p className="text-gray-900 text-sm">
+                        <strong>Title:</strong> <span className="font-medium">{property.title}</span>
                       </p>
-                      <p className="text-gray-700">
-                        <strong>Address:</strong> {property.address}
+                      <p className="text-gray-700 text-sm">
+                        <strong>Address:</strong> <span className="font-medium">{property.address}</span>
                       </p>
-                      <p className="text-gray-700">
-                        <strong>Price:</strong> R {formatAmount(property.price)}
+                      <p className="text-gray-700 text-sm">
+                        <strong>Price:</strong> <span className="font-medium">R {formatAmount(property.price)}</span>
                       </p>
-                      <p className="text-gray-700">
-                        <strong>Status:</strong> {property.status}
+                      <p className="text-gray-700 text-sm">
+                        <strong>Status:</strong> <span className="font-medium">{property.status}</span>
                       </p>
                     </div>
                   </div>
@@ -147,23 +146,22 @@ export default function DeleteProperty() {
               </div>
 
               <div className="flex items-center justify-between gap-4">
-                <ActionButton
+                <button
                   onClick={handleBack}
-                  variant="secondary"
-                  size="medium"
+                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium shadow hover:bg-gray-300 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 text-base"
+                  disabled={isPending}
                 >
                   Cancel
-                </ActionButton>
+                </button>
 
-                <ActionButton
+                <button
                   onClick={handleDelete}
-                  icon={FaTrash}
-                  variant="danger"
-                  size="medium"
+                  className={`px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 text-base ${isDeleteDisabled ? 'bg-red-200 text-red-400 cursor-not-allowed' : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 hover:shadow-lg'}`}
                   disabled={isDeleteDisabled}
                 >
+                  <FaTrash className="w-5 h-5" />
                   {isPending ? "Deleting..." : "Delete Property"}
-                </ActionButton>
+                </button>
               </div>
 
               {confirmText && confirmText.toLowerCase() !== "delete" && (

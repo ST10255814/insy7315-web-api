@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { FaImage, FaPlusCircle, FaTimes, FaCloudUploadAlt, FaExpand, FaCheckCircle } from "react-icons/fa";
+import { FaImage, FaPlusCircle, FaTimes, FaCloudUploadAlt, FaCheckCircle } from "react-icons/fa";
 
 /**
  * Reusable Image Upload Component
