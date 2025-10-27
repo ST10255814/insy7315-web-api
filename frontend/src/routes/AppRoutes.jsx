@@ -1,9 +1,8 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, Suspense } from "react";
 import { setNavigate } from "../utils/navigation";
 import Navbar from "../components/layout/Navbar";
-import { Suspense } from "react";
-import { EnhancedBrandedFallback } from "../components/common";
+import { DelayedSuspense } from "../components/common/index.js";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("../pages/Home"));
