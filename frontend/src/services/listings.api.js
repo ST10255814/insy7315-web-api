@@ -26,11 +26,17 @@ export async function createListing(listingData) {
       });
     }
     
-    // Append image files
-    if (listingData.imageURL && listingData.imageURL.length > 0) {
-      listingData.imageURL.forEach((url) => {
-        formData.append('imageURL', url);
+    // Append image files (actual files, not URLs)
+    if (listingData.imageFiles && listingData.imageFiles.length > 0) {
+      listingData.imageFiles.forEach((file, idx) => {
+        console.log(`[createListing] Appending image file #${idx}:`, file, 'type:', typeof file, 'instanceof File:', file instanceof File);
+        formData.append('imageURL', file);
       });
+    }
+
+    console.log('FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
     }
 
     const response = await api.post(

@@ -225,6 +225,7 @@ export default function ImageUpload({
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
+                  // Remove all images only if user clicks this button
                   onImagesChange([], [], "");
                 }}
                 className="text-xs text-red-600 hover:text-red-700 font-medium hover:underline transition-colors"
@@ -286,13 +287,6 @@ export default function ImageUpload({
                         <FaTimes size={9} />
                       </motion.button>
                     </div>
-                    
-                    {/* Remove the image number badge - commented out */}
-                    {/* 
-                    <div className="absolute top-2 left-2 w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg">
-                      {index + 1}
-                    </div>
-                    */}
                     
                     {/* File info at bottom */}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
