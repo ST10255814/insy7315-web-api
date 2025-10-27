@@ -18,9 +18,9 @@ async function createListing(data, adminId) {
         }
 
         // Convert price from string (FormData) to number
-        const parsedPrice = Number.parseFloat(price);
+        const parsedPrice = parseFloat(price);
         console.log(parsedPrice);
-        if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+        if (isNaN(parsedPrice) || parsedPrice <= 0) {
         throw new TypeError('Price must be a valid positive number');
         }
         
