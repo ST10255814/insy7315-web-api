@@ -150,7 +150,7 @@ describe('ListingService', () => {
 
       expect(result).toEqual({
         message: 'Listing created',
-        listingId: 'listing123'
+        listingId: 'LS-0001'
       });
     });
 
