@@ -17,9 +17,10 @@ async function createListing(data, adminId) {
         throw new Error('Title, address, description, and price are required');
         }
 
-        const parsedPrice = parseFloat(price);
-        if (isNaN(parsedPrice)) {
-        throw new Error('Price must be a valid number');
+        // Convert price from string (FormData) to number
+        const parsedPrice = Number.parseFloat(price);
+        if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+        throw new TypeError('Price must be a valid positive number');
         }
 
         if (!Array.isArray(amenities)) {

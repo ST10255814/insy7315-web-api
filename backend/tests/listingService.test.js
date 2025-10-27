@@ -61,7 +61,32 @@ describe('ListingService', () => {
       
       await expect(listingService.createListing(invalidPriceData, adminId))
         .rejects
-        .toThrow('Price must be a valid number');
+        .toThrow('Price must be a valid positive number');
+    });
+
+    test('should throw error when price is zero or negative', async () => {
+      const zeroPriceData = {
+        title: 'Test Property',
+        address: '123 Test St',
+        description: 'A nice property',
+        price: '0'
+      };
+      const adminId = 'admin123';
+      
+      await expect(listingService.createListing(zeroPriceData, adminId))
+        .rejects
+        .toThrow('Price must be a valid positive number');
+
+      const negativePriceData = {
+        title: 'Test Property',
+        address: '123 Test St',
+        description: 'A nice property',
+        price: '-100'
+      };
+      
+      await expect(listingService.createListing(negativePriceData, adminId))
+        .rejects
+        .toThrow('Price must be a valid positive number');
     });
 
     test('should create listing successfully with valid data', async () => {
