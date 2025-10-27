@@ -11,10 +11,9 @@ async function createListing(data, adminId) {
         const activityCollection = db.collection("User-Activity-Logs");
         console.log('Creating listing with data:', data);
 
-        const { title, address, description, price} = data;
+        const { title, address, description, imagesURL = [], price} = data;
 
         let amenities = data.amenities || [];
-        let imagesURL = data.imagesURL || [];
 
         if (!title || !address || !description || !price) {
           throw new Error('Title, address, description, and price are required');
@@ -32,13 +31,7 @@ async function createListing(data, adminId) {
         amenities = amenities ? [amenities] : [];
         }
 
-        if(!Array.isArray(imagesURL)) {
-        imagesURL = imagesURL ? [imagesURL] : [];
-        }
-
         amenities = [...new Set(amenities.map(a => a.trim()).filter(a => a !== ''))];
-
-        imagesURL = [...new Set(imagesURL.map(url => url.trim()).filter(url => url !== ''))];
 
         //Fetch landlord info
         const landlord = await userCollection.findOne({ _id: toObjectId(adminId) });

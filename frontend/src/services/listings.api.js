@@ -12,6 +12,7 @@ export async function getListingsByAdminId() {
 export async function createListing(listingData) {
   try {
     console.log('Creating listing with data:', listingData);
+    console.log('Image files count:', listingData.imageFiles?.length || 0);
     const formData = new FormData();
     // Append text fields
     formData.append('title', listingData.title);
@@ -26,10 +27,9 @@ export async function createListing(listingData) {
       });
     }
     
-    // Append image files (actual files, not URLs)
+    // Append image files (use imageFiles, not imageURL which are just preview URLs)
     if (listingData.imageFiles && listingData.imageFiles.length > 0) {
-      listingData.imageFiles.forEach((file, idx) => {
-        console.log(`[createListing] Appending image file #${idx}:`, file, 'type:', typeof file, 'instanceof File:', file instanceof File);
+      listingData.imageFiles.forEach((file) => {
         formData.append('imageURL', file);
       });
     }
