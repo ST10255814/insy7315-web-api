@@ -69,7 +69,7 @@ export default function InvoicesTab() {
         errorMessage="Failed to load invoices. Please try again."
         emptyMessage="No invoices found. Add a new invoice to get started."
         gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-        loadingCount={6}
+        loadingCount={8}
       >
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"

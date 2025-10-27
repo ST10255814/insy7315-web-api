@@ -1,17 +1,38 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { FaSave, FaArrowLeft, FaTimes } from "react-icons/fa";
+import { availableAmenities } from "../../../constants/amenities.js";
+import { AmenitiesSelector, ImageUpload } from "../../modals/index.js";
+import TabWrapper from "../../common/TabWrapper.jsx";
+import FormField from "../../common/FormField.jsx";
+import FormInput from "../../common/FormInput.jsx";
+// TODO: Import your mutation hook here when implemented
+// import { useEditListingMutation } from "../../../utils/queries.js";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FaArrowLeft, FaSave, FaImage, FaPlus, FaTimes } from "react-icons/fa";
-import { TabWrapper, StateHandler, ActionButton } from "../../common/index.js";
-import { AmenitySelector } from "../../common/forms";
-import Toast from "../../../lib/toast.js";
-import { formatAmount } from "../../../utils/formatters.js";
 
 export default function EditProperty() {
-  const { userId: adminId, propertyId } = useParams();
+  // Reset form to original property data
+  const handleReset = () => {
+    if (property) {
+      setFormData({
+        title: property.title || "",
+        address: property.address || "",
+        description: property.description || "",
+        amenities: property.amenities || [],
+        imageURL: property.imageURL || [],
+        imageFiles: [],
+        price: property.price || "",
+        status: property.status || "Available",
+      });
+      setIsDirty(false);
+      setErrors({});
+    }
+  };
+  const { userId, propertyId } = useParams();
   const navigate = useNavigate();
-
-  // Mock data for UI display - using useMemo to prevent dependency issues
+  // TODO: Replace with your mutation hook
+  // const editListingMutation = useEditListingMutation();
+  const [errors, setErrors] = useState({});
+  // Mock property data for initial form population
   const property = useMemo(
     () => ({
       listingId: propertyId,
@@ -31,10 +52,6 @@ export default function EditProperty() {
     [propertyId]
   );
 
-  const isLoading = false;
-  const isError = false;
-  const [isPending, setIsPending] = useState(false);
-
   const [formData, setFormData] = useState({
     title: "",
     address: "",
@@ -43,16 +60,12 @@ export default function EditProperty() {
     imageURL: [],
     imageFiles: [],
     price: "",
-    status: "",
+    status: "Available",
   });
+  const [isPending, setIsPending] = useState(false); // Replace with mutation.isPending
+  const [isDirty, setIsDirty] = useState(false);
+  const statusOptions = ["Vacant", "Occupied", "Under Maintenance", "Reserved"];
 
-  // Available status options
-  const statusOptions = [
-    "Available",
-    "Occupied",
-    "Maintenance",
-    "Under Review",
-  ]; // Populate form data when property loads
   useEffect(() => {
     if (property) {
       setFormData({
@@ -63,449 +76,386 @@ export default function EditProperty() {
         imageURL: property.imageURL || [],
         imageFiles: [],
         price: property.price || "",
-        status: property.status || "",
+        status: property.status || "Available",
       });
+      setIsDirty(false);
     }
   }, [property]);
 
-  const handleBack = () => {
-    navigate(`/dashboard/${adminId}/properties`);
+  useEffect(() => {
+    return () => {
+      formData.imageURL.forEach((url) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [formData.imageURL]);
+
+  // Handle input changes and clear errors
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      setIsDirty(
+        updated.title !== (property.title || "") ||
+          updated.address !== (property.address || "") ||
+          updated.description !== (property.description || "") ||
+          updated.price !== (property.price || "") ||
+          updated.status !== (property.status || "") ||
+          JSON.stringify(updated.amenities) !==
+            JSON.stringify(property.amenities || [])
+      );
+      return updated;
+    });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: "" });
+    }
   };
 
-  const handleViewProperty = () => {
-    navigate(`/dashboard/${adminId}/properties/view/${propertyId}`);
+  // Handle amenities change
+  const handleAmenitiesChange = (selectedAmenities, error) => {
+    handleInputChange("amenities", selectedAmenities);
+    if (error) {
+      setErrors({ ...errors, amenities: error });
+    } else if (errors.amenities) {
+      setErrors({ ...errors, amenities: "" });
+    }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+  // Handle images change
+  const handleImagesChange = (files, urls, error) => {
+    setFormData((prev) => {
+      const updated = { ...prev, imageFiles: files, imageURL: urls };
+      setIsDirty(
+        JSON.stringify(updated.imageURL) !==
+          JSON.stringify(property.imageURL || [])
+      );
+      return updated;
+    });
+    setErrors((prev) => ({
       ...prev,
-      [name]: value,
+      images: error || "",
     }));
   };
 
-  const handleAmenitiesChange = (selectedAmenities) => {
-    setFormData((prev) => ({ ...prev, amenities: selectedAmenities }));
+  // Form validation
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = "Property title is required";
+    if (!formData.address.trim()) newErrors.address = "Address is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (!formData.price || formData.price <= 0)
+      newErrors.price = "Valid price is required";
+    if (formData.imageFiles.length === 0 && formData.imageURL.length === 0)
+      newErrors.images = "At least one image is required";
+    if (!formData.amenities || formData.amenities.length === 0)
+      newErrors.amenities = "At least one amenity must be selected";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-
-    files.forEach((file) => {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        Toast.error("Please select only image files");
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        Toast.error("Image size should be less than 5MB");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData((prev) => ({
-          ...prev,
-          imageURL: [...prev.imageURL, event.target.result],
-          imageFiles: [...prev.imageFiles, file],
-        }));
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Reset the input
-    e.target.value = "";
-  };
-
-  const handleImageDrop = (e) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-
-    files.forEach((file) => {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        Toast.error("Please select only image files");
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        Toast.error("Image size should be less than 5MB");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setFormData((prev) => ({
-          ...prev,
-          imageURL: [...prev.imageURL, event.target.result],
-          imageFiles: [...prev.imageFiles, file],
-        }));
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleImageRemove = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      imageURL: prev.imageURL.filter((_, i) => i !== index),
-    }));
-  };
-
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsPending(true);
-
-    // Mock submission with delay
+    if (!validateForm()) {
+      return;
+    }
+    setErrors({});
+    setIsPending(true); // Replace with mutation
+    // TODO: Insert your mutation logic here
+    // editListingMutation.mutate({ ...formData, propertyId }, {
+    //   onSuccess: () => {
+    //     resetForm();
+    //     navigate(`/dashboard/${userId}/properties`);
+    //   },
+    // });
     setTimeout(() => {
       setIsPending(false);
-      Toast.success("Property updated successfully! (Mock functionality)");
-      navigate(`/dashboard/${adminId}/properties/view/${propertyId}`);
-    }, 2000);
-  };
-
-  const handleCancel = () => {
-    navigate(`/dashboard/${adminId}/properties/view/${propertyId}`);
+      navigate(`/dashboard/${userId}/properties`);
+    }, 1500);
   };
 
   return (
     <TabWrapper decorativeElements="default">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <ActionButton
-              onClick={handleBack}
-              icon={FaArrowLeft}
-              variant="secondary"
-              size="small"
-            >
-              Back to Properties
-            </ActionButton>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Edit Property
-              </h1>
-              <p className="text-gray-600">
-                Update the details for "{property?.title}"
-              </p>
-            </div>
-          </div>
-
-          <ActionButton
-            onClick={handleViewProperty}
-            variant="outline"
-            size="small"
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate(`/dashboard/${userId}/properties`)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
-            View Property
-          </ActionButton>
+            <FaArrowLeft className="w-5 h-5" />
+            Back to Properties
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
+              Edit Property
+            </h1>
+            <p className="text-base text-gray-600 mt-1">
+              Edit the details of property{" "}
+              <span className="font-semibold text-blue-700">
+                {property.listingId}
+              </span>{" "}
+              below.
+            </p>
+          </div>
+          <div className="flex-shrink-0 md:ml-auto">
+            <button
+              onClick={() => navigate(`/dashboard/${userId}/properties/view/${propertyId}`)}
+              className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+            >
+              View Property {property.listingId}
+            </button>
+          </div>
         </div>
-
-        <StateHandler
-          isLoading={isLoading}
-          isError={isError}
-          data={property}
-          errorMessage="Failed to load property details for editing. Please try again."
-          emptyMessage="Property not found."
-        >
-          {property && (
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Content - Left Side */}
-                <div className="lg:col-span-2 space-y-8">
-                  {/* Basic Information */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="bg-white rounded-2xl shadow-lg border border-white/20 p-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                      Basic Information
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Property Title *
-                        </label>
-                        <input
-                          type="text"
-                          name="title"
-                          value={formData.title}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          placeholder="Enter property title"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Monthly Rent *
-                        </label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                            R
-                          </span>
-                          <input
-                            type="number"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleInputChange}
-                            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="0.00"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Address *
-                      </label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="Enter full address"
-                        required
-                      />
-                    </div>
-
-                    <div className="mt-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description
-                      </label>
-                      <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                        placeholder="Describe the property features and highlights..."
-                      />
-                    </div>
-                  </motion.div>
-
-                  {/* Amenities */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="bg-white rounded-2xl shadow-lg border border-white/20 p-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                      Amenities
-                    </h2>
-
-                    <AmenitySelector
-                      selectedAmenities={formData.amenities}
-                      onChange={handleAmenitiesChange}
-                      label=""
-                      placeholder="Select amenities for this property..."
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content - Left Side */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Basic Information */}
+              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    1
+                  </span>
+                  Edit Basic Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField label="Property Title" error={errors.title}>
+                    <FormInput
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={(e) =>
+                        handleInputChange("title", e.target.value)
+                      }
+                      placeholder="e.g., Modern 2BR Apartment"
+                      hasError={!!errors.title}
+                      disabled={isPending}
                     />
-                  </motion.div>
-
-                  {/* Images */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="bg-white rounded-2xl shadow-lg border border-white/20 p-6"
-                  >
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                      Property Images
-                    </h2>
-
-                    <div
-                      className="border-2 border-dashed border-gray-200 rounded-lg p-4 mb-4 transition-colors hover:border-gray-300"
-                      onDrop={handleImageDrop}
-                      onDragOver={handleDragOver}
-                    >
-                      {formData.imageURL.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                          {formData.imageURL.map((image, index) => (
-                            <div key={index} className="relative group">
-                              <img
-                                src={image}
-                                alt={`Property view ${index + 1}`}
-                                className="w-full h-32 object-cover rounded-lg"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleImageRemove(index)}
-                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <FaTimes className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <FaImage className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                          <p className="text-gray-500">
-                            Drag and drop images here or click the button below
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-4">
-                      <input
-                        type="file"
-                        id="imageUpload"
-                        multiple
-                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="imageUpload"
-                        className="w-full px-4 py-3 border-2 border-dashed border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        <FaPlus className="w-4 h-4" />
-                        {formData.imageURL.length > 0
-                          ? "Add More Images"
-                          : "Add Images"}
-                      </label>
-                      <div className="mt-2 text-center">
-                        {formData.imageURL.length > 0 && (
-                          <p className="text-sm text-gray-600 mb-1">
-                            {formData.imageURL.length} image
-                            {formData.imageURL.length !== 1 ? "s" : ""} uploaded
-                          </p>
-                        )}
-                        <p className="text-xs text-gray-400">
-                          Supports: JPEG, PNG, GIF, WebP (max 5MB each)
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Sidebar - Right Side */}
-                <div className="space-y-6">
-                  {/* Status */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="bg-white rounded-2xl shadow-lg border border-white/20 p-6"
-                  >
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Property Status
-                    </h3>
-
-                    <div className="space-y-2">
-                      {statusOptions.map((status) => (
-                        <label
-                          key={status}
-                          className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${
-                            formData.status === status
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="status"
-                            value={status}
-                            checked={formData.status === status}
-                            onChange={handleInputChange}
-                            className="sr-only"
-                          />
-                          <span
-                            className={`text-sm font-medium ${
-                              formData.status === status
-                                ? "text-blue-700"
-                                : "text-gray-700"
-                            }`}
-                          >
-                            {status}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </motion.div>
-
-                  {/* Action Buttons */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="bg-white rounded-2xl shadow-lg border border-white/20 p-6"
-                  >
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Actions
-                    </h3>
-
-                    <div className="space-y-3">
-                      <ActionButton
-                        type="submit"
-                        icon={FaSave}
-                        variant="primary"
-                        size="medium"
+                  </FormField>
+                  <FormField label="Monthly Rent" error={errors.price}>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        R
+                      </span>
+                      <FormInput
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={(e) =>
+                          handleInputChange("price", e.target.value)
+                        }
+                        className="pl-8 pr-4"
+                        placeholder="0.00"
+                        hasError={!!errors.price}
                         disabled={isPending}
-                        className="w-full"
-                      >
-                        {isPending ? "Saving..." : "Save Changes"}
-                      </ActionButton>
-
-                      <ActionButton
-                        type="button"
-                        onClick={handleCancel}
-                        variant="secondary"
-                        size="medium"
-                        className="w-full"
-                      >
-                        Cancel
-                      </ActionButton>
+                      />
                     </div>
-                  </motion.div>
-
-                  {/* Property Info */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
-                    className="bg-gray-50 rounded-2xl p-6"
-                  >
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Property Info
-                    </h3>
-
-                    <div className="space-y-3 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Property ID:</span>
-                        <span className="font-medium">{propertyId}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Current Status:</span>
-                        <span className="font-medium">{property.status}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Current Rent:</span>
-                        <span className="font-medium">R {formatAmount(property.price)}</span>
-                      </div>
-                    </div>
-                  </motion.div>
+                  </FormField>
+                </div>
+                <div className="mt-6">
+                  <FormField label="Address" error={errors.address}>
+                    <FormInput
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={(e) =>
+                        handleInputChange("address", e.target.value)
+                      }
+                      placeholder="e.g., 123 Main Street, Johannesburg"
+                      hasError={!!errors.address}
+                      disabled={isPending}
+                    />
+                  </FormField>
+                </div>
+                <div className="mt-6">
+                  <FormField label="Description" error={errors.description}>
+                    <FormInput
+                      as="textarea"
+                      name="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        handleInputChange("description", e.target.value)
+                      }
+                      placeholder="Describe the property features and highlights..."
+                      hasError={!!errors.description}
+                      disabled={isPending}
+                      rows={4}
+                    />
+                  </FormField>
                 </div>
               </div>
-            </form>
-          )}
-        </StateHandler>
+              {/* Amenities */}
+              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    2
+                  </span>
+                  Edit Property Amenities
+                </h2>
+                <FormField label="Amenities">
+                  <AmenitiesSelector
+                    availableOptions={availableAmenities}
+                    selectedAmenities={formData.amenities}
+                    onAmenitiesChange={handleAmenitiesChange}
+                    error={errors.amenities}
+                  />
+                </FormField>
+              </div>
+              {/* Images */}
+              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    3
+                  </span>
+                  Edit Property Images
+                </h2>
+                <ImageUpload
+                  imageURLs={formData.imageURL}
+                  imageFiles={formData.imageFiles}
+                  onImagesChange={handleImagesChange}
+                  error={errors.images}
+                />
+              </div>
+            </div>
+            {/* Sidebar - Right Side */}
+            <div className="space-y-6 flex flex-col justify-start">
+              {/* Status Field Above Actions - Radio Buttons */}
+              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    4
+                  </span>
+                  Edit Property Status
+                </h3>
+                <FormField label="Edit Status">
+                  <div className="space-y-2">
+                    {statusOptions.map((status) => (
+                      <label
+                        key={status}
+                        className={`flex items-center p-2 rounded-lg border cursor-pointer transition-all ${
+                          formData.status === status
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="status"
+                          value={status}
+                          checked={formData.status === status}
+                          onChange={() => handleInputChange("status", status)}
+                          className="mr-3"
+                          disabled={isPending}
+                        />
+                        <span
+                          className={`text-sm font-medium ${
+                            formData.status === status
+                              ? "text-blue-700"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </FormField>
+              </div>
+              {/* Actions */}
+              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    5
+                  </span>
+                  Edit Actions
+                </h3>
+                <div className="space-y-3">
+                  <button
+                    type="submit"
+                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition-all duration-200 text-base font-bold border-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60  ${
+                      isPending ? "animate-pulse" : ""
+                    }`}
+                    disabled={isPending || !isDirty}
+                  >
+                    {isPending ? (
+                      <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
+                    ) : (
+                      <FaSave className="text-lg" />
+                    )}
+                    <span className="tracking-wide">
+                      {isPending ? "Saving..." : "Save Changes"}
+                    </span>
+                  </button>
+                  {isDirty && (
+                    <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-full border border-gray-300 shadow-sm hover:bg-gray-200 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-gray-300 disabled:opacity-60"
+                    onClick={handleReset}
+                  >
+                    <span className="tracking-wide">Reset Form</span>
+                  </button>
+                  )}
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-50 text-red-700 rounded-full border border-red-400 shadow-sm hover:bg-red-100 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-red-300 disabled:opacity-60"
+                    onClick={() => navigate(`/dashboard/${userId}/properties`)}
+                    disabled={isPending}
+                  >
+                    <FaTimes className="text-lg" />
+                    <span className="tracking-wide">Cancel</span>
+                  </button>
+                </div>
+              </div>
+              {/* Property Preview  */}
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                    6
+                  </span>
+                  Current Property Preview
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Title:</span>
+                    <span className="font-medium text-blue-700">
+                      {formData.title || (
+                        <span className="text-gray-400">(empty)</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Address:</span>
+                    <span className="font-medium text-blue-700">
+                      {formData.address || (
+                        <span className="text-gray-400">(empty)</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="font-medium text-blue-700">
+                      {formData.status || (
+                        <span className="text-gray-400">(empty)</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Price:</span>
+                    <span className="font-medium text-blue-700">
+                      {formData.price ? (
+                        `R ${formData.price}`
+                      ) : (
+                        <span className="text-gray-400">(empty)</span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </TabWrapper>
   );

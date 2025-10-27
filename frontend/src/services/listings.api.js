@@ -11,8 +11,6 @@ export async function getListingsByAdminId() {
 
 export async function createListing(listingData) {
   try {
-    console.log('Creating listing with data:', listingData);
-    console.log('Image files count:', listingData.imageFiles?.length || 0);
     const formData = new FormData();
     // Append text fields
     formData.append('title', listingData.title);
