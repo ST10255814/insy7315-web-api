@@ -13,14 +13,15 @@ async function createListing(data, adminId) {
         const { title, address, description, imagesURL = [], price} = data;
 
         let amenities = data.amenities || [];
+
         if (!title || !address || !description || !price) {
         throw new Error('Title, address, description, and price are required');
         }
 
         // Convert price from string (FormData) to number
-        const parsedPrice = parseFloat(price);
+        const parsedPrice = Number.parseFloat(price);
         console.log(parsedPrice);
-        if (isNaN(parsedPrice) || parsedPrice <= 0) {
+        if (parsedPrice <= 0) {
         throw new TypeError('Price must be a valid positive number');
         }
         
