@@ -5,9 +5,9 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 2,
-      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
-      cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache longer
-      refetchOnMount: false, // Don't refetch on component mount if data exists
+      staleTime: 2 * 60 * 1000, // 2 minutes - reduced for better invalidation
+      gcTime: 10 * 60 * 1000, // 10 minutes (replaces cacheTime in v5)
+      refetchOnMount: 'always', // Always refetch on mount to ensure fresh data after invalidation
       refetchOnReconnect: true, // Refetch when network reconnects
     },
     mutations: {

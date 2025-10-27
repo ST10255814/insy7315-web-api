@@ -9,31 +9,31 @@ export const CACHE_CONFIGS = {
   // Static/rarely changing data
   STATIC: {
     staleTime: 30 * 60 * 1000, // 30 minutes
-    cacheTime: 60 * 60 * 1000, // 1 hour
-    refetchOnMount: false,
+    gcTime: 60 * 60 * 1000, // 1 hour (replaces cacheTime in v5)
+    refetchOnMount: 'always', // Always refetch on mount, even if data exists
     refetchOnWindowFocus: false,
   },
   
   // Frequently changing data (like invoices, payments)
   DYNAMIC: {
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnMount: false,
+    staleTime: 1 * 60 * 1000, // 1 minute - shorter stale time for faster invalidation
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: 'always', // Always refetch on mount
     refetchOnWindowFocus: true,
   },
   
   // Medium frequency data (like leases, properties)
   MEDIUM: {
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 15 * 60 * 1000, // 15 minutes
-    refetchOnMount: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes - reduced for better invalidation
+    gcTime: 15 * 60 * 1000, // 15 minutes
+    refetchOnMount: 'always', // Always refetch on mount
     refetchOnWindowFocus: false,
   },
   
   // Real-time data (notifications, live updates)
   REALTIME: {
     staleTime: 0, // Always stale
-    cacheTime: 1 * 60 * 1000, // 1 minute
+    gcTime: 1 * 60 * 1000, // 1 minute
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchInterval: 30 * 1000, // 30 seconds

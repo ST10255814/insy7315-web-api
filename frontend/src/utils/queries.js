@@ -8,7 +8,6 @@ import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, cou
 import { getBookingsByAdminId, getCurrentMonthRevenue } from "../services/bookings.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
-import queryClient from "../lib/queryClient.js";
 import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries, invalidateOverviewQueries } from "./cacheUtils.js";
 import { getRevenueTrend } from "../services/revenue.api.js";
 
@@ -22,7 +21,7 @@ export const useLeasesQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM, // Use medium frequency caching config
-  }, queryClient);
+  });
 };
 
 export const useCreateLeaseMutation = () => {
@@ -67,7 +66,7 @@ export const useInvoicesQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.DYNAMIC, // Invoices change more frequently
-  }, queryClient);
+  });
 };
 
 export const useCreateInvoiceMutation = () => {
@@ -108,7 +107,7 @@ export const useListingsQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 }
 
 export const useCreateListingMutation = () => {
@@ -150,7 +149,7 @@ export const useBookingsQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 }
 
 // Maintenance queries and mutations
@@ -163,7 +162,7 @@ export const useMaintenanceRequestsQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 }
 
 // Overview-specific queries for dashboard statistics
@@ -175,7 +174,7 @@ export const useMonthlyRevenueQuery = (adminId) => {
       return getCurrentMonthRevenue();
     },
     ...CACHE_CONFIGS.DYNAMIC,
-  }, queryClient);
+  });
 };
 
 export const useTotalPropertiesCountQuery = (adminId) => {
@@ -186,7 +185,7 @@ export const useTotalPropertiesCountQuery = (adminId) => {
       return countNumberOfListingsByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useMonthlyPropertiesCountQuery = (adminId) => {
@@ -197,7 +196,7 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
       return countListingsAddedThisMonth();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useActiveLeasesCountQuery = (adminId) => {
@@ -208,7 +207,7 @@ export const useActiveLeasesCountQuery = (adminId) => {
       return countActiveLeasesByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useLeasedPercentageQuery = (adminId) => {
@@ -219,7 +218,7 @@ export const useLeasedPercentageQuery = (adminId) => {
       return getLeasedPropertyPercentage();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useMaintenanceCountQuery = (adminId) => {
@@ -230,7 +229,7 @@ export const useMaintenanceCountQuery = (adminId) => {
       return countMaintenanceRequestsByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useHighPriorityMaintenanceCountQuery = (adminId) => {
@@ -241,7 +240,7 @@ export const useHighPriorityMaintenanceCountQuery = (adminId) => {
       return countHighPriorityMaintenanceRequestsByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
 };
 
 export const useRecentActivitiesQuery = (adminId) => {
@@ -252,7 +251,7 @@ export const useRecentActivitiesQuery = (adminId) => {
       return getRecentActivities(adminId);
     },
     ...CACHE_CONFIGS.DYNAMIC,
-  }, queryClient);
+  });
 };
 
 // Utility function to manually invalidate overview data
@@ -274,5 +273,5 @@ export const useRevenueTrendQuery = (adminId) => {
       return getRevenueTrend();
     },
     ...CACHE_CONFIGS.DYNAMIC,
-  }, queryClient);
+  });
 };
