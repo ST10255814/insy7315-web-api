@@ -74,8 +74,8 @@ async function createListing(data, adminId) {
         };
         await activityCollection.insertOne(activityLog);
 
-        const result = await listingsCollection.insertOne(newListing);
-        return { message: 'Listing created', listingId: result.insertedId };
+        await listingsCollection.insertOne(newListing);
+        return { message: 'Listing created', listingId: listingId };
 
   } catch (error) {
     throw new Error(`Error creating listing: ${error.message}`);
