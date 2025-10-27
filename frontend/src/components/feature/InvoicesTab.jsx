@@ -41,7 +41,6 @@ export default function InvoicesTab() {
   };
 
   const handleAddInvoiceSubmit = (invoiceData) => {
-    console.log("Adding Invoice:", invoiceData);
     createInvoiceMutation.mutate(invoiceData, {
       onSuccess: () => {
         setShowAddModal(false);

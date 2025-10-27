@@ -9,20 +9,21 @@ async function createListing(data, adminId) {
         const listingsCollection = db.collection('Listings');
         const userCollection = db.collection('System-Users');
         const activityCollection = db.collection("User-Activity-Logs");
+        console.log('Creating listing with data:', data);
 
         const { title, address, description, imagesURL = [], price} = data;
 
         let amenities = data.amenities || [];
 
         if (!title || !address || !description || !price) {
-        throw new Error('Title, address, description, and price are required');
+          throw new Error('Title, address, description, and price are required');
         }
 
         // Convert price from string (FormData) to number
         const parsedPrice = Number.parseFloat(price);
         console.log(parsedPrice);
         if (parsedPrice <= 0) {
-        throw new TypeError('Price must be a valid positive number');
+          throw new TypeError('Price must be a valid positive number');
         }
         
 

@@ -11,8 +11,8 @@ export async function getListingsByAdminId() {
 
 export async function createListing(listingData) {
   try {
+    console.log('Creating listing with data:', listingData);
     const formData = new FormData();
-    
     // Append text fields
     formData.append('title', listingData.title);
     formData.append('address', listingData.address);
@@ -27,9 +27,9 @@ export async function createListing(listingData) {
     }
     
     // Append image files
-    if (listingData.imageFiles && listingData.imageFiles.length > 0) {
-      listingData.imageFiles.forEach((file) => {
-        formData.append('imageURL', file);
+    if (listingData.imageURL && listingData.imageURL.length > 0) {
+      listingData.imageURL.forEach((url) => {
+        formData.append('imageURL', url);
       });
     }
 

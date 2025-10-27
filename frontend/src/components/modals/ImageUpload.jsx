@@ -11,8 +11,6 @@ export default function ImageUpload({
   imageFiles = [], 
   onImagesChange, 
   error = "", 
-  required = false, 
-  label = "Property Images",
   className = "",
   maxImages = 10,
   maxSizeMessage = "Max 10MB per image"
@@ -136,11 +134,6 @@ export default function ImageUpload({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-semibold text-gray-700">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      
       <motion.div
         className={`relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-300 ${
           isDragOver 

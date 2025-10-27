@@ -11,7 +11,6 @@ export default function AmenitiesSelector({
   onAmenitiesChange,
   error = "",
   required = false,
-  label = "Amenities",
   placeholder = "Select amenities",
   className = ""
 }) {
@@ -40,11 +39,6 @@ export default function AmenitiesSelector({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <label className="block text-sm font-semibold text-gray-700">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      
       <div className="relative" ref={dropdownRef}>
         <button
           type="button"
