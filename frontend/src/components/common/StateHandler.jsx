@@ -12,7 +12,7 @@ export default function StateHandler({
   emptyMessage = "No data found.",
   children,
   gridCols = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3", // Default grid configuration
-  loadingCount = 6 // Number of loading skeletons to show
+  loadingCount = 8 // Number of loading skeletons to show
 }) {
   // Loading State
   if (isLoading) {

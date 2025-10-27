@@ -73,7 +73,7 @@ function PropertiesListView() {
         errorMessage="Failed to load properties. Please try again."
         emptyMessage="No properties found. Add a new property to get started."
         gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-        loadingCount={6}
+        loadingCount={8}
       >
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
