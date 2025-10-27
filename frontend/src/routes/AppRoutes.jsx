@@ -1,8 +1,8 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, Suspense } from "react";
 import { setNavigate } from "../utils/navigation";
 import Navbar from "../components/layout/Navbar";
-import { DelayedSuspense } from "../components/common/index.js";
+import { EnhancedBrandedFallback } from "../components/common/index.js";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("../pages/Home"));
@@ -41,7 +41,7 @@ export default function AppRoutes() {
 
   return (
     <>
-      <DelayedSuspense minDelay={3000}>
+      <Suspense fallback={<EnhancedBrandedFallback />}>
         {showNavbar && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
@@ -52,7 +52,7 @@ export default function AppRoutes() {
           <Route path="/dashboard/:userId/*" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </DelayedSuspense>
+      </Suspense>
     </>
   );
 }

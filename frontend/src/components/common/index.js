@@ -2,7 +2,6 @@
 export { default as ActionButton } from './ActionButton.jsx';
 export { default as AuthLayout } from './AuthLayout.jsx';
 export { default as BookingCard } from './BookingCard.jsx';
-export { default as DelayedSuspense } from './DelayedSuspense.jsx';
 export { default as EnhancedBrandedFallback } from './EnhancedBrandedFallback.jsx';
 export { default as FormField } from './FormField.jsx';
 export { default as FormInput } from './FormInput.jsx';
