@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaTrash, FaExclamationTriangle } from "react-icons/fa";
 import { TabWrapper, PropertyStateHandler } from "../../common/index.js";
+import PropertyDetailLoading from "./PropertyDetailLoading.jsx";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import {
@@ -18,6 +19,7 @@ export default function DeleteProperty() {
     isLoading,
     isError,
   } = useListingByIdQuery(adminId, propertyId);
+
   const deleteMutation = useDeleteListingMutation();
   const [confirmText, setConfirmText] = useState("");
 
@@ -41,14 +43,14 @@ export default function DeleteProperty() {
     });
   };
 
-  const isDeleteDisabled = confirmText.toLowerCase() !== "delete" || deleteMutation.isLoading;
+  const isDeleteDisabled = confirmText.toLowerCase() !== "delete" || deleteMutation.isPending;
 
   return (
     <TabWrapper decorativeElements="default">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <button
-            disabled={isLoading || deleteMutation.isLoading}
+            disabled={isLoading || deleteMutation.isPending}
             onClick={handleBack}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
@@ -59,7 +61,7 @@ export default function DeleteProperty() {
 
         <button
           onClick={handleViewProperty}
-          disabled={isLoading || deleteMutation.isLoading}
+          disabled={isLoading || deleteMutation.isPending}
           className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
         >
           View Property
@@ -69,9 +71,10 @@ export default function DeleteProperty() {
       <PropertyStateHandler
         isLoading={isLoading}
         isError={isError}
-        data={property}
+        property={property}
         errorMessage="Failed to load property details. Please try again."
         emptyMessage="Property not found."
+        loadingComponent={PropertyDetailLoading}
       >
         {property && (
           <motion.div
@@ -153,7 +156,7 @@ export default function DeleteProperty() {
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-medium shadow hover:bg-gray-300 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 text-base"
-                  disabled={useDeleteListingMutation.isLoading}
+                  disabled={deleteMutation.isPending}
                 >
                   Cancel
                 </button>
@@ -161,14 +164,20 @@ export default function DeleteProperty() {
                 <button
                   onClick={handleDelete}
                   className={`px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 text-base ${
-                    isDeleteDisabled
+                    isDeleteDisabled || deleteMutation.isPending
                       ? "bg-red-200 text-red-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:scale-105 hover:shadow-lg"
-                  }`}
-                  disabled={isDeleteDisabled}
+                  } ${deleteMutation.isPending ? "animate-pulse" : ""}`}
+                  disabled={isDeleteDisabled || deleteMutation.isPending}
                 >
-                  <FaTrash className="w-5 h-5" />
-                  {useDeleteListingMutation.isLoading ? "Deleting..." : "Delete Property"}
+                  {deleteMutation.isPending ? (
+                    <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-red-500 rounded-full animate-spin"></span>
+                  ) : (
+                    <FaTrash className="w-5 h-5" />
+                  )}
+                  <span className="tracking-wide">
+                    {deleteMutation.isPending ? "Deleting..." : "Delete Property"}
+                  </span>
                 </button>
               </div>
 

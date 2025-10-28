@@ -1,4 +1,4 @@
-import PropertyLoadingSkeleton from "./PropertyLoadingSkeleton.jsx";
+import PropertyLoadingSkeleton from "../feature/properties/PropertyLoadingSkeleton.jsx";
 
 /**
  * State handler for single property loading, error, empty, and content states
