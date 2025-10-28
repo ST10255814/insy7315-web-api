@@ -12,6 +12,7 @@ import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import { useListingByIdQuery } from "../../../utils/queries.js";
 import { amenitiesWithIcons } from "../../../constants/amenities.js";
+import PropertyDetailLoading from "./PropertyDetailLoading.jsx";
 
 export default function ViewProperty() {
   const { userId: adminId, propertyId } = useParams();
@@ -54,6 +55,7 @@ export default function ViewProperty() {
         property={property}
         errorMessage="Failed to load property details. Please try again."
         emptyMessage="Property not found."
+        loadingComponent={PropertyDetailLoading}
       >
         {property && (
           <motion.div
