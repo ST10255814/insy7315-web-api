@@ -109,4 +109,4 @@ export const amenitiesWithIcons = [
   { id: 'maintenance', name: 'Maintenance Service', icon: FaTools }
 ];
 
-export default availableAmenities;
+export default availableAmenities; 

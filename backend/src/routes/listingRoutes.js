@@ -16,6 +16,8 @@ router.use(checkAuth);
 // Listing management routes
 router.post('/create', upload.array('imageURL', 10), listingController.createListing);
 router.get('/', listingController.getListingsByAdminId);
+router.get('/:id', listingController.getListingById);
+//router.delete('/delete/:id', listingController.deleteListingById);
 
 // Listing statistics routes
 router.get('/count', listingController.countNumberOfListingsByAdminId);

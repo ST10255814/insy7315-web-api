@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import Toast from "../lib/toast.js";
 import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../services/leases.api.js";
 import { getInvoicesByAdminId, createInvoice } from "../services/invoice.api.js";
-import { getListingsByAdminId, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../services/listings.api.js";
+import { getListingsByAdminId, getListingById, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../services/listings.api.js";
 import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../services/maintenance.api.js";
 import { getBookingsByAdminId, getCurrentMonthRevenue } from "../services/bookings.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
@@ -110,6 +110,18 @@ export const useListingsQuery = (adminId) => {
     ...CACHE_CONFIGS.MEDIUM,
   }, queryClient);
 }
+
+export const useListingByIdQuery = (adminId, listingId) => {
+  return useQuery({
+    queryKey: createQueryKey("listing", { adminId, listingId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getListingById(listingId);
+    },
+    enabled: !!listingId,
+    ...CACHE_CONFIGS.MEDIUM,
+  }, queryClient);
+};
 
 export const useCreateListingMutation = () => {
   const queryClient = useQueryClient();

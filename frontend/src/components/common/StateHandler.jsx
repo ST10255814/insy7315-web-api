@@ -3,10 +3,10 @@ import LoadingSkeleton from "./LoadingSkeleton.jsx";
 /**
  * Reusable state handler for loading, error, and empty states in tab components
  */
-export default function StateHandler({ 
-  isLoading, 
-  isError, 
-  data, 
+export default function StateHandler({
+  isLoading,
+  isError,
+  data,
   loadingComponent: LoadingComponent = null,
   errorMessage = "Failed to load data. Please try again.",
   emptyMessage = "No data found.",

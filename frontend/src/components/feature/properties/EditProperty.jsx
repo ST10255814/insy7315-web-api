@@ -1,56 +1,19 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { FaSave, FaArrowLeft, FaTimes } from "react-icons/fa";
 import { availableAmenities } from "../../../constants/amenities.js";
 import { AmenitiesSelector, ImageUpload } from "../../modals/index.js";
-import TabWrapper from "../../common/TabWrapper.jsx";
-import FormField from "../../common/FormField.jsx";
-import FormInput from "../../common/FormInput.jsx";
-// TODO: Import your mutation hook here when implemented
+import { FormField, FormInput, PropertyStateHandler, TabWrapper } from "../../common/index.js";
+import { useListingByIdQuery } from "../../../utils/queries.js";
 // import { useEditListingMutation } from "../../../utils/queries.js";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function EditProperty() {
-  // Reset form to original property data
-  const handleReset = () => {
-    if (property) {
-      setFormData({
-        title: property.title || "",
-        address: property.address || "",
-        description: property.description || "",
-        amenities: property.amenities || [],
-        imageURL: property.imageURL || [],
-        imageFiles: [],
-        price: property.price || "",
-        status: property.status || "Available",
-      });
-      setIsDirty(false);
-      setErrors({});
-    }
-  };
   const { userId, propertyId } = useParams();
   const navigate = useNavigate();
+  const { data: property, isLoading, isError } = useListingByIdQuery(userId, propertyId);
   // TODO: Replace with your mutation hook
   // const editListingMutation = useEditListingMutation();
   const [errors, setErrors] = useState({});
-  // Mock property data for initial form population
-  const property = useMemo(
-    () => ({
-      listingId: propertyId,
-      title: "Modern Downtown Apartment",
-      address: "123 Main Street, City Center, NY 10001",
-      description:
-        "Beautiful modern apartment in the heart of downtown. Features include hardwood floors, stainless steel appliances, and stunning city views. Perfect for professionals or small families.",
-      price: "2500",
-      status: "Available",
-      amenities: ["WiFi", "Parking", "Gym", "Pool", "Laundry", "Pet Friendly"],
-      imageURL: [
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      ],
-    }),
-    [propertyId]
-  );
 
   const [formData, setFormData] = useState({
     title: "",
@@ -73,7 +36,7 @@ export default function EditProperty() {
         address: property.address || "",
         description: property.description || "",
         amenities: property.amenities || [],
-        imageURL: property.imageURL || [],
+        imageURL: property.imagesURL || [],
         imageFiles: [],
         price: property.price || "",
         status: property.status || "Available",
@@ -109,6 +72,24 @@ export default function EditProperty() {
     });
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
+    }
+  };
+
+  // Reset form to original property data
+  const handleReset = () => {
+    if (property) {
+      setFormData({
+        title: property.title || "",
+        address: property.address || "",
+        description: property.description || "",
+        amenities: property.amenities || [],
+        imageURL: property.imageURL || [],
+        imageFiles: [],
+        price: property.price || "",
+        status: property.status || "Available",
+      });
+      setIsDirty(false);
+      setErrors({});
     }
   };
 
@@ -177,286 +158,294 @@ export default function EditProperty() {
   };
 
   return (
-    <TabWrapper decorativeElements="default">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            onClick={() => navigate(`/dashboard/${userId}/properties`)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-          >
-            <FaArrowLeft className="w-5 h-5" />
-            Back to Properties
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
-              Edit Property
-            </h1>
-            <p className="text-base text-gray-600 mt-1">
-              Edit the details of property{" "}
-              <span className="font-semibold text-blue-700">
-                {property.listingId}
-              </span>{" "}
-              below.
-            </p>
-          </div>
-          <div className="flex-shrink-0 md:ml-auto">
-            <button
-              onClick={() => navigate(`/dashboard/${userId}/properties/view/${propertyId}`)}
-              className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-            >
-              View Property {property.listingId}
-            </button>
-          </div>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content - Left Side */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Basic Information */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    1
-                  </span>
-                  Edit Basic Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField label="Property Title" error={errors.title}>
-                    <FormInput
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={(e) =>
-                        handleInputChange("title", e.target.value)
-                      }
-                      placeholder="e.g., Modern 2BR Apartment"
-                      hasError={!!errors.title}
-                      disabled={isPending}
-                    />
-                  </FormField>
-                  <FormField label="Monthly Rent" error={errors.price}>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                        R
-                      </span>
-                      <FormInput
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={(e) =>
-                          handleInputChange("price", e.target.value)
-                        }
-                        className="pl-8 pr-4"
-                        placeholder="0.00"
-                        hasError={!!errors.price}
-                        disabled={isPending}
-                      />
-                    </div>
-                  </FormField>
-                </div>
-                <div className="mt-6">
-                  <FormField label="Address" error={errors.address}>
-                    <FormInput
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={(e) =>
-                        handleInputChange("address", e.target.value)
-                      }
-                      placeholder="e.g., 123 Main Street, Johannesburg"
-                      hasError={!!errors.address}
-                      disabled={isPending}
-                    />
-                  </FormField>
-                </div>
-                <div className="mt-6">
-                  <FormField label="Description" error={errors.description}>
-                    <FormInput
-                      as="textarea"
-                      name="description"
-                      value={formData.description}
-                      onChange={(e) =>
-                        handleInputChange("description", e.target.value)
-                      }
-                      placeholder="Describe the property features and highlights..."
-                      hasError={!!errors.description}
-                      disabled={isPending}
-                      rows={4}
-                    />
-                  </FormField>
-                </div>
+      <TabWrapper decorativeElements="default">
+        <PropertyStateHandler
+          isLoading={isLoading}
+          isError={isError}
+          property={property}
+          errorMessage="Failed to load property. Please try again."
+          emptyMessage="Property not found."
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-4 mb-8">
+              <button
+                onClick={() => navigate(`/dashboard/${userId}/properties`)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+              >
+                <FaArrowLeft className="w-5 h-5" />
+                Back to Properties
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
+                  Edit Property
+                </h1>
+                <p className="text-base text-gray-600 mt-1">
+                  Edit the details of property{" "}
+                  <span className="font-semibold text-blue-700">
+                    {property?.listingId}
+                  </span>{" "}
+                  below.
+                </p>
               </div>
-              {/* Amenities */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    2
-                  </span>
-                  Edit Property Amenities
-                </h2>
-                <FormField label="Amenities">
-                  <AmenitiesSelector
-                    availableOptions={availableAmenities}
-                    selectedAmenities={formData.amenities}
-                    onAmenitiesChange={handleAmenitiesChange}
-                    error={errors.amenities}
-                  />
-                </FormField>
-              </div>
-              {/* Images */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    3
-                  </span>
-                  Edit Property Images
-                </h2>
-                <ImageUpload
-                  imageURLs={formData.imageURL}
-                  imageFiles={formData.imageFiles}
-                  onImagesChange={handleImagesChange}
-                  error={errors.images}
-                />
+              <div className="flex-shrink-0 md:ml-auto">
+                <button
+                  onClick={() => navigate(`/dashboard/${userId}/properties/view/${propertyId}`)}
+                  className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+                >
+                  View Property {property?.listingId}
+                </button>
               </div>
             </div>
-            {/* Sidebar - Right Side */}
-            <div className="space-y-6 flex flex-col justify-start">
-              {/* Status Field Above Actions - Radio Buttons */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    4
-                  </span>
-                  Edit Property Status
-                </h3>
-                <FormField label="Edit Status">
-                  <div className="space-y-2">
-                    {statusOptions.map((status) => (
-                      <label
-                        key={status}
-                        className={`flex items-center p-2 rounded-lg border cursor-pointer transition-all ${
-                          formData.status === status
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="status"
-                          value={status}
-                          checked={formData.status === status}
-                          onChange={() => handleInputChange("status", status)}
-                          className="mr-3"
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content - Left Side */}
+                <div className="lg:col-span-2 space-y-8">
+                  {/* Basic Information */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        1
+                      </span>
+                      Edit Basic Information
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField label="Property Title" error={errors.title}>
+                        <FormInput
+                          type="text"
+                          name="title"
+                          value={formData.title}
+                          onChange={(e) =>
+                            handleInputChange("title", e.target.value)
+                          }
+                          placeholder="e.g., Modern 2BR Apartment"
+                          hasError={!!errors.title}
                           disabled={isPending}
                         />
-                        <span
-                          className={`text-sm font-medium ${
-                            formData.status === status
-                              ? "text-blue-700"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          {status}
+                      </FormField>
+                      <FormField label="Monthly Rent" error={errors.price}>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            R
+                          </span>
+                          <FormInput
+                            type="number"
+                            name="price"
+                            value={formData.price}
+                            onChange={(e) =>
+                              handleInputChange("price", e.target.value)
+                            }
+                            className="pl-8 pr-4"
+                            placeholder="0.00"
+                            hasError={!!errors.price}
+                            disabled={isPending}
+                          />
+                        </div>
+                      </FormField>
+                    </div>
+                    <div className="mt-6">
+                      <FormField label="Address" error={errors.address}>
+                        <FormInput
+                          type="text"
+                          name="address"
+                          value={formData.address}
+                          onChange={(e) =>
+                            handleInputChange("address", e.target.value)
+                          }
+                          placeholder="e.g., 123 Main Street, Johannesburg"
+                          hasError={!!errors.address}
+                          disabled={isPending}
+                        />
+                      </FormField>
+                    </div>
+                    <div className="mt-6">
+                      <FormField label="Description" error={errors.description}>
+                        <FormInput
+                          as="textarea"
+                          name="description"
+                          value={formData.description}
+                          onChange={(e) =>
+                            handleInputChange("description", e.target.value)
+                          }
+                          placeholder="Describe the property features and highlights..."
+                          hasError={!!errors.description}
+                          disabled={isPending}
+                          rows={4}
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+                  {/* Amenities */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        2
+                      </span>
+                      Edit Property Amenities
+                    </h2>
+                    <FormField label="Amenities">
+                      <AmenitiesSelector
+                        availableOptions={availableAmenities}
+                        selectedAmenities={formData.amenities}
+                        onAmenitiesChange={handleAmenitiesChange}
+                        error={errors.amenities}
+                      />
+                    </FormField>
+                  </div>
+                  {/* Images */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        3
+                      </span>
+                      Edit Property Images
+                    </h2>
+                    <ImageUpload
+                      imageURLs={formData.imageURL}
+                      imageFiles={formData.imageFiles}
+                      onImagesChange={handleImagesChange}
+                      error={errors.images}
+                    />
+                  </div>
+                </div>
+                {/* Sidebar - Right Side */}
+                <div className="space-y-6 flex flex-col justify-start">
+                  {/* Status Field Above Actions - Radio Buttons */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                    <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        4
+                      </span>
+                      Edit Property Status
+                    </h3>
+                    <FormField label="Edit Status">
+                      <div className="space-y-2">
+                        {statusOptions.map((status) => (
+                          <label
+                            key={status}
+                            className={`flex items-center p-2 rounded-lg border cursor-pointer transition-all ${
+                              formData.status === status
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-gray-200 hover:border-gray-300"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="status"
+                              value={status}
+                              checked={formData.status === status}
+                              onChange={() => handleInputChange("status", status)}
+                              className="mr-3"
+                              disabled={isPending}
+                            />
+                            <span
+                              className={`text-sm font-medium ${
+                                formData.status === status
+                                  ? "text-blue-700"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {status}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </FormField>
+                  </div>
+                  {/* Actions */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                    <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        5
+                      </span>
+                      Edit Actions
+                    </h3>
+                    <div className="space-y-3">
+                      <button
+                        type="submit"
+                        className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition-all duration-200 text-base font-bold border-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60  ${
+                          isPending ? "animate-pulse" : ""
+                        }`}
+                        disabled={isPending || !isDirty}
+                      >
+                        {isPending ? (
+                          <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
+                        ) : (
+                          <FaSave className="text-lg" />
+                        )}
+                        <span className="tracking-wide">
+                          {isPending ? "Saving..." : "Save Changes"}
                         </span>
-                      </label>
-                    ))}
-                  </div>
-                </FormField>
-              </div>
-              {/* Actions */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    5
-                  </span>
-                  Edit Actions
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition-all duration-200 text-base font-bold border-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60  ${
-                      isPending ? "animate-pulse" : ""
-                    }`}
-                    disabled={isPending || !isDirty}
-                  >
-                    {isPending ? (
-                      <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
-                    ) : (
-                      <FaSave className="text-lg" />
-                    )}
-                    <span className="tracking-wide">
-                      {isPending ? "Saving..." : "Save Changes"}
-                    </span>
-                  </button>
-                  {isDirty && (
-                    <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-full border border-gray-300 shadow-sm hover:bg-gray-200 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-gray-300 disabled:opacity-60"
-                    onClick={handleReset}
-                  >
-                    <span className="tracking-wide">Reset Form</span>
-                  </button>
-                  )}
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-50 text-red-700 rounded-full border border-red-400 shadow-sm hover:bg-red-100 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-red-300 disabled:opacity-60"
-                    onClick={() => navigate(`/dashboard/${userId}/properties`)}
-                    disabled={isPending}
-                  >
-                    <FaTimes className="text-lg" />
-                    <span className="tracking-wide">Cancel</span>
-                  </button>
-                </div>
-              </div>
-              {/* Property Preview  */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    6
-                  </span>
-                  Current Property Preview
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Title:</span>
-                    <span className="font-medium text-blue-700">
-                      {formData.title || (
-                        <span className="text-gray-400">(empty)</span>
+                      </button>
+                      {isDirty && (
+                        <button
+                        type="button"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-full border border-gray-300 shadow-sm hover:bg-gray-200 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-gray-300 disabled:opacity-60"
+                        onClick={handleReset}
+                      >
+                        <span className="tracking-wide">Reset Form</span>
+                      </button>
                       )}
-                    </span>
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-50 text-red-700 rounded-full border border-red-400 shadow-sm hover:bg-red-100 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-red-300 disabled:opacity-60"
+                        onClick={() => navigate(`/dashboard/${userId}/properties`)}
+                        disabled={isPending}
+                      >
+                        <FaTimes className="text-lg" />
+                        <span className="tracking-wide">Cancel</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Address:</span>
-                    <span className="font-medium text-blue-700">
-                      {formData.address || (
-                        <span className="text-gray-400">(empty)</span>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Status:</span>
-                    <span className="font-medium text-blue-700">
-                      {formData.status || (
-                        <span className="text-gray-400">(empty)</span>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-medium text-blue-700">
-                      {formData.price ? (
-                        `R ${formData.price}`
-                      ) : (
-                        <span className="text-gray-400">(empty)</span>
-                      )}
-                    </span>
+                  {/* Property Preview  */}
+                  <div className="bg-gray-50 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
+                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                        6
+                      </span>
+                      Current Property Preview
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Title:</span>
+                        <span className="font-medium text-blue-700">
+                          {formData.title || (
+                            <span className="text-gray-400">(empty)</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Address:</span>
+                        <span className="font-medium text-blue-700">
+                          {formData.address || (
+                            <span className="text-gray-400">(empty)</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Status:</span>
+                        <span className="font-medium text-blue-700">
+                          {formData.status || (
+                            <span className="text-gray-400">(empty)</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Price:</span>
+                        <span className="font-medium text-blue-700">
+                          {formData.price ? (
+                            `R ${formData.price}`
+                          ) : (
+                            <span className="text-gray-400">(empty)</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </TabWrapper>
+        </PropertyStateHandler>
+      </TabWrapper>
   );
 }

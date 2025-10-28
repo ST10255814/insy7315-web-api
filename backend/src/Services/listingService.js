@@ -82,6 +82,19 @@ async function createListing(data, adminId) {
   }
 }
 
+async function getListingById(listingId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const listing = await listingsCollection.findOne({ listingId: listingId, "landlordInfo.userId": toObjectId(adminId) });
+
+    return listing;
+  } catch (error) {
+    throw new Error(`Error fetching listing by ID: ${error.message}`);
+  }
+}
+
 async function getListingsByAdminId(adminId) {
   try {
     const db = client.db("RentWise");
@@ -141,10 +154,12 @@ async function countListingsAddedThisMonth(adminId) {
   }
 }
 
-const listingService = { 
-  createListing, 
-  getListingsByAdminId, 
-  countNumberOfListingsByAdminId, 
-  countListingsAddedThisMonth 
+const listingService = {
+  createListing,
+  getListingById,
+  getListingsByAdminId,
+  countNumberOfListingsByAdminId,
+  countListingsAddedThisMonth
 };
+
 export default listingService;

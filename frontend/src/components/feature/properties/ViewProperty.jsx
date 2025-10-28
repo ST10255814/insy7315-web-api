@@ -5,35 +5,18 @@ import {
   FaEdit,
   FaTrash,
   FaMapMarkerAlt,
-  FaHome,
 } from "react-icons/fa";
-import { TabWrapper, StateHandler } from "../../common/index.js";
+import { TabWrapper, PropertyStateHandler } from "../../common/index.js";
 import { propertyStatusMap } from "../../../constants/status.js";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
+import { useListingByIdQuery } from "../../../utils/queries.js";
+import { amenitiesWithIcons } from "../../../constants/amenities.js";
 
 export default function ViewProperty() {
   const { userId: adminId, propertyId } = useParams();
   const navigate = useNavigate();
-
-  // Mock data for UI display
-  const property = {
-    listingId: propertyId,
-    title: "Modern Downtown Apartment",
-    address: "123 Main Street, City Center, NY 10001",
-    description:
-      "Beautiful modern apartment in the heart of downtown. Features include hardwood floors, stainless steel appliances, and stunning city views. Perfect for professionals or small families.",
-    price: "2500",
-    status: "Vacant",
-    amenities: ["WiFi", "Parking", "Gym", "Pool", "Laundry", "Pet Friendly"],
-    imageURL: [
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-    ],
-  };
-  const isLoading = false;
-  const isError = false;
+  const { data: property, isLoading, isError } = useListingByIdQuery(adminId, propertyId);
 
   const getStatusClasses = (status) => {
     return propertyStatusMap[status] || "bg-gray-100 text-gray-700";
@@ -65,10 +48,10 @@ export default function ViewProperty() {
         </button>
       </div>
 
-      <StateHandler
+      <PropertyStateHandler
         isLoading={isLoading}
         isError={isError}
-        data={property}
+        property={property}
         errorMessage="Failed to load property details. Please try again."
         emptyMessage="Property not found."
       >
@@ -80,10 +63,10 @@ export default function ViewProperty() {
             className="bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden"
           >
             {/* Property Images */}
-            {property.imageURL && property.imageURL.length > 0 && (
+            {property.imagesURL && property.imagesURL.length > 0 && (
               <div className="relative h-72 md:h-96 lg:h-[28rem] group">
                 <img
-                  src={property.imageURL[0]}
+                  src={property.imagesURL[0]}
                   alt={property.title}
                   className="w-full h-full object-cover rounded-t-3xl"
                 />
@@ -161,27 +144,30 @@ export default function ViewProperty() {
                     Amenities
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    {property.amenities.map((amenity, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-full shadow hover:bg-blue-100 hover:text-blue-700 border border-gray-200 transition-all duration-300 cursor-pointer drop-shadow"
-                      >
-                        <FaHome className="mr-2 text-blue-700" />
-                        {amenity}
-                      </span>
-                    ))}
+                    {property.amenities.map((amenity, index) => {
+                      const amenityData = amenitiesWithIcons.find((a) => a.name === amenity);
+                      return (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-full shadow hover:bg-blue-100 hover:text-blue-700 border border-gray-200 transition-all duration-300 cursor-pointer drop-shadow"
+                        >
+                          {amenityData?.icon && <amenityData.icon className="mr-2 text-blue-700" />}
+                          {amenity}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Additional Images */}
-              {property.imageURL && property.imageURL.length > 0 && (
+              {property.imagesURL && property.imagesURL.length > 0 && (
                 <div>
                   <h3 className="text-xl font-bold text-gray-700 mb-4 drop-shadow">
                     Additional Images
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {property.imageURL.slice(1).map((image, index) => (
+                    {property.imagesURL.slice(1).map((image, index) => (
                       <div
                         key={index}
                         className="aspect-square rounded-2xl overflow-hidden shadow-md border-2 border-blue-100 hover:scale-103 transition-transform duration-300 cursor-pointer bg-white"
@@ -189,7 +175,7 @@ export default function ViewProperty() {
                         <img
                           src={image}
                           alt={`${property.title} - View ${index + 2}`}
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110 hover:brightness-95 rounded-2xl"
+                          className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-110 hover:brightness-95 rounded-2xl"
                         />
                       </div>
                     ))}
@@ -199,7 +185,7 @@ export default function ViewProperty() {
             </div>
           </motion.div>
         )}
-      </StateHandler>
+      </PropertyStateHandler>
     </TabWrapper>
   );
 }

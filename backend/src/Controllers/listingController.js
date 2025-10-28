@@ -52,6 +52,30 @@ const getListingsByAdminId = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get a specific listing by its ID
+ */
+const getListingById = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const listingId = req.params.id;
+
+    logControllerAction('Fetch Listing by ID', adminId);
+
+    const listing = await listingService.getListingById(listingId, adminId);
+
+    if (!listing) {
+      return sendError(res, 'Listing not found', 404);
+    }
+
+    console.log(`[getListingById] Retrieved listing with id="${listingId}" for admin ${adminId}`);
+
+    sendSuccess(res, listing, 'Listing retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
  * Count total number of listings for the authenticated admin
  */
 const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
@@ -86,8 +110,9 @@ const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
 });
 
 // Export individual functions for named imports
-export { 
+export {
     createListing,
+    getListingById,
     getListingsByAdminId,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth
@@ -96,6 +121,7 @@ export {
 // Export default object for backward compatibility
 export default {
     createListing,
+    getListingById,
     getListingsByAdminId,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth

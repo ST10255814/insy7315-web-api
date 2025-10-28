@@ -48,6 +48,15 @@ export async function createListing(listingData) {
   }
 }
 
+export async function getListingById(listingId) {
+  try {
+    const response = await api.get(`/api/listings/${listingId}`, { withCredentials: true });
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function countNumberOfListingsByAdminId() {
   try {
     const response = await api.get("/api/listings/count", { withCredentials: true });
