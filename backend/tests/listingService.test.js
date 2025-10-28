@@ -280,7 +280,10 @@ describe('ListingService', () => {
       const result = await listingService.countNumberOfListingsByAdminId('admin123');
 
       expect(mockListingsCollection.countDocuments).toHaveBeenCalledWith({
-        'landlordInfo.userId': { _id: 'admin123' }
+        $or: [
+          { 'landlordInfo.userId': { _id: 'admin123' } },
+          { 'landlordInfo.landlord': { _id: 'admin123' } }
+        ]
       });
       expect(result).toBe(7);
     });
@@ -522,6 +525,178 @@ describe('ListingService', () => {
 
       // Restore original Date
       global.Date = originalDate;
+    });
+  });
+
+  describe('getListingById', () => {
+    test('should fetch listing by ID successfully', async () => {
+      const mockListing = {
+        _id: 'listing123',
+        listingId: 'L-001',
+        title: 'Test Property',
+        address: '123 Test St',
+        description: 'A test property',
+        price: 1500,
+        landlordInfo: {
+          userId: { _id: 'admin123' }
+        }
+      };
+
+      const mockListingsCollection = {
+        findOne: jest.fn().mockResolvedValue(mockListing)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.getListingById('L-001', 'admin123');
+
+      expect(mockListingsCollection.findOne).toHaveBeenCalledWith({
+        listingId: 'L-001',
+        'landlordInfo.userId': { _id: 'admin123' }
+      });
+      expect(result).toEqual(mockListing);
+    });
+
+    test('should return null when listing not found', async () => {
+      const mockListingsCollection = {
+        findOne: jest.fn().mockResolvedValue(null)
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.getListingById('L-999', 'admin123');
+
+      expect(result).toBeNull();
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockListingsCollection = {
+        findOne: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(listingService.getListingById('L-001', 'admin123'))
+        .rejects
+        .toThrow('Error fetching listing by ID: Database error');
+    });
+  });
+
+  describe('deleteListingById', () => {
+    test('should delete listing successfully', async () => {
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
+      };
+
+      const mockListingsCollection = {
+        deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 })
+      };
+
+      const mockDb = {
+        collection: jest.fn((name) => {
+          if (name === 'User-Activity-Logs') return mockActivityCollection;
+          if (name === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.deleteListingById('L-001', 'admin123');
+
+      expect(mockListingsCollection.deleteOne).toHaveBeenCalledWith({
+        listingId: 'L-001',
+        'landlordInfo.userId': { _id: 'admin123' }
+      });
+      expect(mockActivityCollection.insertOne).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    test('should return false when listing not found', async () => {
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
+      };
+
+      const mockListingsCollection = {
+        deleteOne: jest.fn().mockResolvedValue({ deletedCount: 0 })
+      };
+
+      const mockDb = {
+        collection: jest.fn((name) => {
+          if (name === 'User-Activity-Logs') return mockActivityCollection;
+          if (name === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      const result = await listingService.deleteListingById('L-999', 'admin123');
+
+      expect(result).toBe(false);
+    });
+
+    test('should handle database errors gracefully', async () => {
+      const mockListingsCollection = {
+        deleteOne: jest.fn().mockRejectedValue(new Error('Database error'))
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockListingsCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await expect(listingService.deleteListingById('L-001', 'admin123'))
+        .rejects
+        .toThrow('Error deleting listing by ID: Database error');
+    });
+
+    test('should log activity when deleting listing', async () => {
+      const mockActivityCollection = {
+        insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
+      };
+
+      const mockListingsCollection = {
+        deleteOne: jest.fn().mockResolvedValue({ deletedCount: 1 })
+      };
+
+      const mockDb = {
+        collection: jest.fn((name) => {
+          if (name === 'User-Activity-Logs') return mockActivityCollection;
+          if (name === 'Listings') return mockListingsCollection;
+        })
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+
+      await listingService.deleteListingById('L-001', 'admin123');
+
+      expect(mockActivityCollection.insertOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'Delete Listing',
+          adminId: { _id: 'admin123' },
+          detail: 'Deleted listing L-001',
+          timestamp: expect.any(Date)
+        })
+      );
     });
   });
 });
