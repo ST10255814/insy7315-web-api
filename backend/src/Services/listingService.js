@@ -1,82 +1,82 @@
 import { client } from "../utils/db.js";
-import Object from '../utils/ObjectIDConvert.js';
-import { generateListingId } from '../utils/idGenerator.js';
+import Object from "../utils/ObjectIDConvert.js";
+import { generateListingId } from "../utils/idGenerator.js";
 const { toObjectId } = Object;
 
 async function createListing(data, adminId) {
-     try {
-        const db = client.db('RentWise');
-        const listingsCollection = db.collection('Listings');
-        const userCollection = db.collection('System-Users');
-        const activityCollection = db.collection("User-Activity-Logs");
-        console.log('Creating listing with data:', data);
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+    const userCollection = db.collection("System-Users");
+    const activityCollection = db.collection("User-Activity-Logs");
+    console.log("Creating listing with data:", data);
 
-        const { title, address, description, imagesURL = [], price} = data;
+    const { title, address, description, imagesURL = [], price } = data;
 
-        let amenities = data.amenities || [];
+    let amenities = data.amenities || [];
 
-        if (!title || !address || !description || !price) {
-          throw new Error('Title, address, description, and price are required');
-        }
+    if (!title || !address || !description || !price) {
+      throw new Error("Title, address, description, and price are required");
+    }
 
-        // Convert price from string (FormData) to number
-        const parsedPrice = Number.parseFloat(price);
-        console.log(parsedPrice);
-        if (isNaN(parsedPrice) || parsedPrice <= 0) {
-          throw new Error('Price must be a valid positive number');
-        }
-        
+    // Convert price from string (FormData) to number
+    const parsedPrice = Number.parseFloat(price);
+    console.log(parsedPrice);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      throw new Error("Price must be a valid positive number");
+    }
 
-        if (!Array.isArray(amenities)) {
-        amenities = amenities ? [amenities] : [];
-        }
+    if (!Array.isArray(amenities)) {
+      amenities = amenities ? [amenities] : [];
+    }
 
-        amenities = [...new Set(amenities.map(a => a.trim()).filter(a => a !== ''))];
+    amenities = [
+      ...new Set(amenities.map((a) => a.trim()).filter((a) => a !== "")),
+    ];
 
-        //Fetch landlord info
-        const landlord = await userCollection.findOne({ _id: toObjectId(adminId) });
+    //Fetch landlord info
+    const landlord = await userCollection.findOne({ _id: toObjectId(adminId) });
 
-        if (!landlord) {
-        throw new Error('Landlord not found');
-        }
+    if (!landlord) {
+      throw new Error("Landlord not found");
+    }
 
-        const landlordInfo = {
-            userId: landlord._id,
-            firstName: landlord.firstName,
-            surname: landlord.surname,
-            email: landlord.email
-        };
+    const landlordInfo = {
+      userId: landlord._id,
+      firstName: landlord.firstName,
+      surname: landlord.surname,
+      email: landlord.email,
+    };
 
-        const listingId = await generateListingId();
+    const listingId = await generateListingId();
 
-        const isFavourited = false; // Default value
-        const status = 'Vacant'; // Default value
+    const isFavourited = false; // Default value
+    const status = "Vacant"; // Default value
 
-        const newListing = {
-            listingId,
-            title,
-            address,
-            description,
-            amenities,
-            imagesURL,
-            price: parsedPrice,
-            isFavourited: isFavourited,
-            status: status,
-            landlordInfo,
-            createdAt: new Date()
-        };
+    const newListing = {
+      listingId,
+      title,
+      address,
+      description,
+      amenities,
+      imagesURL,
+      price: parsedPrice,
+      isFavourited: isFavourited,
+      status: status,
+      landlordInfo,
+      createdAt: new Date(),
+    };
 
-        const activityLog = {
-            action: 'Create Listing',
-            adminId: toObjectId(adminId),
-            detail: `Created listing ${listingId} with title "${title}"`,
-            timestamp: new Date()
-        };
-        await activityCollection.insertOne(activityLog);
+    const activityLog = {
+      action: "Create Listing",
+      adminId: toObjectId(adminId),
+      detail: `Created listing ${listingId} with title "${title}"`,
+      timestamp: new Date(),
+    };
+    await activityCollection.insertOne(activityLog);
 
-        await listingsCollection.insertOne(newListing);
-        return { message: 'Listing created', listingId: listingId };
-
+    await listingsCollection.insertOne(newListing);
+    return { message: "Listing created", listingId: listingId };
   } catch (error) {
     throw new Error(`Error creating listing: ${error.message}`);
   }
@@ -87,7 +87,10 @@ async function getListingById(listingId, adminId) {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
-    const listing = await listingsCollection.findOne({ listingId: listingId, "landlordInfo.userId": toObjectId(adminId) });
+    const listing = await listingsCollection.findOne({
+      listingId: listingId,
+      "landlordInfo.userId": toObjectId(adminId),
+    });
 
     return listing;
   } catch (error) {
@@ -110,12 +113,38 @@ async function getListingsByAdminId(adminId) {
   }
 }
 
-async function countNumberOfListingsByAdminId(adminId) {
-  try{
+async function deleteListingById(listingId, adminId) {
+  try {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
-    const count = await listingsCollection.countDocuments({ "landlordInfo.userId": toObjectId(adminId) });
+    const result = await listingsCollection.deleteOne({
+      listingId: listingId,
+      "landlordInfo.userId": toObjectId(adminId),
+    });
+
+    const activityLog = {
+      action: "Delete Listing",
+      adminId: toObjectId(adminId),
+      detail: `Deleted listing ${listingId}`,
+      timestamp: new Date(),
+    };
+    await activityCollection.insertOne(activityLog);
+
+    return result.deletedCount > 0;
+  } catch (error) {
+    throw new Error(`Error deleting listing by ID: ${error.message}`);
+  }
+}
+
+async function countNumberOfListingsByAdminId(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const count = await listingsCollection.countDocuments({
+      "landlordInfo.userId": toObjectId(adminId),
+    });
     return count;
   } catch (error) {
     throw new Error(`Error counting listings: ${error.message}`);
@@ -134,23 +163,37 @@ async function countListingsAddedThisMonth(adminId) {
 
     // Create start and end dates for current month
     const startOfMonth = new Date(currentYear, currentMonth, 1);
-    const endOfMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999); // Last day of current month
+    const endOfMonth = new Date(
+      currentYear,
+      currentMonth + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    ); // Last day of current month
 
-    console.log(`Counting listings added between ${startOfMonth} and ${endOfMonth} for admin ${adminId}`);
+    console.log(
+      `Counting listings added between ${startOfMonth} and ${endOfMonth} for admin ${adminId}`
+    );
 
-    const count = await listingsCollection.countDocuments({ 
+    const count = await listingsCollection.countDocuments({
       "landlordInfo.userId": toObjectId(adminId),
-      "createdAt": {
+      createdAt: {
         $gte: startOfMonth,
-        $lte: endOfMonth
-      }
+        $lte: endOfMonth,
+      },
     });
 
-    console.log(`Found ${count} listings added this month for admin ${adminId}`);
+    console.log(
+      `Found ${count} listings added this month for admin ${adminId}`
+    );
     return count;
   } catch (error) {
     console.error(`Error counting listings added this month: ${error.message}`);
-    throw new Error(`Error counting listings added this month: ${error.message}`);
+    throw new Error(
+      `Error counting listings added this month: ${error.message}`
+    );
   }
 }
 
@@ -159,7 +202,7 @@ const listingService = {
   getListingById,
   getListingsByAdminId,
   countNumberOfListingsByAdminId,
-  countListingsAddedThisMonth
+  countListingsAddedThisMonth,
 };
 
 export default listingService;

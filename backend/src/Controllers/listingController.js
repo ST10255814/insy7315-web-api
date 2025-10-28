@@ -76,6 +76,30 @@ const getListingById = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Delete a specific listing by its ID
+ */
+const deleteListingById = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const listingId = req.params.id;
+
+    logControllerAction('Delete Listing by ID', adminId);
+
+    const result = await listingService.deleteListingById(listingId, adminId);
+
+    if (!result) {
+      return sendError(res, 'Listing not found', 404);
+    }
+
+    console.log(`[deleteListingById] Deleted listing with id="${listingId}" for admin ${adminId}`);
+
+    sendSuccess(res, null, 'Listing deleted successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
  * Count total number of listings for the authenticated admin
  */
 const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
@@ -114,6 +138,7 @@ export {
     createListing,
     getListingById,
     getListingsByAdminId,
+    deleteListingById,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth
 };
@@ -123,6 +148,7 @@ export default {
     createListing,
     getListingById,
     getListingsByAdminId,
+    deleteListingById,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth
 };

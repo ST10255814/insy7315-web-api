@@ -1,14 +1,41 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import Toast from "../lib/toast.js";
-import { getLeasesByAdminId, createLeaseForBookingID, countActiveLeasesByAdminId, getLeasedPropertyPercentage } from "../services/leases.api.js";
-import { getInvoicesByAdminId, createInvoice } from "../services/invoice.api.js";
-import { getListingsByAdminId, getListingById, createListing, countNumberOfListingsByAdminId, countListingsAddedThisMonth } from "../services/listings.api.js";
-import { getMaintenanceRequestsByAdminId, countMaintenanceRequestsByAdminId, countHighPriorityMaintenanceRequestsByAdminId } from "../services/maintenance.api.js";
-import { getBookingsByAdminId, getCurrentMonthRevenue } from "../services/bookings.api.js";
+import {
+  getLeasesByAdminId,
+  createLeaseForBookingID,
+  countActiveLeasesByAdminId,
+  getLeasedPropertyPercentage,
+} from "../services/leases.api.js";
+import {
+  getInvoicesByAdminId,
+  createInvoice,
+} from "../services/invoice.api.js";
+import {
+  getListingsByAdminId,
+  getListingById,
+  createListing,
+  deleteListingById,
+  countNumberOfListingsByAdminId,
+  countListingsAddedThisMonth,
+} from "../services/listings.api.js";
+import {
+  getMaintenanceRequestsByAdminId,
+  countMaintenanceRequestsByAdminId,
+  countHighPriorityMaintenanceRequestsByAdminId,
+} from "../services/maintenance.api.js";
+import {
+  getBookingsByAdminId,
+  getCurrentMonthRevenue,
+} from "../services/bookings.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
-import { CACHE_CONFIGS, createQueryKey, invalidateEntityQueries, invalidateOverviewQueries } from "./cacheUtils.js";
+import {
+  CACHE_CONFIGS,
+  createQueryKey,
+  invalidateEntityQueries,
+  invalidateOverviewQueries,
+} from "./cacheUtils.js";
 import { getRevenueTrend } from "../services/revenue.api.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
@@ -29,15 +56,13 @@ export const useCreateLeaseMutation = () => {
 
   return useMutation({
     mutationFn: async (bookingID) => {
-      await new Promise((r) => setTimeout(r, 2000)); 
+      await new Promise((r) => setTimeout(r, 2000));
       return createLeaseForBookingID(bookingID);
     },
     onSuccess: (response) => {
-      console.log(response)
+      console.log(response);
       const leaseID = response?.leaseId || response;
-      Toast.success(
-        `Lease created successfully: Lease ID: ${leaseID}`
-      );
+      Toast.success(`Lease created successfully: Lease ID: ${leaseID}`);
       // Use efficient invalidation utility
       invalidateEntityQueries(queryClient, "leases");
       // Invalidate overview queries since lease count and occupancy changed
@@ -46,7 +71,7 @@ export const useCreateLeaseMutation = () => {
     onError: (error) => {
       // Don't show toast if error was already handled by 401 interceptor
       if (error.isHandledBy401Interceptor) return;
-      
+
       const msg =
         error?.response?.data?.error ||
         error?.message ||
@@ -87,7 +112,7 @@ export const useCreateInvoiceMutation = () => {
     onError: (error) => {
       // Don't show toast if error was already handled by 401 interceptor
       if (error.isHandledBy401Interceptor) return;
-      
+
       const msg =
         error?.response?.data?.error ||
         error?.message ||
@@ -108,7 +133,7 @@ export const useListingsQuery = (adminId) => {
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
   });
-}
+};
 
 export const useListingByIdQuery = (adminId, listingId) => {
   return useQuery({
@@ -119,7 +144,39 @@ export const useListingByIdQuery = (adminId, listingId) => {
     },
     enabled: !!listingId,
     ...CACHE_CONFIGS.MEDIUM,
-  }, queryClient);
+  });
+};
+
+export const useDeleteListingMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (listingId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return deleteListingById(listingId);
+    },
+    onSuccess: (response) => {
+      const listingID = response?.listingId || response;
+      Toast.success(
+        `Property deleted successfully!${
+          listingID ? ` Listing ID: ${listingID}` : ""
+        }`
+      );
+      invalidateEntityQueries(queryClient, "listings");
+      // Invalidate overview queries since property counts have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      console.error("Delete listing mutation error:", error);
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.error ||
+        error?.message ||
+        "Failed to delete property";
+      Toast.error(msg);
+    },
+  });
 };
 
 export const useCreateListingMutation = () => {
@@ -131,16 +188,20 @@ export const useCreateListingMutation = () => {
     },
     onSuccess: (response) => {
       const listingID = response?.listingId || response;
-      Toast.success(`Property created successfully!${listingID ? ` Listing ID: ${listingID}` : ''}`);
+      Toast.success(
+        `Property created successfully!${
+          listingID ? ` Listing ID: ${listingID}` : ""
+        }`
+      );
       invalidateEntityQueries(queryClient, "listings");
       // Invalidate overview queries since property counts have changed
       invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
-      console.error('Create listing mutation error:', error);
+      console.error("Create listing mutation error:", error);
       // Don't show toast if error was already handled by 401 interceptor
       if (error.isHandledBy401Interceptor) return;
-      
+
       const msg =
         error?.response?.data?.error ||
         error?.error ||
@@ -162,7 +223,7 @@ export const useBookingsQuery = (adminId) => {
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
   });
-}
+};
 
 // Maintenance queries and mutations
 export const useMaintenanceRequestsQuery = (adminId) => {
@@ -175,7 +236,7 @@ export const useMaintenanceRequestsQuery = (adminId) => {
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
   });
-}
+};
 
 // Overview-specific queries for dashboard statistics
 export const useMonthlyRevenueQuery = (adminId) => {
@@ -270,7 +331,7 @@ export const useRecentActivitiesQuery = (adminId) => {
 // Use this in components when you know overview data has changed
 export const useInvalidateOverview = () => {
   const queryClient = useQueryClient();
-  
+
   return useCallback(() => {
     invalidateOverviewQueries(queryClient);
   }, [queryClient]);
