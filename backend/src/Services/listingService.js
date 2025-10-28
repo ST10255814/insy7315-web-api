@@ -117,6 +117,7 @@ async function deleteListingById(listingId, adminId) {
   try {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
+    const activityCollection = db.collection("User-Activity-Logs");
 
     const result = await listingsCollection.deleteOne({
       listingId: listingId,
