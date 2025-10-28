@@ -203,6 +203,7 @@ const listingService = {
   getListingsByAdminId,
   countNumberOfListingsByAdminId,
   countListingsAddedThisMonth,
+  deleteListingById,
 };
 
 export default listingService;

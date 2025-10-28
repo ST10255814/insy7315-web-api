@@ -150,5 +150,5 @@ export default {
     getListingsByAdminId,
     deleteListingById,
     countNumberOfListingsByAdminId,
-    countListingsAddedThisMonth
+    countListingsAddedThisMonth,
 };
