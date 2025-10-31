@@ -10,6 +10,8 @@ import {
   FaCommentDots,
   FaIdBadge,
   FaFileAlt,
+  FaCheckCircle,
+  FaEdit,
 } from "react-icons/fa";
 import { downloadFiles } from "../../utils/fileDownload.js";
 import { formatDateTimeUS } from "../../utils/formatters.js";
@@ -19,12 +21,12 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-export default function MaintenanceCard({ request }) {
+export default function MaintenanceCard({ request , onAction }) {
   return (
     <motion.div
       variants={cardVariants}
       style={{ willChange: "transform, box-shadow" }}
-      className="relative bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100"
+      className="relative bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4 sm:p-6 rounded-3xl shadow-lg border border-blue-200 hover:shadow-2xl transition-all duration-300"
     >
       {/* Priority Badge */}
       <div
@@ -145,6 +147,7 @@ export default function MaintenanceCard({ request }) {
             whileTap={{ scale: 0.975 }}
             style={{ willChange: "transform, box-shadow" }}
             className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg sm:rounded-xl shadow-md transition-colors duration-200 flex items-center justify-center gap-2"
+            onClick={() => onAction && onAction("assign", request)}
           >
             <FaTools size={12} className="sm:w-3.5 sm:h-3.5" />
             <span className="truncate">Assign Caretaker</span>
@@ -168,19 +171,36 @@ export default function MaintenanceCard({ request }) {
           </motion.button>
         )}
         {request.status === "In Progress" && (
-          <motion.button
-            whileHover={{
-              scale: 1.02,
-              boxShadow: "0 4px 12px rgba(34,197,94,0.3)",
-              transition: { duration: 0.15, ease: "easeOut" },
-            }}
-            whileTap={{ scale: 0.975 }}
-            style={{ willChange: "transform, box-shadow" }}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg sm:rounded-xl shadow-md transition-colors duration-200 flex items-center justify-center gap-2"
-          >
-            <FaTools size={12} className="sm:w-3.5 sm:h-3.5" />
-            <span className="truncate">Update Request</span>
-          </motion.button>
+          <>
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 4px 12px rgba(251,191,36,0.3)", // amber
+                transition: { duration: 0.15, ease: "easeOut" },
+              }}
+              whileTap={{ scale: 0.975 }}
+              style={{ willChange: "transform, box-shadow" }}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-lg sm:rounded-xl shadow-md transition-colors duration-200 flex items-center justify-center gap-2"
+              onClick={() => onAction && onAction("update", request)}
+            >
+              <FaEdit size={12} className="sm:w-3.5 sm:h-3.5" />
+              <span className="truncate">Update Request</span>
+            </motion.button>
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 4px 12px rgba(34,197,94,0.3)", // green
+                transition: { duration: 0.15, ease: "easeOut" },
+              }}
+              whileTap={{ scale: 0.975 }}
+              style={{ willChange: "transform, box-shadow" }}
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold bg-green-600 hover:bg-green-700 text-white rounded-lg sm:rounded-xl shadow-md transition-colors duration-200 flex items-center justify-center gap-2 mt-2"
+              onClick={() => onAction && onAction("complete", request)}
+            >
+              <FaCheckCircle size={12} className="sm:w-3.5 sm:h-3.5" />
+              <span className="truncate">Mark as Complete</span>
+            </motion.button>
+          </>
         )}
       </div>
 

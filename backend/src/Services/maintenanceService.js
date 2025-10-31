@@ -43,6 +43,7 @@ async function getAllMaintenanceRequests(adminId) {
           priority: request.newMaintenanceRequest?.priority || "medium",
           status: request.newMaintenanceRequest?.status || "pending",
           documentURL: request.newMaintenanceRequest?.documentURL,
+          notes: request.newMaintenanceRequest?.notes || "",
           createdAt: request.newMaintenanceRequest?.createdAt || request.createdAt,
           property: request.listingDetail?.address,
           tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",

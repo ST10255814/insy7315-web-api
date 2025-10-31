@@ -1,15 +1,42 @@
 import { TabWrapper, StateHandler, MaintenanceColumn } from "../common/index.js";
 import { statuses } from "../../constants/constants.js";
 import { useMaintenanceRequestsQuery } from "../../utils/queries.js";
-import { useParams } from "react-router-dom";
+import { useParams, Routes, Route} from "react-router-dom";
+import AssignCaretaker from "./maintenance/AssignCaretaker.jsx";
+import UpdateMaintenanceRequest from "./maintenance/UpdateMaintenanceRequest.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function MaintenanceTab() {
+  return (
+    <Routes>
+      <Route index element={<MaintenanceListView />} />
+      <Route path="assign/:maintenanceId" element={<AssignCaretaker />} />
+      <Route path="update/:maintenanceId" element={<UpdateMaintenanceRequest />} />
+    </Routes>
+  );
+}
+
+function MaintenanceListView() {
+  const navigate = useNavigate();
   const { userId: adminId } = useParams();
   const {
     data: maintenanceData = [],
     isLoading,
     isError,
   } = useMaintenanceRequestsQuery(adminId);
+
+  const handleMaintenanceAction = (action, request) => {
+    switch (action) {
+      case "assign":
+        navigate(`assign/${request.maintenanceID}`);
+        break;
+      case "update":
+        navigate(`update/${request.maintenanceID}`);
+        break;
+      default:
+        break;
+    }
+  };
   
   return (
     <TabWrapper className="flex flex-col h-full w-full overflow-y-auto md:overflow-hidden" decorativeElements="none">
@@ -37,7 +64,9 @@ export default function MaintenanceTab() {
               status={status}
               requests={maintenanceData.filter(
                 (request) => request.status === status
+                
               )}
+              onAction={handleMaintenanceAction}
             />
           ))}
         </div>

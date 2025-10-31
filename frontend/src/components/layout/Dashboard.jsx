@@ -82,7 +82,7 @@ export default function Dashboard() {
             <Route path="properties/*" element={<PropertiesTab />} />
             <Route path="leases" element={<LeasesTab />} />
             <Route path="invoices" element={<InvoicesTab />} />
-            <Route path="maintenance" element={<MaintenanceTab />} />
+            <Route path="maintenance/*" element={<MaintenanceTab />} />
             <Route path="bookings" element={<BookingsTab />} />
             {/* Catch-all route for invalid dashboard paths */}
             <Route path="*" element={<DashboardNotFound />} />

@@ -7,7 +7,7 @@ const columnVariants = {
   visible: { transition: { staggerChildren: 0.12 } },
 };
 
-export default function MaintenanceColumn({ status, requests }) {
+export default function MaintenanceColumn({ status, requests, onAction}) {
   return (
     <motion.div
       className="flex flex-col h-auto md:h-full"
@@ -35,9 +35,10 @@ export default function MaintenanceColumn({ status, requests }) {
           </div>
         ) : (
           requests.map((req, i) => (
-            <MaintenanceCard 
-              key={req.maintenanceID} 
-              request={req} 
+            <MaintenanceCard
+              key={req.maintenanceID}
+              request={req}
+              onAction={onAction}
             />
           ))
         )}

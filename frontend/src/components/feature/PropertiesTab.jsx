@@ -75,7 +75,7 @@ function PropertiesListView() {
         gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
         loadingCount={8}
       >
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
