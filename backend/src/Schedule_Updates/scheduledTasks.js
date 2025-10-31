@@ -3,6 +3,7 @@ import { client } from '../utils/db.js';
 import leaseService from '../Services/leaseService.js';
 import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
+import occupansyService from '../Services/occupansyService.js';
 import { determineLeaseStatus } from '../utils/statusManager.js';
 
 // Function to update all lease statuses
@@ -203,9 +204,9 @@ async function calculateHistoricalRevenue() {
         }
         
         if (results.totalRevenue > 0) {
-          console.log(`✓ ${month}/${year}: R${results.totalRevenue} from ${results.processedAdmins} admins`);
+          console.log(`${month}/${year}: R${results.totalRevenue} from ${results.processedAdmins} admins`);
         } else {
-          console.log(`⚪ ${month}/${year}: R0 - skipped (no revenue to record)`);
+          console.log(`${month}/${year}: R0 - skipped (no revenue to record)`);
         }
       } catch (monthError) {
         console.error(`Error calculating revenue for ${month}/${year}:`, monthError);
@@ -244,6 +245,7 @@ function startStatusScheduler() {
     try {
       await updateAllLeaseStatuses();
       await updateAllInvoiceStatuses();
+      await occupansyService.updateAllListingStatuses();
       console.log('Daily status updates completed successfully');
     } catch (error) {
       console.error('Error during daily status updates:', error);
@@ -261,7 +263,7 @@ function startStatusScheduler() {
     }
   });
   
-  console.log('Status scheduler started - Daily updates at midnight, Monthly revenue calculation on 1st at 2 AM');
+  console.log('Status scheduler started - Daily updates at midnight (leases, invoices, listing statuses), Monthly revenue calculation on 1st at 2 AM');
 }
 
 // Function to manually trigger status updates (useful for testing)
@@ -270,8 +272,9 @@ async function manualStatusUpdate() {
     console.log('Starting manual status update...');
     const leaseUpdates = await updateAllLeaseStatuses();
     const invoiceUpdates = await updateAllInvoiceStatuses();
-    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}`);
-    return { leaseUpdates, invoiceUpdates };
+    const listingUpdates = await occupansyService.updateAllListingStatuses();
+    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}, Listings: ${listingUpdates.totalUpdated}/${listingUpdates.totalListingsProcessed}`);
+    return { leaseUpdates, invoiceUpdates, listingUpdates };
   } catch (error) {
     console.error('Error during manual status update:', error);
     throw error;
@@ -299,10 +302,33 @@ async function manualRevenueCalculation(month = null, year = null) {
   }
 }
 
+// Function to manually trigger listing status update for a specific admin (useful for testing)
+async function manualListingStatusUpdate(adminId = null) {
+  try {
+    console.log('Starting manual listing status update...');
+    
+    if (adminId) {
+      console.log(`Updating listings for admin: ${adminId}`);
+      const result = await occupansyService.updateListingStatuses(adminId);
+      console.log(`Manual listing update completed for admin ${adminId} - Updated: ${result.updated}/${result.processedListings}`);
+      return result;
+    } else {
+      console.log('Updating listings for all admins...');
+      const result = await occupansyService.updateAllListingStatuses();
+      console.log(`Manual listing update completed for all admins - Updated: ${result.totalUpdated}/${result.totalListingsProcessed}`);
+      return result;
+    }
+  } catch (error) {
+    console.error('Error during manual listing status update:', error);
+    throw error;
+  }
+}
+
 export { 
   startStatusScheduler, 
   manualStatusUpdate, 
   manualRevenueCalculation,
+  manualListingStatusUpdate,
   updateAllLeaseStatuses, 
   updateAllInvoiceStatuses,
   calculateMonthlyRevenueForAllAdmins,

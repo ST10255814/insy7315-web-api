@@ -14,6 +14,7 @@ import bookingRoutes from './bookingRoutes.js';
 import maintenanceRoutes from './maintenanceRoutes.js';
 import activityRoutes from './activityRoutes.js';
 import revenueRoutes from './revenueRoutes.js';
+import occupancyRoutes from './occupancyRoutes.js';
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use('/bookings', bookingRoutes);
 router.use('/maintenance', maintenanceRoutes);
 router.use('/activity-logs', activityRoutes);
 router.use('/revenue', revenueRoutes);
+router.use('/occupancy', occupancyRoutes);
 
 export default router;
