@@ -59,10 +59,22 @@ export const updateAllListingStatuses = asyncHandler(async (req, res) => {
   }
 });
 
+export const getAllListingsStatus = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const listingsStatus = await occupansyService.getAllListingsStatus(adminId);
+    
+    sendSuccess(res, { listings: listingsStatus }, 'Successfully retrieved all listings status');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 // Export default object for backward compatibility
 const occupancyController = { 
   getOccupancyStatus, 
   updateListingStatuses,
+  getAllListingsStatus,
   updateAllListingStatuses
 };
 
