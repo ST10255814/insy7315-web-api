@@ -16,5 +16,5 @@ export async function createInvoice(invoiceData) {
         return response.data.data;
     } catch (error) {
         throw error;
-    }  
+    }
 };
