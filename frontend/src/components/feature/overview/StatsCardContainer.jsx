@@ -49,6 +49,16 @@ export default function StatsCardContainer() {
     }).format(amount);
   };
 
+  // Convert month number to month name
+  const getMonthName = (monthNumber) => {
+    if (!monthNumber) return '';
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[monthNumber - 1] || '';
+  };
+
   const statsCardsConfig = [
     {
       title: "Total Properties",
@@ -78,7 +88,7 @@ export default function StatsCardContainer() {
         ? "Fetching data..." 
         : revenueError 
           ? "Failed to load" 
-          : `${monthlyRevenue?.month || ''} ${monthlyRevenue?.year || ''}`,
+          : `${getMonthName(monthlyRevenue?.month)} ${monthlyRevenue?.year || ''}`,
       color: "green",
       icon: <FaMoneyBillWave />
     },

@@ -4,7 +4,7 @@ import leaseService from '../Services/leaseService.js';
 import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
 import occupansyService from '../Services/occupansyService.js';
-import { determineLeaseStatus } from '../utils/statusManager.js';
+import { determineLeaseStatus, determineBookingStatus } from '../utils/statusManager.js';
 
 // Function to update all lease statuses
 async function updateAllLeaseStatuses() {
@@ -95,6 +95,87 @@ async function updateAllInvoiceStatuses() {
     return updatedCount;
   } catch (error) {
     console.error('Error updating invoice statuses:', error);
+    throw error;
+  }
+}
+
+// Function to update all booking statuses
+async function updateAllBookingStatuses() {
+  try {
+    console.log('Starting scheduled booking status update...');
+    
+    const db = client.db("RentWise");
+    const bookingsCollection = db.collection("Bookings");
+
+    // Get all bookings that are not already cancelled or completed
+    // We want to update: Pending, Confirmed, Active, Expired bookings
+    const bookings = await bookingsCollection
+      .find({ 
+        "newBooking.status": { 
+          $in: ["Pending", "pending", "Confirmed", "confirmed", "Active", "active", "Expired", "expired"] 
+        } 
+      })
+      .toArray();
+
+    console.log(`Found ${bookings.length} bookings to check for status updates`);
+
+    let updatedCount = 0;
+    const statusUpdates = {
+      toActive: 0,
+      toExpired: 0,
+      other: 0
+    };
+
+    for (const booking of bookings) {
+      try {
+        const currentStatus = booking.newBooking.status;
+        const checkInDate = booking.newBooking.checkInDate;
+        const checkOutDate = booking.newBooking.checkOutDate;
+
+        if (!checkInDate || !checkOutDate) {
+          console.warn(`Booking ${booking.newBooking.bookingId} missing dates - skipping`);
+          continue;
+        }
+
+        const newStatus = determineBookingStatus(checkInDate, checkOutDate, currentStatus);
+
+        // Only update if status has changed
+        if (currentStatus !== newStatus) {
+          await bookingsCollection.updateOne(
+            { _id: booking._id },
+            { 
+              $set: { 
+                "newBooking.status": newStatus,
+                lastStatusUpdate: new Date()
+              }
+            }
+          );
+          updatedCount++;
+          
+          // Track what type of update was made
+          if (newStatus === 'Active') {
+            statusUpdates.toActive++;
+          } else if (newStatus === 'Expired') {
+            statusUpdates.toExpired++;
+          } else {
+            statusUpdates.other++;
+          }
+          
+          console.log(`Updated booking ${booking.newBooking.bookingId} from ${currentStatus} to ${newStatus}`);
+        }
+      } catch (bookingError) {
+        console.error(`Error updating booking ${booking.newBooking?.bookingId || 'unknown'}:`, bookingError);
+      }
+    }
+
+    console.log(`Booking status update completed. Updated ${updatedCount} bookings.`);
+    console.log(`  - ${statusUpdates.toActive} bookings set to Active (check-in date reached)`);
+    console.log(`  - ${statusUpdates.toExpired} bookings set to Expired (check-out date passed)`);
+    console.log(`  - ${statusUpdates.other} other status updates`);
+    
+    return updatedCount;
+  } catch (error) {
+    console.error('Error updating booking statuses:', error);
     throw error;
   }
 }
@@ -245,6 +326,7 @@ function startStatusScheduler() {
     try {
       await updateAllLeaseStatuses();
       await updateAllInvoiceStatuses();
+      await updateAllBookingStatuses();
       await occupansyService.updateAllListingStatuses();
       console.log('Daily status updates completed successfully');
     } catch (error) {
@@ -263,7 +345,7 @@ function startStatusScheduler() {
     }
   });
   
-  console.log('Status scheduler started - Daily updates at midnight (leases, invoices, listing statuses), Monthly revenue calculation on 1st at 2 AM');
+  console.log('Status scheduler started - Daily updates at midnight (leases, invoices, bookings, listing statuses), Monthly revenue calculation on 1st at 2 AM');
 }
 
 // Function to manually trigger status updates (useful for testing)
@@ -272,9 +354,10 @@ async function manualStatusUpdate() {
     console.log('Starting manual status update...');
     const leaseUpdates = await updateAllLeaseStatuses();
     const invoiceUpdates = await updateAllInvoiceStatuses();
+    const bookingUpdates = await updateAllBookingStatuses();
     const listingUpdates = await occupansyService.updateAllListingStatuses();
-    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}, Listings: ${listingUpdates.totalUpdated}/${listingUpdates.totalListingsProcessed}`);
-    return { leaseUpdates, invoiceUpdates, listingUpdates };
+    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}, Bookings: ${bookingUpdates}, Listings: ${listingUpdates.totalUpdated}/${listingUpdates.totalListingsProcessed}`);
+    return { leaseUpdates, invoiceUpdates, bookingUpdates, listingUpdates };
   } catch (error) {
     console.error('Error during manual status update:', error);
     throw error;
@@ -331,6 +414,7 @@ export {
   manualListingStatusUpdate,
   updateAllLeaseStatuses, 
   updateAllInvoiceStatuses,
+  updateAllBookingStatuses,
   calculateMonthlyRevenueForAllAdmins,
   calculateHistoricalRevenue,
   cleanupZeroRevenueRecords

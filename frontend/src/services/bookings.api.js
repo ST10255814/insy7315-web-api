@@ -11,9 +11,10 @@ export async function getBookingsByAdminId() {
 }
 
 // Get current month revenue for the logged-in admin
+// Uses the revenue service endpoint which reads from MonthlyRevenue collection
 export async function getCurrentMonthRevenue() {
     try {
-        const response = await api.get('/api/bookings/current-month-revenue', {
+        const response = await api.get('/api/revenue/current-month', {
             withCredentials: true
         });
         return response.data.data;
