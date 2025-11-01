@@ -8,6 +8,7 @@ import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import AddInvoice from "../feature/invoice/AddInvoice.jsx";
 import DeleteInvoice from "../feature/invoice/DeleteInvoice.jsx";
 import ViewInvoice from "../feature/invoice/ViewInvoice.jsx";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function InvoicesTab() {
   return (
@@ -16,6 +17,7 @@ export default function InvoicesTab() {
       <Route path="delete/:invoiceId" element={<DeleteInvoice />} />
       <Route path="view/:invoiceId" element={<ViewInvoice />} />
       <Route index element={<InvoicesListView />} />
+      <Route path="*" element={<DashboardNotFound />} />
     </Routes>
   );
 }

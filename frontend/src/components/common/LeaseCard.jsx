@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   FaEdit,
+  FaEye,
   FaTrash,
   FaHome,
   FaCalendarAlt,
@@ -88,6 +89,13 @@ export default function LeaseCard({ lease, onAction }) {
           label="Edit"
           onClick={() => handleActionClick("Edit", lease)}
           className="text-blue-600 hover:bg-blue-50"
+        />
+
+        <HoverActionButton
+          icon={<FaEye size={18} />}
+          label="View"
+          onClick={() => handleActionClick("View", lease)}
+          className="text-yellow-600 hover:bg-yellow-50"
         />
 
         <HoverActionButton

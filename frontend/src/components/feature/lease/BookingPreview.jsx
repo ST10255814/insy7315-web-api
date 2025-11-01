@@ -18,7 +18,7 @@ export default function BookingPreview({ booking }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <span className="text-sm text-gray-600 font-semibold">Booking ID:</span>
-              <p className="text-base font-bold text-blue-800 mt-1">{booking.bookingId || "N/A"}</p>
+              <p className="text-base font-bold text-blue-800 mt-1">{booking.bookingID || "N/A"}</p>
             </div>
             <div>
               <span className="text-sm text-gray-600 font-semibold">Status:</span>
@@ -27,32 +27,36 @@ export default function BookingPreview({ booking }) {
             <div>
               <span className="text-sm text-gray-600 font-semibold">Tenant Name:</span>
               <p className="text-base font-bold text-gray-900 mt-1">
-                {booking.tenant?.firstName && booking.tenant?.surname
-                  ? `${booking.tenant.firstName} ${booking.tenant.surname}`
-                  : "N/A"}
+                {booking.tenantInfo?.name || "N/A"}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-600 font-semibold">Email:</span>
-              <p className="text-base font-medium text-gray-900 mt-1">{booking.tenant?.email || "N/A"}</p>
+              <span className="text-sm text-gray-600 font-semibold">Guests:</span>
+              <p className="text-base font-medium text-gray-900 mt-1">{booking.guests || "N/A"}</p>
             </div>
             <div className="md:col-span-2">
               <span className="text-sm text-gray-600 font-semibold">Property:</span>
               <p className="text-base font-bold text-gray-900 mt-1">
-                {booking.listing?.title || booking.listing?.address || "N/A"}
+                {booking.listingTitle || booking.listingAddress || "N/A"}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-600 font-semibold">Monthly Rent:</span>
+              <span className="text-sm text-gray-600 font-semibold">Total Price:</span>
               <p className="text-base font-bold text-blue-700 mt-1">
-                R {booking.listing?.price?.toFixed(2) || "0.00"}
+                R {booking.price?.toFixed(2) || "0.00"}
               </p>
             </div>
             <div>
-              <span className="text-sm text-gray-600 font-semibold">Booking Date:</span>
-              <p className="text-base font-medium text-gray-900 mt-1">
-                {booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : "N/A"}
-              </p>
+              <span className="text-sm text-gray-600 font-semibold">Nights:</span>
+              <p className="text-base font-medium text-gray-900 mt-1">{booking.nights || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-sm text-gray-600 font-semibold">Check In:</span>
+              <p className="text-base font-medium text-gray-900 mt-1">{booking.checkIn || "N/A"}</p>
+            </div>
+            <div>
+              <span className="text-sm text-gray-600 font-semibold">Check Out:</span>
+              <p className="text-base font-medium text-gray-900 mt-1">{booking.checkOut || "N/A"}</p>
             </div>
           </div>
         )}

@@ -5,6 +5,7 @@ import { useParams, Routes, Route} from "react-router-dom";
 import AssignCaretaker from "./maintenance/AssignCaretaker.jsx";
 import UpdateMaintenanceRequest from "./maintenance/UpdateMaintenanceRequest.jsx";
 import { useNavigate } from "react-router-dom";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function MaintenanceTab() {
   return (
@@ -12,6 +13,7 @@ export default function MaintenanceTab() {
       <Route index element={<MaintenanceListView />} />
       <Route path="assign/:maintenanceId" element={<AssignCaretaker />} />
       <Route path="update/:maintenanceId" element={<UpdateMaintenanceRequest />} />
+      <Route path="*" element={<DashboardNotFound />} />
     </Routes>
   );
 }

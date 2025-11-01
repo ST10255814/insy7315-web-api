@@ -50,7 +50,7 @@ export default function AddLease() {
     });
   };
 
-  const selectedBooking = bookings.find((booking) => booking.bookingId === selectedBookingId);
+  const selectedBooking = bookings.find((booking) => booking.bookingID === selectedBookingId);
 
   return (
     <TabWrapper decorativeElements="default">
@@ -82,7 +82,7 @@ export default function AddLease() {
                 </h2>
                 <div className="space-y-6">
                   <FormField label="Select a Booking" error={errors.bookingId}>
-                    <div className="relative" tabIndex={0} onBlur={() => setDropdownOpen(false)}>
+                    <div className="relative">
                       <button
                         type="button"
                         className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm flex items-center justify-between ${
@@ -97,7 +97,7 @@ export default function AddLease() {
                           {bookingsLoading
                             ? "Loading bookings..."
                             : selectedBooking
-                            ? `Booking ${selectedBooking.bookingId} - ${selectedBooking.tenant?.firstName} ${selectedBooking.tenant?.surname}`
+                            ? `Booking ${selectedBooking.bookingID} - ${selectedBooking.tenantInfo?.name}`
                             : "Choose a Booking"}
                         </span>
                         <FaChevronDown
@@ -116,24 +116,27 @@ export default function AddLease() {
                             bookings.map((booking) => (
                               <button
                                 type="button"
-                                key={booking.bookingId}
+                                key={booking.bookingID}
                                 className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors font-medium border-b border-gray-100 last:border-0 ${
-                                  selectedBookingId === booking.bookingId ? "bg-blue-100" : ""
+                                  selectedBookingId === booking.bookingID ? "bg-blue-100" : ""
                                 }`}
-                                onClick={() => {
-                                  setSelectedBookingId(booking.bookingId);
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log("Selected booking ID:", booking.bookingID);
+                                  setSelectedBookingId(booking.bookingID);
                                   setDropdownOpen(false);
                                   if (errors.bookingId) {
                                     setErrors({});
                                   }
                                 }}
                               >
-                                <div className="font-semibold text-blue-800">Booking ID: {booking.bookingId}</div>
+                                <div className="font-semibold text-blue-800">Booking ID: {booking.bookingID}</div>
                                 <div className="text-sm text-gray-600 mt-1">
-                                  Tenant: {booking.tenant?.firstName} {booking.tenant?.surname}
+                                  Tenant: {booking.tenantInfo?.name}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                  Property: {booking.listing?.title || booking.listing?.address}
+                                  Property: {booking.listingTitle || booking.listingAddress}
                                 </div>
                                 <div className="text-xs text-blue-600 font-semibold mt-1">
                                   Status: {booking.status}
@@ -222,13 +225,13 @@ export default function AddLease() {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Tenant:</span>
                         <span className="font-medium text-blue-700">
-                          {selectedBooking.tenant?.firstName} {selectedBooking.tenant?.surname}
+                          {selectedBooking.tenantInfo?.name}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Property:</span>
                         <span className="font-medium text-blue-700 text-right max-w-[150px] truncate">
-                          {selectedBooking.listing?.title || selectedBooking.listing?.address}
+                          {selectedBooking.listingTitle}
                         </span>
                       </div>
                     </>

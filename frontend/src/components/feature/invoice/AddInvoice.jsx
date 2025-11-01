@@ -123,7 +123,7 @@ export default function AddInvoice() {
                       </option>
                       {leases.map((lease) => (
                         <option key={lease._id} value={lease._id}>
-                          {lease.listing?.address || "Untitled Property"} -{" "}
+                          {lease.leaseId|| "Undefined Lease"} -{" "}
                           {lease.tenant?.firstName}{" "}
                           {lease.tenant?.surname || "Unknown Tenant"} (
                           {lease.status})

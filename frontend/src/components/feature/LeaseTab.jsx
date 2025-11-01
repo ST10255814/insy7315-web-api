@@ -5,12 +5,16 @@ import { FaPlusCircle } from "react-icons/fa";
 import { TabWrapper, StateHandler, ActionButton, LeaseCard } from "../common/index.js";
 import Toast from "../../lib/toast.js";
 import AddLease from "./lease/AddLease.jsx";
+import DeleteLease from "./lease/DeleteLease.jsx";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function LeaseTab() {
   return (
     <Routes>
       <Route path="add" element={<AddLease />} />
+      <Route path="delete/:leaseId" element={<DeleteLease />} />
       <Route index element={<LeaseListView />} />
+      <Route path="*" element={<DashboardNotFound />} />
     </Routes>
   );
 }
@@ -28,8 +32,7 @@ function LeaseListView() {
         Toast.info(`Editing lease ${lease.leaseId}`);
         break;
       case "Delete":
-        //TODO: Implement delete functionality
-        Toast.warning(`Deleting lease ${lease.leaseId}`);
+        navigate(`delete/${lease.leaseId}`);
         break;
       case "Activate":
         //TODO: Implement activate functionality
@@ -42,6 +45,9 @@ function LeaseListView() {
       case "Renew":
         //TODO: Implement renew functionality
         Toast.info(`Renewing lease ${lease.leaseId}`);
+        break;
+      case "View":
+        navigate(`view/${lease.leaseId}`);
         break;
       default:
         break;

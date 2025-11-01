@@ -36,39 +36,47 @@ export default function BookingCard({ booking, onAction }) {
     >
       {/* Card Info */}
       <div className="space-y-2">
-        <h4 className="font-bold text-blue-800 text-lg truncate">
+        <h4 className="font-bold text-blue-800 text-base sm:text-lg break-words line-clamp-2">
           Tenant: {booking.tenantInfo.name}
         </h4>
-        <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaEnvelope className="text-gray-400" /> Booking ID:{" "}
-          <span className="font-medium">{booking.bookingID}</span>
+        <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
+          <FaEnvelope className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="flex-1">
+            Booking ID: <span className="font-medium break-all">{booking.bookingID}</span>
+          </span>
         </div>
-        <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaHome className="text-gray-400" /> Property:{" "}
-          <span className="font-medium">{booking.listingAddress}</span>
+        <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
+          <FaHome className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="flex-1">
+            Property: <span className="font-medium break-words">{booking.listingAddress}</span>
+          </span>
         </div>
-        <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaCalendarAlt className="text-gray-400" /> Check-in:{" "}
-          <span className="font-medium">{formatDateUS(booking.checkIn)}</span>
+        <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
+          <FaCalendarAlt className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="flex-1">
+            Check-in: <span className="font-medium">{formatDateUS(booking.checkIn)}</span>
+          </span>
         </div>
-        <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaCalendarAlt className="text-gray-400" /> Check-out:{" "}
-          <span className="font-medium">{formatDateUS(booking.checkOut)}</span>
+        <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
+          <FaCalendarAlt className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="flex-1">
+            Check-out: <span className="font-medium">{formatDateUS(booking.checkOut)}</span>
+          </span>
         </div>
-        <div className="flex items-center text-gray-600 text-sm gap-2">
-          <FaUsers className="text-gray-400" /> Guests:{" "}
-          <span className="font-medium">
+        <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
+          <FaUsers className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="flex-1 font-medium">
             {booking.guests} • {booking.nights} night
             {booking.nights !== 1 ? "s" : ""}
           </span>
         </div>
-        <div className="flex items-baseline text-blue-700 font-bold gap-1.5 mt-1">
-          <FaMoneyBillWave className="text-green-500 text-sm" />
-          <span className="text-lg">R{formattedAmount}</span>
+        <div className="flex items-baseline text-blue-700 font-bold gap-1.5 mt-1 flex-wrap">
+          <FaMoneyBillWave className="text-green-500 text-sm flex-shrink-0" />
+          <span className="text-base sm:text-lg">R{formattedAmount}</span>
           <span className="text-xs text-gray-500 font-normal">/ per night</span>
         </div>
         {booking.specialRequests && (
-          <p className="text-gray-500 text-sm italic mt-1">
+          <p className="text-gray-500 text-xs sm:text-sm italic mt-1 line-clamp-2 break-words">
             Notes: {booking.specialRequests}
           </p>
         )}
@@ -79,6 +87,21 @@ export default function BookingCard({ booking, onAction }) {
         >
           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
         </span>
+        
+        {/* Download Button */}
+        {booking.supportDocuments && booking.supportDocuments.length > 0 && (
+          <motion.button
+            className="relative z-30 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full shadow-md transition-colors duration-200 flex items-center gap-2 w-fit mt-3"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => downloadFiles(booking.supportDocuments)}
+          >
+            <FaDownload size={12} />
+            <span className="text-xs font-medium whitespace-nowrap">
+              Download Docs ({booking.supportDocuments.length})
+            </span>
+          </motion.button>
+        )}
       </div>
 
       {/* Hover Overlay */}
@@ -86,61 +109,48 @@ export default function BookingCard({ booking, onAction }) {
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
-        className="absolute inset-0 z-20 bg-black/25 rounded-2xl flex items-center justify-center gap-4 pointer-events-none group-hover:pointer-events-auto"
+        className="absolute inset-0 z-20 bg-black/25 rounded-2xl flex flex-wrap items-center justify-center gap-2 sm:gap-4 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
         {/* Common Buttons */}
         <HoverActionButton
-          icon={<FaEdit size={18} />}
+          icon={<FaEdit size={16} />}
           label="Edit"
           onClick={() => onAction("Edit", booking)}
-          className="text-blue-600 hover:bg-blue-50"
+          className="text-blue-600 hover:bg-blue-50 text-xs sm:text-sm"
         />
 
         <HoverActionButton
-          icon={<FaEye size={18} />}
+          icon={<FaEye size={16} />}
           label="View"
           onClick={() => onAction("View", booking)}
-          className="text-yellow-600 hover:bg-yellow-50"
+          className="text-yellow-600 hover:bg-yellow-50 text-xs sm:text-sm"
         />
 
         <HoverActionButton
-          icon={<FaTrash size={18} />}
+          icon={<FaTrash size={16} />}
           label="Delete"
           onClick={() => onAction("Delete", booking)}
-          className="text-red-600 hover:bg-red-50"
+          className="text-red-600 hover:bg-red-50 text-xs sm:text-sm"
         />
 
         {/* Status-specific Buttons */}
         {booking.status === "pending" && (
           <>
             <HoverActionButton
-              icon={<FaCheck size={18} />}
+              icon={<FaCheck size={16} />}
               label="Confirm"
               onClick={() => onAction("Confirm", booking)}
-              className="text-green-600 hover:bg-green-50"
+              className="text-green-600 hover:bg-green-50 text-xs sm:text-sm"
             />
             <HoverActionButton
-              icon={<FaTimes size={18} />}
+              icon={<FaTimes size={16} />}
               label="Cancel"
               onClick={() => onAction("Cancel", booking)}
-              className="text-red-600 hover:bg-red-50"
+              className="text-red-600 hover:bg-red-50 text-xs sm:text-sm"
             />
           </>
         )}
       </motion.div>
-
-      {/* Bottom Right Corner Button */}
-      {booking.supportDocuments && booking.supportDocuments.length > 0 && (
-        <motion.button
-          className="absolute bottom-3 right-3 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-lg transition-colors duration-200 z-30 flex items-center gap-2"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => downloadFiles(booking.supportDocuments)}
-        >
-          <FaDownload size={12} />
-          <span className="text-xs font-medium">Download Attached Docs ({booking.supportDocuments.length})</span>
-        </motion.button>
-      )}
     </motion.div>
   );
 }

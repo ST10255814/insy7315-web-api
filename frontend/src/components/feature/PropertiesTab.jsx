@@ -8,6 +8,7 @@ import ViewProperty from "./properties/ViewProperty.jsx";
 import EditProperty from "./properties/EditProperty.jsx";
 import DeleteProperty from "./properties/DeleteProperty.jsx";
 import AddProperty from "./properties/AddProperty.jsx";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function PropertiesTab() {
   return (
@@ -17,6 +18,7 @@ export default function PropertiesTab() {
       <Route path="edit/:propertyId" element={<EditProperty />} />
       <Route path="delete/:propertyId" element={<DeleteProperty />} />
       <Route index element={<PropertiesListView />} />
+      <Route path="*" element={<DashboardNotFound />} />
     </Routes>
   );
 }

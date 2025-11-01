@@ -4,6 +4,7 @@ import Toast from "../lib/toast.js";
 import {
   getLeasesByAdminId,
   createLeaseForBookingID,
+  deleteLeaseById,
   countActiveLeasesByAdminId,
   getLeasedPropertyPercentage,
   getLeaseById,
@@ -91,6 +92,35 @@ export const useCreateLeaseMutation = () => {
         error?.response?.data?.error ||
         error?.message ||
         "Failed to create lease";
+      Toast.error(msg);
+    },
+  });
+};
+
+// Delete Lease Mutation
+export const useDeleteLeaseMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (leaseId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return deleteLeaseById(leaseId);
+    },
+    onSuccess: (response) => {
+      const leaseID = response?.leaseId || response;
+      Toast.success(`Lease deleted successfully: Lease ID: ${leaseID}`);
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "leases");
+      // Invalidate overview queries since lease count and occupancy changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete lease";
       Toast.error(msg);
     },
   });
