@@ -1,25 +1,33 @@
-import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
 import Toast from "../../lib/toast.js";
 import { TabWrapper, StateHandler, ActionButton, InvoiceCard } from "../common/index.js";
-import AddInvoiceModal from "../../models/AddInvoiceModel.jsx";
 import {
   useInvoicesQuery,
-  useCreateInvoiceMutation,
 } from "../../utils/queries.js";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Routes, Route } from "react-router-dom";
+import AddInvoice from "../feature/invoice/AddInvoice.jsx";
+import DeleteInvoice from "../feature/invoice/DeleteInvoice.jsx";
+import ViewInvoice from "../feature/invoice/ViewInvoice.jsx";
 
 export default function InvoicesTab() {
+  return (
+    <Routes>
+      <Route path="add" element={<AddInvoice />} />
+      <Route path="delete/:invoiceId" element={<DeleteInvoice />} />
+      <Route path="view/:invoiceId" element={<ViewInvoice />} />
+      <Route index element={<InvoicesListView />} />
+    </Routes>
+  );
+}
+
+function InvoicesListView() {
   const { userId: adminId } = useParams();
   // React Query to get invoices
   const { data, isLoading, isError } = useInvoicesQuery(adminId);
   // Normalize the data shape so `invoices` is always an array
   const invoices = Array.isArray(data) ? data : data?.invoices ?? [];
-
-  const createInvoiceMutation = useCreateInvoiceMutation();
-
-  const [showAddModal, setShowAddModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleInvoiceAction = (action, invoice) => {
     switch (action) {
@@ -28,24 +36,14 @@ export default function InvoicesTab() {
         Toast.info(`Editing ${invoice.invoiceId}`);
         break;
       case "Delete":
-        //TODO: Implement delete functionality
-        Toast.warning(`Deleting ${invoice.invoiceId}`);
+        navigate(`delete/${invoice.invoiceId}`);
         break;
       case "View":
-        //TODO: Implement view functionality
-        Toast.info(`Viewing details for ${invoice.invoiceId}`);
+        navigate(`view/${invoice.invoiceId}`);
         break;
       default:
         break;
     }
-  };
-
-  const handleAddInvoiceSubmit = (invoiceData) => {
-    createInvoiceMutation.mutate(invoiceData, {
-      onSuccess: () => {
-        setShowAddModal(false);
-      },
-    });
   };
 
   return (
@@ -53,7 +51,7 @@ export default function InvoicesTab() {
       {/* Add Invoice Button */}
       <div className="flex justify-start">
         <ActionButton
-          onClick={() => setShowAddModal(true)}
+          onClick={() => navigate(`add`)}
           icon={FaPlusCircle}
           disabled={isLoading}
           size="medium"
@@ -95,14 +93,6 @@ export default function InvoicesTab() {
           </AnimatePresence>
         </motion.div>
       </StateHandler>
-
-      {/* Add Invoice Modal */}
-      <AddInvoiceModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSubmit={handleAddInvoiceSubmit}
-        isPending={createInvoiceMutation.isPending}
-      />
     </TabWrapper>
   );
 }

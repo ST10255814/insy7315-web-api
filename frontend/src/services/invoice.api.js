@@ -18,3 +18,21 @@ export async function createInvoice(invoiceData) {
         throw error;
     }
 };
+
+export async function deleteInvoice(invoiceId) {
+    try {
+        const response = await api.delete(`/api/invoices/${invoiceId}`, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export async function getInvoiceById(invoiceId) {
+    try {
+        const response = await api.get(`/api/invoices/${invoiceId}`, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};

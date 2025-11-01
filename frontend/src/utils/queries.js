@@ -6,10 +6,13 @@ import {
   createLeaseForBookingID,
   countActiveLeasesByAdminId,
   getLeasedPropertyPercentage,
+  getLeaseById,
 } from "../services/leases.api.js";
 import {
   getInvoicesByAdminId,
   createInvoice,
+  getInvoiceById,
+  deleteInvoice,
 } from "../services/invoice.api.js";
 import {
   getListingsByAdminId,
@@ -48,6 +51,18 @@ export const useLeasesQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM, // Use medium frequency caching config
+  });
+};
+
+export const useLeaseByIdQuery = (adminId, leaseId) => {
+  return useQuery({
+    queryKey: createQueryKey("lease", { adminId, leaseId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getLeaseById(leaseId);
+    },
+    enabled: !!leaseId,
+    ...CACHE_CONFIGS.MEDIUM,
   });
 };
 
@@ -117,6 +132,48 @@ export const useCreateInvoiceMutation = () => {
         error?.response?.data?.error ||
         error?.message ||
         "Failed to create invoice";
+      Toast.error(msg);
+    },
+  });
+};
+
+// Get Invoice by ID Query
+export const useInvoiceByIdQuery = (adminId, invoiceId) => {
+  return useQuery({
+    queryKey: createQueryKey("invoice", { adminId, invoiceId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getInvoiceById(invoiceId);
+    },
+    enabled: !!invoiceId,
+    ...CACHE_CONFIGS.MEDIUM,
+  });
+};
+
+// Delete Invoice Mutation
+export const useDeleteInvoiceMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (invoiceId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return deleteInvoice(invoiceId);
+    },
+    onSuccess: (response) => {
+      const invoiceID = response?.invoiceId || response;
+      Toast.success(`Invoice deleted successfully: Invoice ID: ${invoiceID}`);
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "invoices");
+      // Invalidate overview queries since revenue data may have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete invoice";
       Toast.error(msg);
     },
   });

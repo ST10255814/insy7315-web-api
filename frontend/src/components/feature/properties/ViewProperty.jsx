@@ -6,13 +6,12 @@ import {
   FaTrash,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import { TabWrapper, PropertyStateHandler } from "../../common/index.js";
+import { TabWrapper, DataStateHandler, DataLoading } from "../../common/index.js";
 import { propertyStatusMap } from "../../../constants/status.js";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import { useListingByIdQuery } from "../../../utils/queries.js";
 import { amenitiesWithIcons } from "../../../constants/amenities.js";
-import PropertyDetailLoading from "./PropertyDetailLoading.jsx";
 
 export default function ViewProperty() {
   const { userId: adminId, propertyId } = useParams();
@@ -49,13 +48,13 @@ export default function ViewProperty() {
         </button>
       </div>
 
-      <PropertyStateHandler
+      <DataStateHandler
         isLoading={isLoading}
         isError={isError}
-        property={property}
+        data={property}
         errorMessage="Failed to load property details. Please try again."
         emptyMessage="Property not found."
-        loadingComponent={PropertyDetailLoading}
+        loadingComponent={DataLoading}
       >
         {property && (
           <motion.div
@@ -187,7 +186,7 @@ export default function ViewProperty() {
             </div>
           </motion.div>
         )}
-      </PropertyStateHandler>
+      </DataStateHandler>
     </TabWrapper>
   );
 }

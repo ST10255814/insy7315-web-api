@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaSave, FaArrowLeft, FaTimes } from "react-icons/fa";
 import { availableAmenities } from "../../../constants/amenities.js";
 import { AmenitiesSelector, ImageUpload } from "../../modals/index.js";
-import { FormField, FormInput, PropertyStateHandler, TabWrapper } from "../../common/index.js";
+import { FormField, FormInput, DataStateHandler, TabWrapper, PropertyLoadingSkeleton } from "../../common/index.js";
 import { useListingByIdQuery } from "../../../utils/queries.js";
 // import { useEditListingMutation } from "../../../utils/queries.js";
 import { useParams, useNavigate } from "react-router-dom";
@@ -159,10 +159,11 @@ export default function EditProperty() {
 
   return (
       <TabWrapper decorativeElements="default">
-        <PropertyStateHandler
+        <DataStateHandler
           isLoading={isLoading}
           isError={isError}
-          property={property}
+          data={property}
+          loadingComponent={PropertyLoadingSkeleton}
           errorMessage="Failed to load property. Please try again."
           emptyMessage="Property not found."
         >
@@ -445,7 +446,7 @@ export default function EditProperty() {
               </div>
             </form>
           </div>
-        </PropertyStateHandler>
+        </DataStateHandler>
       </TabWrapper>
   );
 }

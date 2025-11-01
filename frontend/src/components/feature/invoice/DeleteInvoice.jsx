@@ -2,32 +2,33 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaTrash, FaExclamationTriangle } from "react-icons/fa";
-import { TabWrapper, DataStateHandler, DataLoading } from "../../common/index.js";
+import { TabWrapper, DataStateHandler } from "../../common/index.js";
+import DataLoading from "../../common/DataLoading.jsx";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import {
-  useListingByIdQuery,
-  useDeleteListingMutation,
+  useInvoiceByIdQuery,
+  useDeleteInvoiceMutation,
 } from "../../../utils/queries.js";
 
-export default function DeleteProperty() {
-  const { userId: adminId, propertyId } = useParams();
+export default function DeleteInvoice() {
+  const { userId: adminId, invoiceId } = useParams();
   const navigate = useNavigate();
   const {
-    data: property,
+    data: invoice,
     isLoading,
     isError,
-  } = useListingByIdQuery(adminId, propertyId);
+  } = useInvoiceByIdQuery(adminId, invoiceId);
 
-  const deleteMutation = useDeleteListingMutation();
+  const deleteMutation = useDeleteInvoiceMutation();
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/properties`);
+    navigate(`/dashboard/${adminId}/invoices`);
   };
 
-  const handleViewProperty = () => {
-    navigate(`/dashboard/${adminId}/properties/view/${propertyId}`);
+  const handleViewInvoice = () => {
+    navigate(`/dashboard/${adminId}/invoices/view/${invoiceId}`);
   };
 
   const handleDelete = () => {
@@ -35,9 +36,9 @@ export default function DeleteProperty() {
       Toast.error('Please type "delete" to confirm deletion.');
       return;
     }
-    deleteMutation.mutate(propertyId, {
+    deleteMutation.mutate(invoiceId, {
       onSuccess: () => {
-        navigate(`/dashboard/${adminId}/properties`);
+        navigate(`/dashboard/${adminId}/invoices`);
       },
     });
   };
@@ -54,28 +55,28 @@ export default function DeleteProperty() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
             <FaArrowLeft className="w-5 h-5" />
-            Back to Properties
+            Back to Invoices
           </button>
         </div>
 
         <button
-          onClick={handleViewProperty}
+          onClick={handleViewInvoice}
           disabled={isLoading || deleteMutation.isPending}
           className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
         >
-          View Property
+          View Invoice
         </button>
       </div>
 
       <DataStateHandler
         isLoading={isLoading}
         isError={isError}
-        data={property}
-        errorMessage="Failed to load property details. Please try again."
-        emptyMessage="Property not found."
+        data={invoice}
+        errorMessage="Failed to load invoice details. Please try again."
+        emptyMessage="Invoice not found."
         loadingComponent={DataLoading}
       >
-        {property && (
+        {invoice && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -90,10 +91,10 @@ export default function DeleteProperty() {
                 </div>
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-red-800 mb-1 tracking-tight">
-                    Delete Property
+                    Delete Invoice
                   </h1>
                   <p className="text-red-700 mb-3 text-sm">
-                    Are you absolutely sure you want to delete this property?
+                    Are you absolutely sure you want to delete this invoice?
                     <br className="hidden md:block" />
                     <span className="font-semibold">
                       This action cannot be undone.
@@ -102,26 +103,26 @@ export default function DeleteProperty() {
 
                   <div className="bg-white border border-red-200 rounded-lg p-3 shadow-sm">
                     <h3 className="font-semibold text-red-900 mb-1 text-base">
-                      Property to be deleted:
+                      Invoice to be deleted:
                     </h3>
                     <div className="space-y-1">
                       <p className="text-gray-900 text-sm">
                         <strong>Title:</strong>{" "}
-                        <span className="font-medium">{property.title}</span>
+                        <span className="font-medium">{invoice.title}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Address:</strong>{" "}
-                        <span className="font-medium">{property.address}</span>
+                        <span className="font-medium">{invoice.address}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Price:</strong>{" "}
                         <span className="font-medium">
-                          R {formatAmount(property.price)}
+                          R {formatAmount(invoice.price)}
                         </span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Status:</strong>{" "}
-                        <span className="font-medium">{property.status}</span>
+                        <span className="font-medium">{invoice.status}</span>
                       </p>
                     </div>
                   </div>
@@ -138,7 +139,7 @@ export default function DeleteProperty() {
               <div className="mb-6">
                 <p className="text-gray-600 mb-3">
                   Please type <strong className="text-red-600">"delete"</strong>{" "}
-                  to confirm that you want to permanently delete this property:
+                  to confirm that you want to permanently delete this invoice:
                 </p>
 
                 <input
