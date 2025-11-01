@@ -2,11 +2,25 @@ import { motion, AnimatePresence } from "framer-motion";
 import Toast from "../../lib/toast.js";
 import { TabWrapper, StateHandler, SectionHeading, BookingCard } from "../common/index.js";
 import { useBookingsQuery } from "../../utils/queries.js";
-import { useParams } from "react-router-dom";
+import { Routes, Route, useParams, useNavigate } from "react-router-dom";
+import DashboardNotFound from "../feature/DashboardNotFound.jsx";
+import DeleteBooking from "./booking/DeleteBooking.jsx";
 
 export default function BookingsTab() {
+  return (
+    <Routes>
+      <Route path="delete/:bookingId" element={<DeleteBooking/>} />
+      <Route index element={<BookingsListView />} />
+      <Route path="*" element={<DashboardNotFound />} />
+    </Routes>
+  )
+}
+
+function BookingsListView() {
   const { userId: adminId } = useParams();
   const { isLoading, isError, data: bookings = [] } = useBookingsQuery(adminId);
+
+  const navigate = useNavigate();
 
   const handleBookingAction = (action, booking) => {
     switch (action) {
@@ -15,8 +29,7 @@ export default function BookingsTab() {
         Toast.info(`Editing booking ${booking.bookingId}`);
         break;
       case "Delete":
-        //TODO: Implement delete functionality
-        Toast.warning(`Deleting booking ${booking.bookingId}`);
+        navigate(`delete/${booking.bookingId}`);
         break;
       case "View":
         //TODO: Implement view functionality

@@ -7,28 +7,28 @@ import DataLoading from "../../common/DataLoading.jsx";
 import Toast from "../../../lib/toast.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import {
-  useInvoiceByIdQuery,
-  useDeleteInvoiceMutation,
+  useBookingByIdQuery,
+  useDeleteBookingMutation,
 } from "../../../utils/queries.js";
 
-export default function DeleteInvoice() {
-  const { userId: adminId, invoiceId } = useParams();
+export default function DeleteBooking() {
+  const { userId: adminId, bookingId } = useParams();
   const navigate = useNavigate();
   const {
-    data: invoice,
+    data: booking,
     isLoading,
     isError,
-  } = useInvoiceByIdQuery(adminId, invoiceId);
+  } = useBookingByIdQuery(adminId, bookingId);
 
-  const deleteMutation = useDeleteInvoiceMutation();
+  const deleteMutation = useDeleteBookingMutation();
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/invoices`);
+    navigate(`/dashboard/${adminId}/bookings`);
   };
 
-  const handleViewInvoice = () => {
-    navigate(`/dashboard/${adminId}/invoices/view/${invoiceId}`);
+  const handleViewBooking = () => {
+    navigate(`/dashboard/${adminId}/bookings/view/${bookingId}`);
   };
 
   const handleDelete = () => {
@@ -36,9 +36,9 @@ export default function DeleteInvoice() {
       Toast.error('Please type "delete" to confirm deletion.');
       return;
     }
-    deleteMutation.mutate(invoiceId, {
+    deleteMutation.mutate(bookingId, {
       onSuccess: () => {
-        navigate(`/dashboard/${adminId}/invoices`);
+        navigate(`/dashboard/${adminId}/bookings`);
       },
     });
   };
@@ -55,28 +55,28 @@ export default function DeleteInvoice() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
             <FaArrowLeft className="w-5 h-5" />
-            Back to Invoices
+            Back to Bookings
           </button>
         </div>
 
         <button
-          onClick={handleViewInvoice}
+          onClick={handleViewBooking}
           disabled={isLoading || deleteMutation.isPending}
           className="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 font-medium bg-white shadow hover:bg-blue-50 hover:text-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
         >
-          View Invoice
+          View Booking
         </button>
       </div>
 
       <DataStateHandler
         isLoading={isLoading}
         isError={isError}
-        data={invoice}
-        errorMessage="Failed to load invoice details. Please try again."
-        emptyMessage="Invoice not found."
+        data={booking}
+        errorMessage="Failed to load booking details. Please try again."
+        emptyMessage="Booking not found."
         loadingComponent={DataLoading}
       >
-        {invoice && (
+        {booking && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,10 +91,10 @@ export default function DeleteInvoice() {
                 </div>
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-red-800 mb-1 tracking-tight">
-                    Delete Invoice
+                    Delete Booking
                   </h1>
                   <p className="text-red-700 mb-3 text-sm">
-                    Are you absolutely sure you want to delete this invoice?
+                    Are you absolutely sure you want to delete this booking?
                     <br className="hidden md:block" />
                     <span className="font-semibold">
                       This action cannot be undone.
@@ -103,26 +103,26 @@ export default function DeleteInvoice() {
 
                   <div className="bg-white border border-red-200 rounded-lg p-3 shadow-sm">
                     <h3 className="font-semibold text-red-900 mb-1 text-base">
-                      Invoice to be deleted:
+                      Booking to be deleted:
                     </h3>
                     <div className="space-y-1">
                       <p className="text-gray-900 text-sm">
                         <strong>Title:</strong>{" "}
-                        <span className="font-medium">{invoice.title}</span>
+                        <span className="font-medium">{booking.title}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Address:</strong>{" "}
-                        <span className="font-medium">{invoice.address}</span>
+                        <span className="font-medium">{booking.address}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Price:</strong>{" "}
                         <span className="font-medium">
-                          R {formatAmount(invoice.price)}
+                          R {formatAmount(booking.price)}
                         </span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Status:</strong>{" "}
-                        <span className="font-medium">{invoice.status}</span>
+                        <span className="font-medium">{booking.status}</span>
                       </p>
                     </div>
                   </div>
@@ -139,7 +139,7 @@ export default function DeleteInvoice() {
               <div className="mb-6">
                 <p className="text-gray-600 mb-3">
                   Please type <strong className="text-red-600">"delete"</strong>{" "}
-                  to confirm that you want to permanently delete this invoice:
+                  to confirm that you want to permanently delete this booking:
                 </p>
 
                 <input

@@ -30,6 +30,8 @@ import {
 } from "../services/maintenance.api.js";
 import {
   getBookingsByAdminId,
+  getBookingById,
+  deleteBookingById,
   getCurrentMonthRevenue,
 } from "../services/bookings.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
@@ -309,6 +311,50 @@ export const useBookingsQuery = (adminId) => {
     },
     enabled: !!adminId,
     ...CACHE_CONFIGS.MEDIUM,
+  });
+};
+
+export const useBookingByIdQuery = (adminId, bookingId) => {
+  return useQuery({
+    queryKey: createQueryKey("booking", { adminId, bookingId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getBookingById(bookingId);
+    },
+    enabled: !!bookingId,
+    ...CACHE_CONFIGS.MEDIUM,
+  });
+};
+
+export const useDeleteBookingMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (bookingId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return deleteBookingById(bookingId);
+    },
+    onSuccess: (response) => {
+      const bookingID = response?.bookingId || response;
+      Toast.success(
+        `Booking deleted successfully!${
+          bookingID ? ` Booking ID: ${bookingID}` : ""
+        }`
+      );
+      invalidateEntityQueries(queryClient, "bookings");
+      // Invalidate overview queries since booking counts have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      console.error("Delete booking mutation error:", error);
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.error ||
+        error?.message ||
+        "Failed to delete booking";
+      Toast.error(msg);
+    },
   });
 };
 
