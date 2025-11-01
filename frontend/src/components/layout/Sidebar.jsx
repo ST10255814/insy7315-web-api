@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FaHome,
   FaBuilding,
+  FaRegStar,
   FaFileContract,
   FaFileInvoice,
   FaWrench,
@@ -19,6 +20,7 @@ const tabs = [
   { key: "invoices", label: "Your Invoices", description: "Track payments, generate invoices, and manage billing.", icon: FaFileInvoice },
   { key: "maintenance", label: "Your Maintenance Requests", description: "Monitor and schedule maintenance requests and tasks.", icon: FaWrench },
   { key: "bookings", label: "Your Bookings", description: "Manage property bookings and reservations.", icon: FaCalendarCheck },
+  { key: "reviews", label: "Your Reviews", description: "View reviews from your tenants.", icon: FaRegStar }
 ];
 
 export default function Sidebar({ 
