@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import {
-  FaEdit,
   FaTrash,
   FaEye,
   FaEnvelope,
@@ -68,13 +67,6 @@ export default function InvoiceCard({ invoice, onAction }) {
         transition={{ duration: 0.2 }}
         className="absolute inset-0 z-20 bg-black/25 rounded-2xl flex items-center justify-center gap-4 pointer-events-none group-hover:pointer-events-auto"
       >
-        <HoverActionButton
-          icon={<FaEdit />}
-          label="Edit"
-          onClick={() => onAction("Edit", invoice)}
-          className="text-blue-600 hover:bg-blue-50"
-        />
-
         <HoverActionButton
           icon={<FaEye />}
           label="View"

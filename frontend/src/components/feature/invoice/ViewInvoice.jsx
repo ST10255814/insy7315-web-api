@@ -33,7 +33,7 @@ export default function ViewInvoice() {
 
   const isLoading = invoiceLoading || leaseLoading;
   const isError = invoiceError || leaseError;
-
+  
   return (
     <TabWrapper decorativeElements="default">
       <div className="max-w-6xl mx-auto">

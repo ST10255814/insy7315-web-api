@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
-import Toast from "../../lib/toast.js";
 import { TabWrapper, StateHandler, ActionButton, InvoiceCard } from "../common/index.js";
 import {
   useInvoicesQuery,
@@ -31,10 +30,6 @@ function InvoicesListView() {
 
   const handleInvoiceAction = (action, invoice) => {
     switch (action) {
-      case "Edit":
-        //TODO: Implement edit functionality
-        Toast.info(`Editing ${invoice.invoiceId}`);
-        break;
       case "Delete":
         navigate(`delete/${invoice.invoiceId}`);
         break;
