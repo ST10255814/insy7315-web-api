@@ -66,7 +66,7 @@ export default function BookingCard({ booking, onAction }) {
         <div className="flex items-start text-gray-600 text-xs sm:text-sm gap-2">
           <FaUsers className="text-gray-400 flex-shrink-0 mt-0.5" />
           <span className="flex-1 font-medium">
-            {booking.guests} • {booking.nights} night
+            Guests: {booking.guests} • {booking.nights} night
             {booking.nights !== 1 ? "s" : ""}
           </span>
         </div>
