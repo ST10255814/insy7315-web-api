@@ -311,7 +311,7 @@ export default function AddProperty() {
                         formData.title ? "text-blue-700" : "text-gray-400"
                       }`}
                     >
-                      {formData.title ? "Filled" : "Not filled"}
+                      {formData.title ? "Yes" : "No"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -321,7 +321,7 @@ export default function AddProperty() {
                         formData.address ? "text-blue-700" : "text-gray-400"
                       }`}
                     >
-                      {formData.address ? "Filled" : "Not filled"}
+                      {formData.address ? "Yes" : "No"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -331,7 +331,19 @@ export default function AddProperty() {
                         formData.price ? "text-blue-700" : "text-gray-400"
                       }`}
                     >
-                      {formData.price ? "Filled" : "Not filled"}
+                      {formData.price
+                        ? `R ${parseFloat(formData.price).toFixed(2)}`
+                        : "Not filled"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Description:</span>
+                    <span
+                      className={`font-medium ${
+                        formData.description ? "text-blue-700" : "text-gray-400"
+                      }`}
+                    >
+                      {formData.description ? "Yes" : "No"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -349,16 +361,6 @@ export default function AddProperty() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Description:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.description ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.description ? "Filled" : "Not filled"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="text-gray-600">Images:</span>
                     <span
                       className={`font-medium ${
@@ -371,6 +373,34 @@ export default function AddProperty() {
                         ? `${formData.imageURL.length} uploaded`
                         : "None"}
                     </span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-3 mt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600 font-semibold">
+                        Form Status:
+                      </span>
+                      <span
+                        className={`font-bold ${
+                          formData.title &&
+                          formData.address &&
+                          formData.price &&
+                          formData.description &&
+                          formData.amenities.length > 0 &&
+                          formData.imageURL.length > 0
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }`}
+                      >
+                        {formData.title &&
+                        formData.address &&
+                        formData.price &&
+                        formData.description &&
+                        formData.amenities.length > 0 &&
+                        formData.imageURL.length > 0
+                          ? "Ready"
+                          : "Incomplete"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
