@@ -143,6 +143,8 @@ async function countNumberOfListingsByAdminId(adminId) {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
+    console.log(`[countNumberOfListingsByAdminId] Counting listings for admin ${adminId}`);
+
     //create variable to search both landlordInfo.userId and landlordInfo.landlord (both are adminId one is just the new variant)
     const searchCriteria = {
       $or: [
@@ -151,15 +153,13 @@ async function countNumberOfListingsByAdminId(adminId) {
       ],
     };
 
-    const count = await listingsCollection.countDocuments({
-      $or: [
-        { "landlordInfo.userId": toObjectId(adminId) },
-        { "landlordInfo.landlord": toObjectId(adminId) },
-      ],
-    });
+    const count = await listingsCollection.countDocuments(searchCriteria);
+    
+    console.log(`[countNumberOfListingsByAdminId] Found ${count} listings for admin ${adminId}`);
     
     return count;
   } catch (error) {
+    console.error(`[countNumberOfListingsByAdminId] Error counting listings: ${error.message}`);
     throw new Error(`Error counting listings: ${error.message}`);
   }
 }

@@ -341,9 +341,22 @@ export const useTotalPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("totalPropertiesCount", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
-      return countNumberOfListingsByAdminId();
+      console.log('[useTotalPropertiesCountQuery] Fetching count for admin:', adminId);
+      if (!adminId) {
+        console.warn('[useTotalPropertiesCountQuery] No adminId provided!');
+        throw new Error('Admin ID is required');
+      }
+      try {
+        const count = await countNumberOfListingsByAdminId();
+        console.log('[useTotalPropertiesCountQuery] Count received:', count);
+        return count;
+      } catch (error) {
+        console.error('[useTotalPropertiesCountQuery] Error:', error);
+        throw error;
+      }
     },
+    enabled: !!adminId, // Only run query if adminId exists
+    retry: 1, // Reduce retries to see errors faster
     ...CACHE_CONFIGS.MEDIUM,
   });
 };
@@ -352,9 +365,22 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("monthlyPropertiesCount", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
-      return countListingsAddedThisMonth();
+      console.log('[useMonthlyPropertiesCountQuery] Fetching count for admin:', adminId);
+      if (!adminId) {
+        console.warn('[useMonthlyPropertiesCountQuery] No adminId provided!');
+        throw new Error('Admin ID is required');
+      }
+      try {
+        const count = await countListingsAddedThisMonth();
+        console.log('[useMonthlyPropertiesCountQuery] Count received:', count);
+        return count;
+      } catch (error) {
+        console.error('[useMonthlyPropertiesCountQuery] Error:', error);
+        throw error;
+      }
     },
+    enabled: !!adminId, // Only run query if adminId exists
+    retry: 1, // Reduce retries to see errors faster
     ...CACHE_CONFIGS.MEDIUM,
   });
 };

@@ -106,12 +106,15 @@ const countNumberOfListingsByAdminId = asyncHandler(async (req, res) => {
   try {
     const adminId = getAdminId(req);
     
+    logControllerAction('Count Listings', adminId);
+    
     const count = await listingService.countNumberOfListingsByAdminId(adminId);
     
     console.log(`[countNumberOfListingsByAdminId] Counted ${count} listings for admin ${adminId}`);
     
     sendSuccess(res, { count }, 'Listings count retrieved successfully');
   } catch (error) {
+    console.error(`[countNumberOfListingsByAdminId] Error in controller: ${error.message}`);
     sendBadRequest(res, error.message, error.details);
   }
 });
@@ -123,12 +126,15 @@ const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
   try {
     const adminId = getAdminId(req);
     
+    logControllerAction('Count This Month Listings', adminId);
+    
     const count = await listingService.countListingsAddedThisMonth(adminId);
     
     console.log(`[countListingsAddedThisMonth] Counted ${count} listings added this month for admin ${adminId}`);
     
     sendSuccess(res, { count }, 'This month listings count retrieved successfully');
   } catch (error) {
+    console.error(`[countListingsAddedThisMonth] Error in controller: ${error.message}`);
     sendBadRequest(res, error.message, error.details);
   }
 });

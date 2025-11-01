@@ -69,8 +69,10 @@ export async function deleteListingById(listingId) {
 export async function countNumberOfListingsByAdminId() {
   try {
     const response = await api.get("/api/listings/count", { withCredentials: true });
+    console.log('[countNumberOfListingsByAdminId] Response:', response.data);
     return response.data.data.count;
   } catch (error) {
+    console.error('[countNumberOfListingsByAdminId] Error:', error.response?.data || error.message);
     throw error;
   }
 }
@@ -78,8 +80,10 @@ export async function countNumberOfListingsByAdminId() {
 export async function countListingsAddedThisMonth() {
   try {
     const response = await api.get("/api/listings/count-this-month", { withCredentials: true });
+    console.log('[countListingsAddedThisMonth] Response:', response.data);
     return response.data.data.count;
   } catch (error) {
+    console.error('[countListingsAddedThisMonth] Error:', error.response?.data || error.message);
     throw error;
   }
 }
