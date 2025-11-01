@@ -22,7 +22,12 @@ async function createInvoice(adminId, data){
         const db = client.db("RentWise");
         const activityCollection = db.collection("User-Activity-Logs");
 
+        console.log("[invoiceService.createInvoice] Received data:", data);
+        console.log("[invoiceService.createInvoice] AdminId:", adminId);
+
         const {leaseId, description, date, amount } = data;
+
+        console.log("[invoiceService.createInvoice] Extracted leaseId:", leaseId);
 
         //validate inputs - description is now optional as we'll auto-generate it
         if(!leaseId || !date || !amount){
@@ -35,7 +40,13 @@ async function createInvoice(adminId, data){
         validation.validateRentAmount(amount);
 
         //find lease by leaseId
+        console.log("[invoiceService.createInvoice] Searching for lease with leaseId:", leaseId);
         const lease = await findLeaseByLeaseId(leaseId);
+
+        console.log("[invoiceService.createInvoice] Found lease:", lease ? "Yes" : "No");
+        if (lease) {
+            console.log("[invoiceService.createInvoice] Lease details:", JSON.stringify(lease, null, 2));
+        }
 
         if(!lease){
             throw new Error("Lease not found with the provided Lease ID");

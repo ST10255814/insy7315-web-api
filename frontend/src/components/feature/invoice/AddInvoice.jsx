@@ -28,6 +28,14 @@ export default function AddInvoice() {
   const createInvoiceMutation = useCreateInvoiceMutation();
   const isPending = createInvoiceMutation.isPending;
 
+  // Debug: Log leases when they load
+  useEffect(() => {
+    if (leases.length > 0) {
+      console.log("Leases loaded:", leases);
+      console.log("First lease structure:", leases[0]);
+    }
+  }, [leases]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -80,6 +88,8 @@ export default function AddInvoice() {
       return;
     }
     setErrors({});
+    console.log("Form data being sent:", formData);
+    console.log("Selected lease:", selectedLease);
     createInvoiceMutation.mutate(formData, {
       onSuccess: () => {
         resetForm();
@@ -89,7 +99,7 @@ export default function AddInvoice() {
   };
 
   // Get selected lease details for preview
-  const selectedLease = leases.find((lease) => lease._id === formData.leaseId);
+  const selectedLease = leases.find((lease) => lease.leaseId === formData.leaseId);
 
   return (
     <TabWrapper decorativeElements="blue-purple">
@@ -157,12 +167,14 @@ export default function AddInvoice() {
                                 type="button"
                                 key={lease._id}
                                 className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors font-medium border-b border-gray-100 last:border-0 ${
-                                  formData.leaseId === lease._id ? "bg-blue-100" : ""
+                                  formData.leaseId === lease.leaseId ? "bg-blue-100" : ""
                                 }`}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  handleInputChange("leaseId", lease._id);
+                                  console.log("Selected lease object:", lease);
+                                  console.log("Lease ID being set:", lease.leaseId);
+                                  handleInputChange("leaseId", lease.leaseId);
                                   setDropdownOpen(false);
                                 }}
                               >

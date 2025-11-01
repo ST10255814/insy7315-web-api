@@ -58,7 +58,7 @@ export default function AddLease() {
       return;
     }
 
-    createLeaseMutation.mutate({ bookingId: selectedBookingId }, {
+    createLeaseMutation.mutate(selectedBookingId, {
       onSuccess: () => {
         navigate(`/dashboard/${userId}/leases`);
       }

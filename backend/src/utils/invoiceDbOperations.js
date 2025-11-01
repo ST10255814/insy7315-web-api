@@ -59,9 +59,22 @@ export async function findLeaseByLeaseId(leaseId) {
     const db = client.db("RentWise");
     const leaseCollection = db.collection("Leases");
 
+    console.log("[invoiceDbOperations.findLeaseByLeaseId] Searching for leaseId:", leaseId);
+    console.log("[invoiceDbOperations.findLeaseByLeaseId] leaseId type:", typeof leaseId);
+    
     const lease = await leaseCollection.findOne({ leaseId: leaseId });
+    
+    console.log("[invoiceDbOperations.findLeaseByLeaseId] Result:", lease ? "Found" : "Not found");
+    
+    // Also try to see if there are any leases at all
+    if (!lease) {
+      const sampleLease = await leaseCollection.findOne({});
+      console.log("[invoiceDbOperations.findLeaseByLeaseId] Sample lease in DB:", sampleLease ? JSON.stringify({ _id: sampleLease._id, leaseId: sampleLease.leaseId }) : "No leases found");
+    }
+    
     return lease;
   } catch (err) {
+    console.error("[invoiceDbOperations.findLeaseByLeaseId] Error:", err);
     throw new Error("Error finding lease: " + err.message);
   }
 }
