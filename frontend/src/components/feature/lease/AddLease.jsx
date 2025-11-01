@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { TabWrapper } from "../../common";
 import { FaPlusCircle, FaArrowLeft, FaChevronDown } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ export default function AddLease() {
   const [selectedBookingId, setSelectedBookingId] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [errors, setErrors] = useState({});
+  const dropdownRef = useRef(null);
   const { userId } = useParams();
   const navigate = useNavigate();
 
@@ -18,6 +19,20 @@ export default function AddLease() {
   const { data: bookings = [], isLoading: bookingsLoading } = useBookingsQuery(userId);
   const createLeaseMutation = useCreateLeaseMutation();
   const isSubmitting = createLeaseMutation.isPending;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Reset form function
   const resetForm = useCallback(() => {
@@ -82,7 +97,7 @@ export default function AddLease() {
                 </h2>
                 <div className="space-y-6">
                   <FormField label="Select a Booking" error={errors.bookingId}>
-                    <div className="relative">
+                    <div className="relative" ref={dropdownRef}>
                       <button
                         type="button"
                         className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm flex items-center justify-between ${

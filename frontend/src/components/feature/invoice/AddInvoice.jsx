@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import { FaPlusCircle, FaArrowLeft } from "react-icons/fa";
+import { useCallback, useState, useEffect, useRef } from "react";
+import { FaPlusCircle, FaArrowLeft, FaChevronDown } from "react-icons/fa";
 import TabWrapper from "../../common/TabWrapper.jsx";
 import FormField from "../../common/FormField.jsx";
 import FormInput from "../../common/FormInput.jsx";
@@ -14,6 +14,8 @@ export default function AddInvoice() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const [formData, setFormData] = useState({
     amount: "",
     date: "",
@@ -25,6 +27,20 @@ export default function AddInvoice() {
     useLeasesQuery(userId);
   const createInvoiceMutation = useCreateInvoiceMutation();
   const isPending = createInvoiceMutation.isPending;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Reset form function
   const resetForm = useCallback(() => {
@@ -105,31 +121,69 @@ export default function AddInvoice() {
                 </h2>
                 <div className="space-y-6">
                   <FormField label="Select Lease" error={errors.leaseId}>
-                    <select
-                      name="leaseId"
-                      value={formData.leaseId}
-                      onChange={(e) =>
-                        handleInputChange("leaseId", e.target.value)
-                      }
-                      disabled={isPending || leasesLoading}
-                      className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm ${
-                        errors.leaseId
-                          ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
-                          : "border-gray-300 focus:ring-2 focus:ring-blue-700"
-                      }`}
-                    >
-                      <option value="">
-                        {leasesLoading ? "Loading leases..." : "Select a lease"}
-                      </option>
-                      {leases.map((lease) => (
-                        <option key={lease._id} value={lease._id}>
-                          {lease.leaseId|| "Undefined Lease"} -{" "}
-                          {lease.tenant?.firstName}{" "}
-                          {lease.tenant?.surname || "Unknown Tenant"} (
-                          {lease.status})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative" ref={dropdownRef}>
+                      <button
+                        type="button"
+                        className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm flex items-center justify-between ${
+                          errors.leaseId
+                            ? "border-[#FF3B30] focus:ring-2 focus:ring-[#FF3B30]"
+                            : "border-gray-300 focus:ring-2 focus:ring-blue-700"
+                        }`}
+                        onClick={() => setDropdownOpen((open) => !open)}
+                        disabled={isPending || leasesLoading}
+                      >
+                        <span className={selectedLease ? "text-gray-900" : "text-gray-400"}>
+                          {leasesLoading
+                            ? "Loading leases..."
+                            : selectedLease
+                            ? `${selectedLease.leaseId || "Undefined Lease"} - ${selectedLease.tenant?.firstName} ${selectedLease.tenant?.surname || "Unknown Tenant"} (${selectedLease.status})`
+                            : "Select a lease"}
+                        </span>
+                        <FaChevronDown
+                          className={`ml-2 transition-transform duration-200 ${
+                            dropdownOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      {dropdownOpen && (
+                        <div className="absolute left-0 right-0 z-20 mt-1 bg-white border border-blue-200 rounded-xl shadow-lg max-h-60 overflow-y-auto animate-fade-in">
+                          {leases.length === 0 ? (
+                            <div className="px-4 py-3 text-gray-500 text-center">
+                              No leases available
+                            </div>
+                          ) : (
+                            leases.map((lease) => (
+                              <button
+                                type="button"
+                                key={lease._id}
+                                className={`w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors font-medium border-b border-gray-100 last:border-0 ${
+                                  formData.leaseId === lease._id ? "bg-blue-100" : ""
+                                }`}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInputChange("leaseId", lease._id);
+                                  setDropdownOpen(false);
+                                }}
+                              >
+                                <div className="font-semibold text-blue-800">
+                                  Lease ID: {lease.leaseId || "Undefined"}
+                                </div>
+                                <div className="text-sm text-gray-600 mt-1">
+                                  Tenant: {lease.tenant?.firstName} {lease.tenant?.surname || "Unknown Tenant"}
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  Property: {lease.listing?.title || lease.listing?.address || "N/A"}
+                                </div>
+                                <div className="text-xs text-blue-600 font-semibold mt-1">
+                                  Status: {lease.status}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </FormField>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
