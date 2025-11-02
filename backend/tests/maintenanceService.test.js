@@ -127,6 +127,7 @@ describe('MaintenanceService', () => {
         priority: 'high',
         status: 'pending',
         documentURL: 'http://example.com/doc.pdf',
+        notes: '',
         createdAt: expect.any(Date),
         property: '123 Test St',
         tenantName: 'Jane Smith'
