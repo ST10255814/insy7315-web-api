@@ -126,7 +126,9 @@ export default function ReviewsTab() {
                   <div className="flex-1">
                     <div className="mb-3">
                       <div className="text-base font-bold text-blue-800">{r.fullname}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{r.property}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        <span className="text-xs font-bold">Property:</span> {r.property}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between mb-3">
