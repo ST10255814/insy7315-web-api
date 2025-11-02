@@ -12,15 +12,15 @@ const router = Router();
 // All lease routes require authentication
 router.use(checkAuth);
 
+// Lease statistics routes (must be before dynamic /:leaseId route)
+router.get('/count', leaseController.countActiveLeasesByAdminId);
+router.get('/leased-percentage', leaseController.getLeasedPropertyPercentage);
+
 // Lease management routes
 router.get('/', leaseController.getAdminLeases);
 router.post('/create', leaseController.createLease);
 router.get('/:leaseId', leaseController.getLeaseById);
 router.delete('/:leaseId', leaseController.deleteLease);
-
-// Lease statistics routes
-router.get('/count', leaseController.countActiveLeasesByAdminId);
-router.get('/leased-percentage', leaseController.getLeasedPropertyPercentage);
 
 // Lease status management routes
 router.patch('/update-statuses', leaseController.updateLeaseStatuses);
