@@ -34,6 +34,7 @@ import {
   deleteBookingById,
   getCurrentMonthRevenue,
 } from "../services/bookings.api.js";
+import { getAdminPropertiesReviews } from "../services/review.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -503,6 +504,18 @@ export const useRevenueTrendQuery = (adminId) => {
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getRevenueTrend();
+    },
+    ...CACHE_CONFIGS.DYNAMIC,
+  });
+};
+
+// Review Query
+export const useAdminPropertiesReviewsQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("reviews", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getAdminPropertiesReviews();
     },
     ...CACHE_CONFIGS.DYNAMIC,
   });

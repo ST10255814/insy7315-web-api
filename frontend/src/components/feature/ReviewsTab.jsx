@@ -1,64 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaStar, FaRegStar, FaQuoteLeft } from "react-icons/fa";
-import { TabWrapper, SectionHeading, StateHandler } from "../common/index.js";
-
-// Simulated API data - replace with actual API call
-const sampleReviews = [
-  {
-    id: 1,
-    name: "Samantha Lee",
-    date: "2025-10-12",
-    rating: 5,
-    comment:
-      "Fantastic stay — the host was responsive and the place was exactly as described. Clean, comfortable and great location.",
-    property: "2-bed downtown loft"
-  },
-  {
-    id: 2,
-    name: "Carlos M.",
-    date: "2025-09-26",
-    rating: 4,
-    comment:
-      "Very good overall. A couple small issues with the heater but the host sorted them quickly.",
-    property: "Studio near park"
-  },
-  {
-    id: 3,
-    name: "Priya K.",
-    date: "2025-08-03",
-    rating: 4,
-    comment:
-      "Great value for money. Would stay again. The welcome pack was a nice touch.",
-    property: "Seaside apartment"
-  },
-  {
-    id: 4,
-    name: "James T.",
-    date: "2025-07-18",
-    rating: 5,
-    comment:
-      "Exceeded expectations! Beautiful property, spotless condition, and excellent communication throughout.",
-    property: "Luxury penthouse"
-  },
-  {
-    id: 5,
-    name: "Nina P.",
-    date: "2025-06-22",
-    rating: 5,
-    comment:
-      "Perfect location and amenities. The host went above and beyond to ensure our comfort.",
-    property: "Garden apartment"
-  },
-  {
-    id: 6,
-    name: "Marcus R.",
-    date: "2025-05-30",
-    rating: 3,
-    comment:
-      "Decent stay overall. The property was clean but a bit dated. Some appliances needed updating.",
-    property: "City center flat"
-  }
-];
+import { TabWrapper, SectionHeading, StateHandler, DataLoading} from "../common/index.js";
+import { useAdminPropertiesReviewsQuery } from "../../utils/queries.js";
+import { useParams } from "react-router-dom";
 
 function Stars({ value = 0 }) {
   const stars = [];
@@ -74,11 +18,11 @@ function Stars({ value = 0 }) {
   return <span className="inline-flex">{stars}</span>;
 }
 
-export default function ReviewsTab({ reviews = sampleReviews }) {
+export default function ReviewsTab() {
   // Simulate loading/error states - replace with actual API hook
-  const isLoading = false;
-  const isError = false;
-  
+  const { userId } = useParams();
+  const { data: reviews = [], isLoading, isError } = useAdminPropertiesReviewsQuery(userId);
+
   const total = reviews.length;
   const avg = total > 0 ? (
     reviews.reduce((s, r) => s + (r.rating || 0), 0) / total
@@ -95,7 +39,7 @@ export default function ReviewsTab({ reviews = sampleReviews }) {
         errorMessage="Failed to load reviews. Please try again."
         emptyMessage="No reviews yet. Reviews from tenants will appear here."
         gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-        loadingCount={6}
+        loadingComponent={DataLoading}
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -111,7 +55,7 @@ export default function ReviewsTab({ reviews = sampleReviews }) {
               
               <div className="text-6xl font-bold text-blue-700 mb-3">{avg}</div>
               <Stars value={Math.round(parseFloat(avg))} />
-              <div className="text-sm text-gray-600 mt-2 font-medium">Average Rating</div>
+              <div className="text-sm text-gray-600 mt-2 font-medium">Average Rating Across All Properties</div>
               <div className="text-xs text-gray-500 mt-1">Based on {total} reviews</div>
             </div>
 
@@ -175,20 +119,20 @@ export default function ReviewsTab({ reviews = sampleReviews }) {
                 <div className="flex items-start gap-4 relative z-10">
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                      {r.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                      {r.fullname.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                     </div>
                   </div>
 
                   <div className="flex-1">
                     <div className="mb-3">
-                      <div className="text-base font-bold text-blue-800">{r.name}</div>
+                      <div className="text-base font-bold text-blue-800">{r.fullname}</div>
                       <div className="text-xs text-gray-500 mt-0.5">{r.property}</div>
                     </div>
 
                     <div className="flex items-center justify-between mb-3">
                       <Stars value={r.rating} />
                       <div className="text-xs text-gray-400">
-                        {new Date(r.date).toLocaleDateString('en-US', {
+                        {new Date(r.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'

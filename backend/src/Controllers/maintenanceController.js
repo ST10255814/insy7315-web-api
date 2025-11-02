@@ -54,4 +54,5 @@ const maintenanceController = {
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
 };
+
 export default maintenanceController;
