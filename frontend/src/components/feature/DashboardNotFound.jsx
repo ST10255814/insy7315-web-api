@@ -8,7 +8,7 @@ export default function DashboardNotFound() {
 
   const handleGoBack = (e) => {
     e.preventDefault();
-    navigate(`/dashboard/${adminId}/overview`);
+    navigate(-1);
   };
 
   const handleGoToDashboard = () => {
