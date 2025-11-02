@@ -72,6 +72,10 @@ export const getActivityColor = (action) => {
       color: '#A855F7', // purple-500
       bgColor: 'rgba(168, 85, 247, 0.1)'
     },
+    'Delete Lease': {
+      color: '#A855F7', // purple-500
+      bgColor: 'rgba(168, 85, 247, 0.1)'
+    },
     
     // Bookings - Cyan
     'Create Booking': {

@@ -43,6 +43,46 @@ export const createLease = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get lease by ID for the authenticated admin
+ */
+export const getLeaseById = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { leaseId } = req.params;
+
+    logControllerAction('Fetch Lease By ID', adminId, { leaseId });
+
+    const lease = await leaseService.getLeaseById(leaseId, adminId);
+
+    if (!lease) {
+      return sendError(res, 'Lease not found', 404);
+    }
+
+    sendSuccess(res, lease, 'Lease retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
+ * Delete lease by ID for the authenticated admin
+ */
+export const deleteLease = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { leaseId } = req.params;
+
+    logControllerAction('Delete Lease', adminId, { leaseId });
+
+    await leaseService.deleteLease(leaseId, adminId);
+
+    sendSuccess(res, null, 'Lease deleted successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
  * Update lease statuses for a specific admin
  */
 export const updateLeaseStatuses = asyncHandler(async (req, res) => {
@@ -109,6 +149,8 @@ export const getLeasedPropertyPercentage = asyncHandler(async (req, res) => {
 const leaseController = {
     getAdminLeases,
     createLease,
+    getLeaseById,
+    deleteLease,
     updateLeaseStatuses,
     countActiveLeasesByAdminId,
     triggerGlobalStatusUpdate,

@@ -111,7 +111,7 @@ async function createLease(bookingID, adminId) {
       throw new Error("Listing not found");
     }
 
-    //create listing object with address 
+    //create listing object with address
     const listing = {
         listingId : listingData._id,
         address: listingData.address
@@ -153,6 +153,51 @@ async function createLease(bookingID, adminId) {
   }
 }
 
+// Get lease by ID for the authenticated admin
+async function getLeaseById(leaseId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+    const lease = await leasesCollection.findOne({
+      leaseId: leaseId,
+      adminId: toObjectId(adminId)
+    });
+    if (!lease) {
+      throw new Error("Lease not found");
+    }
+    return lease;
+  } catch (err) {
+    throw new Error("Error fetching lease: " + err.message);
+  }
+}
+
+// Delete lease by ID for the authenticated admin
+async function deleteLease(leaseId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const leasesCollection = db.collection("Leases");
+    const activityCollection = db.collection("User-Activity-Logs");
+    const result = await leasesCollection.deleteOne({
+      leaseId: leaseId,
+      adminId: toObjectId(adminId)
+    });
+    if (result.deletedCount === 0) {
+      throw new Error("Lease not found or could not be deleted");
+    }
+
+    const activityLog = {
+      action: 'Delete Lease',
+      adminId: toObjectId(adminId),
+      detail: `Deleted lease ${leaseId}`,
+      timestamp: new Date()
+    };
+    await activityCollection.insertOne(activityLog);
+    return;
+  } catch (err) {
+    throw new Error("Error deleting lease: " + err.message);
+  }
+}
+
 // ID generation functions now imported from utils/idGenerator.js
 
 //compare startDate and endDate to today's date
@@ -169,7 +214,7 @@ async function updateLeaseStatusesByAdmin(adminId) {
     const leasesCollection = db.collection("Leases");
 
     const leases = await leasesCollection
-      .find({ 
+      .find({
         adminId: toObjectId(adminId),
         status: { $in: ["Pending", "Active"] } // Only check non-expired leases
       })
@@ -299,6 +344,8 @@ async function getLeasedPropertyPercentage(adminId) {
 const leaseService = {
     getLeasesByAdminId,
     createLease,
+    getLeaseById,
+    deleteLease,
     generateLeaseId,
     generateBookingId,
     countActiveLeasesByAdminId,

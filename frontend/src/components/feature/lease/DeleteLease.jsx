@@ -107,17 +107,17 @@ export default function DeleteLeases() {
                     </h3>
                     <div className="space-y-1">
                       <p className="text-gray-900 text-sm">
-                        <strong>Title:</strong>{" "}
-                        <span className="font-medium">{lease.title}</span>
+                        <strong>Lease ID:</strong>{" "}
+                        <span className="font-medium">{lease.leaseId}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
-                        <strong>Address:</strong>{" "}
-                        <span className="font-medium">{lease.address}</span>
+                        <strong>Tenant:</strong>{" "}
+                        <span className="font-medium">{lease.tenant.firstName} {lease.tenant.surname}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Price:</strong>{" "}
                         <span className="font-medium">
-                          R {formatAmount(lease.price)}
+                          R {formatAmount(lease.bookingDetails.rentAmount)}
                         </span>
                       </p>
                       <p className="text-gray-700 text-sm">

@@ -15,6 +15,8 @@ router.use(checkAuth);
 // Lease management routes
 router.get('/', leaseController.getAdminLeases);
 router.post('/create', leaseController.createLease);
+router.get('/:leaseId', leaseController.getLeaseById);
+router.delete('/:leaseId', leaseController.deleteLease);
 
 // Lease statistics routes
 router.get('/count', leaseController.countActiveLeasesByAdminId);
