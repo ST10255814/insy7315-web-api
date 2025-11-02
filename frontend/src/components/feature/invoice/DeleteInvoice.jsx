@@ -5,7 +5,7 @@ import { FaArrowLeft, FaTrash, FaExclamationTriangle } from "react-icons/fa";
 import { TabWrapper, DataStateHandler } from "../../common/index.js";
 import DataLoading from "../../common/DataLoading.jsx";
 import Toast from "../../../lib/toast.js";
-import { formatAmount } from "../../../utils/formatters.js";
+import { formatAmount, formatDateUS } from "../../../utils/formatters.js";
 import {
   useInvoiceByIdQuery,
   useDeleteInvoiceMutation,
@@ -107,22 +107,26 @@ export default function DeleteInvoice() {
                     </h3>
                     <div className="space-y-1">
                       <p className="text-gray-900 text-sm">
-                        <strong>Title:</strong>{" "}
-                        <span className="font-medium">{invoice.title}</span>
+                        <strong>Invoice ID: </strong>{" "}
+                        <span className="font-medium">{invoice.invoice.invoiceId}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
-                        <strong>Address:</strong>{" "}
-                        <span className="font-medium">{invoice.address}</span>
+                        <strong>Due Date: </strong>{" "}
+                        <span className="font-medium">{formatDateUS(invoice.invoice.date)}</span>
                       </p>
                       <p className="text-gray-700 text-sm">
-                        <strong>Price:</strong>{" "}
+                        <strong>Property: </strong>{" "}
+                        <span className="font-medium">{invoice.invoice.lease.propertyAddress}</span>
+                      </p>
+                      <p className="text-gray-700 text-sm">
+                        <strong>Amount:</strong>{" "}
                         <span className="font-medium">
-                          R {formatAmount(invoice.price)}
+                          R {formatAmount(invoice.invoice.amount)}
                         </span>
                       </p>
                       <p className="text-gray-700 text-sm">
                         <strong>Status:</strong>{" "}
-                        <span className="font-medium">{invoice.status}</span>
+                        <span className="font-medium">{invoice.invoice.status}</span>
                       </p>
                     </div>
                   </div>

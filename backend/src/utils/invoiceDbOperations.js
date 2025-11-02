@@ -31,6 +31,29 @@ export async function getInvoicesFromDB(adminId) {
 }
 
 /**
+ * Get invoice by invoice ID and admin ID from database
+ * 
+ * @param {string} invoiceId - Invoice ID to search for
+ * @param {string} adminId - Admin ID to filter by
+ * @returns {Promise<Object|null>} Invoice document or null
+ */
+export async function getInvoiceFromDB(invoiceId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const invoicesCollection = db.collection("Invoices");
+
+    const invoice = await invoicesCollection.findOne({
+      invoiceId: invoiceId,
+      adminId: toObjectId(adminId)
+    });
+
+    return invoice;
+  } catch (err) {
+    throw new Error("Error fetching invoice from database: " + err.message);
+  }
+}
+
+/**
  * Create invoice in database
  * 
  * @param {Object} invoiceData - Invoice data to insert

@@ -12,9 +12,9 @@ const createInvoice = asyncHandler(async (req, res) => {
     // Validate required fields
     validateRequiredFields(req.body, ['leaseId', 'date', 'amount']);
     
-    logControllerAction('Create Invoice', adminId, { 
+    logControllerAction('Create Invoice', adminId, {
       leaseId: req.body.leaseId,
-      amount: req.body.amount 
+      amount: req.body.amount
     });
     
     const invoiceId = await invoiceService.createInvoice(adminId, req.body);
@@ -37,6 +37,28 @@ const getInvoicesByAdminId = asyncHandler(async (req, res) => {
     const invoices = await invoiceService.getInvoicesByAdminId(adminId);
     
     sendSuccess(res, { invoices }, `Successfully fetched ${invoices.length} invoices`);
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
+ * Controller to handle fetching an invoice by ID
+ */
+const getInvoiceById = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { invoiceId } = req.params;
+
+    logControllerAction('Fetch Invoice', adminId, { invoiceId });
+
+    const invoice = await invoiceService.getInvoiceById(invoiceId, adminId);
+
+    if (!invoice) {
+      return sendNotFound(res, "Invoice not found");
+    }
+
+    sendSuccess(res, { invoice }, "Invoice fetched successfully");
   } catch (error) {
     sendBadRequest(res, error.message, error.details);
   }
@@ -114,6 +136,7 @@ export {
 export default {
   createInvoice,
   getInvoicesByAdminId,
+  getInvoiceById,
   markInvoiceAsPaid,
   getInvoiceStats,
   regenerateInvoiceDescriptions

@@ -15,6 +15,7 @@ router.use(checkAuth);
 // Invoice management routes
 router.post('/create', invoiceController.createInvoice);
 router.get('/', invoiceController.getInvoicesByAdminId);
+router.get('/:invoiceId', invoiceController.getInvoiceById);
 router.patch('/:invoiceId/pay', invoiceController.markInvoiceAsPaid);
 
 // Invoice statistics and utilities

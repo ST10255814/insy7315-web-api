@@ -7,6 +7,7 @@ import { generateInvoiceDescription, formatCurrency, truncateText } from '../uti
 import { determineInvoiceStatus } from '../utils/statusManager.js';
 import {
   getInvoicesFromDB,
+  getInvoiceFromDB,
   createInvoiceInDB,
   findLeaseByLeaseId,
   markInvoiceAsPaidInDB,
@@ -164,6 +165,23 @@ async function getInvoicesByAdminId(adminId) {
   }
 }
 
+// Get invoice by ID
+async function getInvoiceById(invoiceId, adminId) {
+  try {
+    if (!invoiceId || !adminId) {
+      throw new Error("Invoice ID and Admin ID are required");
+    }
+
+    const invoice = await getInvoiceFromDB(invoiceId, adminId);
+    if (!invoice) {
+      throw new Error("Invoice not found");
+    }
+    return invoice;
+  } catch (err) {
+    throw new Error("Error fetching invoice: " + err.message);
+  }
+}
+
 // Wrapper functions that use the utility modules
 async function updateInvoiceStatusesByAdmin(adminId) {
   return await updateStatusesByAdmin(adminId);
@@ -232,6 +250,7 @@ async function regenerateAllInvoiceDescriptions(adminId = null) {
 export default {
     createInvoice,
     getInvoicesByAdminId,
+    getInvoiceById,
     generateInvoiceId,
     generateInvoiceDescription,
     validateInvoiceDate: determineInvoiceStatus, // Use new utility function
