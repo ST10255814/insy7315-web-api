@@ -33,8 +33,8 @@ export function useAuth() {
       });
       
       const userData = response.data.data.user;
-      localStorage.setItem("user", JSON.stringify(userData.fullname));
-      localStorage.setItem("userId", JSON.stringify(userData._id));
+      sessionStorage.setItem("user", JSON.stringify(userData.fullname));
+      sessionStorage.setItem("userId", JSON.stringify(userData._id));
       Toast.success(response.data.message);
       
       // Navigate to dashboard after a short delay
@@ -80,13 +80,13 @@ export function useAuth() {
         password: userData.password,
       });
 
-      // Store user data in localStorage if successful
+      // Store user data in sessionStorage if successful
       if (response.data && response.data.user) {
-        localStorage.setItem(
+        sessionStorage.setItem(
           "userEmail",
           JSON.stringify(response.data.user.email)
         );
-        localStorage.setItem(
+        sessionStorage.setItem(
           "userFullname",
           JSON.stringify(response.data.user.fullname)
         );
@@ -146,8 +146,8 @@ export function useAuth() {
    * Handle forgot password using stored credentials
    */
   const handleForgotPasswordFromStorage = useCallback(async () => {
-    const userEmail = JSON.parse(localStorage.getItem("userEmail"));
-    const userFullname = JSON.parse(localStorage.getItem("userFullname"));
+    const userEmail = JSON.parse(sessionStorage.getItem("userEmail"));
+    const userFullname = JSON.parse(sessionStorage.getItem("userFullname"));
 
     if (userEmail && userFullname) {
       return await forgotPassword(userEmail, userFullname);

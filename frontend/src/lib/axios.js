@@ -4,11 +4,11 @@ import { navigateTo } from "../utils/navigation";
 
 // Avoid circular dependency by defining logout logic here
 const clearUserSession = () => {
-  // Clear all user-related localStorage items
-  localStorage.removeItem("user");
-  localStorage.removeItem("userEmail");
-  localStorage.removeItem("userFullname");
-  localStorage.removeItem("userId");
+  // Clear all user-related sessionStorage items
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("userEmail");
+  sessionStorage.removeItem("userFullname");
+  sessionStorage.removeItem("userId");
   
   // Clear any other session data
   try {

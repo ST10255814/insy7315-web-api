@@ -14,7 +14,7 @@ import Toast from "../../lib/toast.js";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);

@@ -3,9 +3,9 @@ import queryClient from "../lib/queryClient.js";
 
 // Centralized function to clear all user session data
 export function clearUserSession() {
-  // Clear all user-related localStorage items
-  localStorage.removeItem("user");
-  localStorage.removeItem("userId");
+  // Clear all user-related sessionStorage items
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("userId");
   
   // Clear React Query cache
   queryClient.clear();
