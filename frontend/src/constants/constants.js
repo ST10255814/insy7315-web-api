@@ -1,4 +1,4 @@
-import { FaPlay, FaTimes } from "react-icons/fa";
+import { FaPlay, FaTimes, FaRedo } from "react-icons/fa";
 
 /**
  * Status styling classes for different entity types
@@ -40,25 +40,24 @@ export const statusActions = {
       action: "Cancel",
     },
   ],
-  "Expiring Soon": [
+  Pending: [
     {
-      label: "Renew",
-      icon: <FaPlay />,
+      label: "Activate",
+      icon: <FaRedo />,
       color: "text-yellow-600",
       hover: "hover:bg-yellow-50",
-      action: "Renew",
+      action: "Activate",
     },
   ],
   Expired: [
     {
-      label: "Activate",
+      label: "Renew",
       icon: <FaPlay />,
       color: "text-green-600",
       hover: "hover:bg-green-50",
-      action: "Activate",
+      action: "Renew",
     },
   ],
-  Pending: [],
 };
 
 /**

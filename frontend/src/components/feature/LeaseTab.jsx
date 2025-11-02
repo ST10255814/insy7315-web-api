@@ -27,10 +27,6 @@ function LeaseListView() {
   // Handle Lease Actions
   const handleLeaseAction = (action, lease) => {
     switch (action) {
-      case "Edit":
-        //TODO: Implement edit functionality
-        Toast.info(`Editing lease ${lease.leaseId}`);
-        break;
       case "Delete":
         navigate(`delete/${lease.leaseId}`);
         break;
