@@ -366,157 +366,6 @@ jobs:
         
         echo "Vulnerability summary generated"
 
-    - name: 🌐 Generate Vulnerability HTML Report
-      if: always()
-      run: |
-        echo "Generating HTML vulnerability report..."
-        
-        cat > ${{ env.REPORT_DIR }}/vulnerability/vulnerability-report.html << 'EOF'
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Vulnerability Scan Report</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    padding: 20px;
-                    color: #333;
-                }
-                .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    background: white;
-                    border-radius: 20px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    overflow: hidden;
-                }
-                .header {
-                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                    color: white;
-                    padding: 40px;
-                    text-align: center;
-                }
-                .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-                .content { padding: 40px; }
-                .tool-section {
-                    background: #f8f9fa;
-                    border-radius: 15px;
-                    padding: 25px;
-                    margin: 20px 0;
-                    border-left: 5px solid #667eea;
-                }
-                .tool-section h2 {
-                    color: #667eea;
-                    margin-bottom: 15px;
-                }
-                .info-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 15px;
-                    margin: 20px 0;
-                }
-                .info-card {
-                    background: white;
-                    padding: 20px;
-                    border-radius: 10px;
-                    border-left: 4px solid #667eea;
-                }
-                .info-card h3 {
-                    font-size: 0.9em;
-                    color: #666;
-                    text-transform: uppercase;
-                    margin-bottom: 8px;
-                }
-                .info-card .value {
-                    font-size: 1.5em;
-                    font-weight: bold;
-                    color: #333;
-                }
-                .footer {
-                    background: #f8f9fa;
-                    padding: 30px;
-                    text-align: center;
-                    color: #666;
-                }
-                ul { margin: 15px 0; padding-left: 20px; }
-                li { margin: 8px 0; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🔍 Vulnerability Scan Report</h1>
-                    <p>Comprehensive Dependency & Security Analysis</p>
-                    <p style="font-size: 0.9em; margin-top: 10px;">$(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
-                </div>
-                
-                <div class="content">
-                    <div class="tool-section">
-                        <h2>🛡️ Snyk Vulnerability Scanning</h2>
-                        <p>Industry-standard dependency vulnerability detection</p>
-                        <ul>
-                            <li>Backend dependencies scanned</li>
-                            <li>Frontend dependencies scanned</li>
-                            <li>Known vulnerability database checked</li>
-                            <li>Results: See snyk-backend.json and snyk-frontend.json</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tool-section">
-                        <h2>🔒 Trivy Security Scanning</h2>
-                        <p>Filesystem and configuration security analysis</p>
-                        <ul>
-                            <li>Filesystem vulnerabilities detected</li>
-                            <li>Configuration issues identified</li>
-                            <li>Misconfigurations flagged</li>
-                            <li>Results: See trivy-fs-scan.json and trivy-config-scan.json</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="tool-section">
-                        <h2>🎯 OWASP Dependency-Check</h2>
-                        <p>CVE database cross-reference and analysis</p>
-                        <ul>
-                            <li>Backend project analyzed</li>
-                            <li>Frontend project analyzed</li>
-                            <li>CVE matches identified</li>
-                            <li>Results: See dependency-check HTML reports</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <h3>Scan Coverage</h3>
-                            <div class="value">100%</div>
-                        </div>
-                        <div class="info-card">
-                            <h3>Tools Used</h3>
-                            <div class="value">3</div>
-                        </div>
-                        <div class="info-card">
-                            <h3>Projects Scanned</h3>
-                            <div class="value">2</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="footer">
-                    <p><strong>Repository:</strong> ${{ github.repository }}</p>
-                    <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
-                    <p><strong>Commit:</strong> $(echo ${{ github.sha }} | cut -c1-7)</p>
-                    <p style="margin-top: 15px;">Download JSON files from artifacts for detailed analysis</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        EOF
-        
-        echo "HTML vulnerability report generated"
-
     - name: 📤 Upload Vulnerability Reports
       if: always()
       uses: actions/upload-artifact@v4
@@ -819,9 +668,84 @@ jobs:
     - name: 📊 Generate Penetration Test Report
       if: always()
       run: |
-        echo "Generating comprehensive penetration test report..."
+        echo "Generating comprehensive penetration test report based on actual results..."
         
-        cat > ${{ env.REPORT_DIR }}/penetration-testing/pen-test-summary.md << 'EOF'
+        # Check which tests actually completed
+        ZAP_BASELINE_STATUS="❌ Not Run"
+        ZAP_FULL_STATUS="❌ Not Run"
+        SQL_INJ_STATUS="❌ Not Run"
+        NOSQL_INJ_STATUS="❌ Not Run"
+        XSS_STATUS="❌ Not Run"
+        CSRF_STATUS="❌ Not Run"
+        AUTH_STATUS="❌ Not Run"
+        RATE_LIMIT_STATUS="❌ Not Run"
+        
+        # Check ZAP baseline scan
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/zap-baseline-report.json" ] || [ -f "${{ env.REPORT_DIR }}/penetration-testing/zap-baseline-report.html" ]; then
+          ZAP_BASELINE_STATUS="✅ Completed"
+        fi
+        
+        # Check ZAP full scan
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/zap-full-report.json" ] || [ -f "${{ env.REPORT_DIR }}/penetration-testing/zap-full-report.html" ]; then
+          ZAP_FULL_STATUS="✅ Completed"
+        fi
+        
+        # Check SQL injection test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/sql-injection-test.log" ]; then
+          if grep -q "SQL injection testing completed" "${{ env.REPORT_DIR }}/penetration-testing/sql-injection-test.log"; then
+            SQL_INJ_STATUS="✅ Completed"
+          else
+            SQL_INJ_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Check NoSQL injection test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/nosql-injection-test.log" ]; then
+          if grep -q "NoSQL injection testing completed" "${{ env.REPORT_DIR }}/penetration-testing/nosql-injection-test.log"; then
+            NOSQL_INJ_STATUS="✅ Completed"
+          else
+            NOSQL_INJ_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Check XSS test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/xss-test.log" ]; then
+          if grep -q "XSS testing completed" "${{ env.REPORT_DIR }}/penetration-testing/xss-test.log"; then
+            XSS_STATUS="✅ Completed"
+          else
+            XSS_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Check CSRF test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/csrf-test.log" ]; then
+          if grep -q "CSRF testing completed" "${{ env.REPORT_DIR }}/penetration-testing/csrf-test.log"; then
+            CSRF_STATUS="✅ Completed"
+          else
+            CSRF_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Check auth bypass test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/auth-bypass-test.log" ]; then
+          if grep -q "Authentication bypass testing completed" "${{ env.REPORT_DIR }}/penetration-testing/auth-bypass-test.log"; then
+            AUTH_STATUS="✅ Completed"
+          else
+            AUTH_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Check rate limiting test
+        if [ -f "${{ env.REPORT_DIR }}/penetration-testing/rate-limit-test.log" ]; then
+          if grep -q "Rate limiting test completed" "${{ env.REPORT_DIR }}/penetration-testing/rate-limit-test.log"; then
+            RATE_LIMIT_STATUS="✅ Completed"
+          else
+            RATE_LIMIT_STATUS="⚠️ Partial"
+          fi
+        fi
+        
+        # Generate dynamic report
+        cat > ${{ env.REPORT_DIR }}/penetration-testing/pen-test-summary.md << EOF
         # Penetration Testing Report
         
         ## Test Date
@@ -830,50 +754,37 @@ jobs:
         ## Tests Performed
         
         ### 1. OWASP ZAP Scanning
-        - ✅ Baseline security scan
-        - ✅ Full active scan
-        - ✅ Spider crawling
-        - ✅ Passive scanning
+        - ${ZAP_BASELINE_STATUS} - Baseline security scan
+        - ${ZAP_FULL_STATUS} - Full active scan
         
-        ### 2. Injection Testing
-        - ✅ SQL Injection attempts
-        - ✅ NoSQL Injection patterns
-        - ✅ Command Injection tests
-        - ✅ LDAP Injection checks
+        ### 2. SQL Injection Testing
+        - ${SQL_INJ_STATUS} - SQL Injection attempts
         
-        ### 3. Cross-Site Scripting (XSS)
-        - ✅ Reflected XSS
-        - ✅ Stored XSS
-        - ✅ DOM-based XSS
+        ### 3. NoSQL Injection Testing
+        - ${NOSQL_INJ_STATUS} - NoSQL Injection patterns
         
-        ### 4. Authentication & Authorization
-        - ✅ Authentication bypass attempts
-        - ✅ Session fixation tests
-        - ✅ JWT token manipulation
-        - ✅ Privilege escalation tests
+        ### 4. Cross-Site Scripting (XSS)
+        - ${XSS_STATUS} - XSS vulnerability testing
         
         ### 5. CSRF Protection
-        - ✅ CSRF token validation
-        - ✅ Cross-origin request testing
-        - ✅ State-changing operation tests
+        - ${CSRF_STATUS} - CSRF token validation
         
-        ### 6. Security Misconfigurations
-        - ✅ HTTP security headers
-        - ✅ CORS policy verification
-        - ✅ Error handling analysis
-        - ✅ Default credentials check
+        ### 6. Authentication & Authorization
+        - ${AUTH_STATUS} - Authentication bypass attempts
         
         ### 7. Rate Limiting & DoS
-        - ✅ Rate limit enforcement
-        - ✅ Request flooding tests
-        - ✅ Resource exhaustion attempts
+        - ${RATE_LIMIT_STATUS} - Rate limit enforcement
+        
+        ## Test Status Legend
+        - ✅ **Completed**: Test ran successfully
+        - ⚠️ **Partial**: Test started but may have issues
+        - ❌ **Not Run**: Test did not execute
         
         ## Severity Levels
         - 🔴 **Critical**: Immediate action required
         - 🟠 **High**: Fix within 7 days
         - 🟡 **Medium**: Fix within 30 days
         - 🔵 **Low**: Fix when convenient
-        - ✅ **Info**: No action required
         
         ## Recommendations
         1. Review all findings in detailed reports
@@ -883,192 +794,15 @@ jobs:
         5. Schedule regular penetration tests
         
         ## Detailed Results
-        See individual test logs and ZAP reports in artifacts.
+        See individual test logs and ZAP reports in artifacts for complete findings.
+        
+        ## Notes
+        - Tests marked as "Not Run" may indicate environment issues or dependencies not met
+        - Review individual log files for detailed error messages and findings
+        - Some tests use \`continue-on-error: true\` and may complete with warnings
         EOF
         
-        echo "Penetration test report generated"
-
-    - name: 🌐 Generate Penetration Test HTML Report
-      if: always()
-      run: |
-        echo "Generating HTML penetration test report..."
-        
-        cat > ${{ env.REPORT_DIR }}/penetration-testing/pen-test-report.html << 'EOF'
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Penetration Testing Report</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-                    padding: 20px;
-                    color: #333;
-                }
-                .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    background: white;
-                    border-radius: 20px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    overflow: hidden;
-                }
-                .header {
-                    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-                    color: white;
-                    padding: 40px;
-                    text-align: center;
-                }
-                .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-                .content { padding: 40px; }
-                .test-category {
-                    background: #f8f9fa;
-                    border-radius: 15px;
-                    padding: 25px;
-                    margin: 20px 0;
-                    border-left: 5px solid #fa709a;
-                }
-                .test-category h2 {
-                    color: #fa709a;
-                    margin-bottom: 15px;
-                }
-                .test-list {
-                    list-style: none;
-                    padding: 0;
-                }
-                .test-list li {
-                    padding: 10px 15px;
-                    margin: 8px 0;
-                    background: white;
-                    border-radius: 8px;
-                    display: flex;
-                    align-items: center;
-                }
-                .test-list li::before {
-                    content: "✅";
-                    margin-right: 10px;
-                    font-size: 1.2em;
-                }
-                .severity-guide {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                    gap: 15px;
-                    margin: 30px 0;
-                }
-                .severity-card {
-                    padding: 20px;
-                    border-radius: 10px;
-                    text-align: center;
-                    color: white;
-                    font-weight: bold;
-                }
-                .severity-critical { background: #dc3545; }
-                .severity-high { background: #fd7e14; }
-                .severity-medium { background: #ffc107; color: #333; }
-                .severity-low { background: #17a2b8; }
-                .severity-info { background: #6c757d; }
-                .footer {
-                    background: #f8f9fa;
-                    padding: 30px;
-                    text-align: center;
-                    color: #666;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🕷️ Penetration Testing Report</h1>
-                    <p>Comprehensive Application Security Assessment</p>
-                    <p style="font-size: 0.9em; margin-top: 10px;">$(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
-                </div>
-                
-                <div class="content">
-                    <div class="test-category">
-                        <h2>🛡️ OWASP ZAP Scanning</h2>
-                        <ul class="test-list">
-                            <li>Baseline security scan completed</li>
-                            <li>Full active scan performed</li>
-                            <li>Spider crawling executed</li>
-                            <li>Passive vulnerability detection</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-category">
-                        <h2>💉 Injection Testing</h2>
-                        <ul class="test-list">
-                            <li>SQL Injection attempts tested</li>
-                            <li>NoSQL Injection patterns verified</li>
-                            <li>Command Injection checks performed</li>
-                            <li>MongoDB operator injection tested</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-category">
-                        <h2>🔓 Cross-Site Scripting (XSS)</h2>
-                        <ul class="test-list">
-                            <li>Reflected XSS testing completed</li>
-                            <li>Stored XSS vulnerability checks</li>
-                            <li>DOM-based XSS pattern testing</li>
-                            <li>Multiple payload variations tested</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-category">
-                        <h2>🔐 Authentication & Authorization</h2>
-                        <ul class="test-list">
-                            <li>Authentication bypass attempts</li>
-                            <li>Session fixation testing</li>
-                            <li>JWT token manipulation</li>
-                            <li>Privilege escalation checks</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-category">
-                        <h2>🛡️ CSRF Protection</h2>
-                        <ul class="test-list">
-                            <li>CSRF token validation tested</li>
-                            <li>Cross-origin request testing</li>
-                            <li>State-changing operations verified</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="test-category">
-                        <h2>⚡ Rate Limiting & DoS</h2>
-                        <ul class="test-list">
-                            <li>Rate limit enforcement tested</li>
-                            <li>Request flooding simulation</li>
-                            <li>Resource exhaustion attempts</li>
-                        </ul>
-                    </div>
-                    
-                    <h2 style="margin: 30px 0 15px 0;">Severity Guide</h2>
-                    <div class="severity-guide">
-                        <div class="severity-card severity-critical">🔴 CRITICAL</div>
-                        <div class="severity-card severity-high">🟠 HIGH</div>
-                        <div class="severity-card severity-medium">🟡 MEDIUM</div>
-                        <div class="severity-card severity-low">🔵 LOW</div>
-                        <div class="severity-card severity-info">✅ INFO</div>
-                    </div>
-                </div>
-                
-                <div class="footer">
-                    <p><strong>Repository:</strong> ${{ github.repository }}</p>
-                    <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
-                    <p><strong>Commit:</strong> $(echo ${{ github.sha }} | cut -c1-7)</p>
-                    <p style="margin-top: 15px;">
-                        See OWASP ZAP HTML reports and test logs in artifacts for detailed findings
-                    </p>
-                </div>
-            </div>
-        </body>
-        </html>
-        EOF
-        
-        echo "HTML penetration test report generated"
+        echo "Penetration test report generated with actual test results"
 
     - name: 🧹 Cleanup Test Environment
       if: always()
@@ -1275,7 +1009,7 @@ jobs:
         SENSITIVE_FILES=(
           ".env"
           "*.pem"
-          "*.key" 
+          "*.key"
           "*.p12"
           "*.pfx"
           "id_rsa"
@@ -1510,7 +1244,6 @@ jobs:
       run: |
         mkdir -p ${{ env.REPORT_DIR }}/final
         mkdir -p ${{ env.REPORT_DIR }}/json
-        mkdir -p ${{ env.REPORT_DIR }}/html
         echo "Final reports directories created"
 
     - name: 📊 Download All Security Reports
@@ -1800,176 +1533,6 @@ jobs:
         EOF
         
         echo "Comprehensive security report generated successfully"
-
-    - name: 🌐 Generate HTML Security Report
-      run: |
-        echo "Generating HTML security report..."
-        
-        cat > ${{ env.REPORT_DIR }}/html/security-dashboard.html << 'EOF'
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>RentWise Security Dashboard</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    padding: 20px;
-                    color: #333;
-                }
-                .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    background: white;
-                    border-radius: 20px;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                    overflow: hidden;
-                }
-                .header {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    padding: 40px;
-                    text-align: center;
-                }
-                .header h1 {
-                    font-size: 2.5em;
-                    margin-bottom: 10px;
-                }
-                .header p {
-                    font-size: 1.1em;
-                    opacity: 0.9;
-                }
-                .content {
-                    padding: 40px;
-                }
-                .score-card {
-                    text-align: center;
-                    padding: 40px;
-                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                    border-radius: 15px;
-                    color: white;
-                    margin-bottom: 30px;
-                }
-                .score-card .score {
-                    font-size: 4em;
-                    font-weight: bold;
-                    margin: 20px 0;
-                }
-                .stats-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 20px;
-                    margin: 30px 0;
-                }
-                .stat-card {
-                    padding: 25px;
-                    border-radius: 15px;
-                    background: #f8f9fa;
-                    border-left: 5px solid;
-                }
-                .stat-card.critical { border-color: #dc3545; }
-                .stat-card.high { border-color: #fd7e14; }
-                .stat-card.medium { border-color: #ffc107; }
-                .stat-card.low { border-color: #17a2b8; }
-                .stat-card h3 {
-                    font-size: 0.9em;
-                    text-transform: uppercase;
-                    color: #666;
-                    margin-bottom: 10px;
-                }
-                .stat-card .number {
-                    font-size: 2.5em;
-                    font-weight: bold;
-                    color: #333;
-                }
-                .checks-section {
-                    margin: 30px 0;
-                }
-                .check-item {
-                    padding: 15px;
-                    background: #f8f9fa;
-                    border-radius: 10px;
-                    margin: 10px 0;
-                    display: flex;
-                    align-items: center;
-                }
-                .check-item::before {
-                    content: "✅";
-                    font-size: 1.5em;
-                    margin-right: 15px;
-                }
-                .footer {
-                    background: #f8f9fa;
-                    padding: 30px;
-                    text-align: center;
-                    color: #666;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🔐 Security Dashboard</h1>
-                    <p>RentWise Application Security Assessment</p>
-                    <p style="font-size: 0.9em; margin-top: 10px;">Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
-                </div>
-                
-                <div class="content">
-                    <div class="score-card">
-                        <h2>Overall Security Score</h2>
-                        <div class="score">${{ steps.analyze.outputs.security_score }}/100</div>
-                        <p>Status: ${{ steps.analyze.outputs.status }}</p>
-                    </div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card critical">
-                            <h3>Critical Issues</h3>
-                            <div class="number">${{ steps.analyze.outputs.critical_count }}</div>
-                        </div>
-                        <div class="stat-card high">
-                            <h3>High Severity</h3>
-                            <div class="number">${{ steps.analyze.outputs.high_count }}</div>
-                        </div>
-                        <div class="stat-card medium">
-                            <h3>Medium Severity</h3>
-                            <div class="number">${{ steps.analyze.outputs.medium_count }}</div>
-                        </div>
-                        <div class="stat-card low">
-                            <h3>Low Severity</h3>
-                            <div class="number">${{ steps.analyze.outputs.low_count }}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="checks-section">
-                        <h2 style="margin-bottom: 20px;">✅ Security Checks Performed</h2>
-                        <div class="check-item">Secret Detection & Scanning</div>
-                        <div class="check-item">Dependency Vulnerability Analysis</div>
-                        <div class="check-item">Advanced Vulnerability Scanning (Snyk, Trivy, OWASP)</div>
-                        <div class="check-item">Penetration Testing (OWASP ZAP)</div>
-                        <div class="check-item">Injection Testing (SQL, NoSQL, XSS)</div>
-                        <div class="check-item">Authentication & Authorization Testing</div>
-                        <div class="check-item">Static Code Analysis</div>
-                        <div class="check-item">Infrastructure Security Review</div>
-                    </div>
-                </div>
-                
-                <div class="footer">
-                    <p><strong>Repository:</strong> ${{ github.repository }}</p>
-                    <p><strong>Branch:</strong> ${{ github.ref_name }}</p>
-                    <p><strong>Commit:</strong> ${{ github.sha }}</p>
-                    <p style="margin-top: 15px;">
-                        <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">View Full Workflow Run</a>
-                    </p>
-                </div>
-            </div>
-        </body>
-        </html>
-        EOF
-        
-        echo "HTML security dashboard generated"
 
     - name: 📊 Generate JSON Report
       run: |
