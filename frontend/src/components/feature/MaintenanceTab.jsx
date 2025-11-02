@@ -48,15 +48,7 @@ function MaintenanceListView() {
         data={maintenanceData}
         errorMessage="Failed to load maintenance requests. Please try again."
         emptyMessage="No maintenance requests found. Contact support to report issues."
-        loadingComponent={() => (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:overflow-hidden">
-            {Array(9)
-              .fill(0)
-              .map((_, i) => (
-                <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-lg"></div>
-              ))}
-          </div>
-        )}
+        loadingCount={9}
       >
         {/* Content State - Mobile: scrollable page, Desktop: scrollable columns */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:min-h-0">

@@ -59,7 +59,7 @@ function BookingsListView() {
         errorMessage="Failed to load bookings. Please try again."
         emptyMessage="No bookings found. Add a new booking to get started."
         gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-        loadingCount={6}
+        loadingCount={8}
       >
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6"
