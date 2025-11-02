@@ -54,6 +54,10 @@ export const getActivityColor = (action) => {
       color: '#22C55E', // green-500
       bgColor: 'rgba(34, 197, 94, 0.1)'
     },
+    'Delete Invoice': {
+      color: '#EF4444', // red-500
+      bgColor: 'rgba(239, 68, 68, 0.1)'
+    },
     
     // Leases - Purple
     'Create Lease': {

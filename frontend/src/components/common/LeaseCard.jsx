@@ -118,13 +118,6 @@ export default function LeaseCard({ lease, onAction }) {
       >
         {/* Common Buttons */}
         <HoverActionButton
-          icon={<FaEdit size={16} />}
-          label="Edit"
-          onClick={() => handleActionClick("Edit", lease)}
-          className="text-blue-600 hover:bg-blue-50"
-        />
-
-        <HoverActionButton
           icon={<FaEye size={16} />}
           label="View"
           onClick={() => handleActionClick("View", lease)}
