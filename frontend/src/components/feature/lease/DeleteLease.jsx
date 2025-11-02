@@ -24,7 +24,7 @@ export default function DeleteLeases() {
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/leases`);
+    navigate(-1);
   };
 
   const handleViewLease = () => {

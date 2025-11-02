@@ -25,7 +25,7 @@ export default function UpdateMaintenanceRequest({ onUpdate }) {
       <button
         type="button"
         className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition mb-4"
-        onClick={() => navigate(`/dashboard/${userId}/maintenance`)}
+        onClick={() => navigate(-1)}
       >
         <FaArrowLeft /> Back to requests
       </button>

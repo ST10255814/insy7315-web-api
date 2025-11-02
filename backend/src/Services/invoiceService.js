@@ -8,6 +8,7 @@ import { determineInvoiceStatus } from '../utils/statusManager.js';
 import {
   getInvoicesFromDB,
   getInvoiceFromDB,
+  deleteInvoiceFromDB,
   createInvoiceInDB,
   findLeaseByLeaseId,
   markInvoiceAsPaidInDB,
@@ -182,6 +183,36 @@ async function getInvoiceById(invoiceId, adminId) {
   }
 }
 
+// Delete invoice by ID
+async function deleteInvoiceById(invoiceId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const activityCollection = db.collection("User-Activity-Logs");
+
+    if (!invoiceId || !adminId) {
+      throw new Error("Invoice ID and Admin ID are required");
+    }
+
+    const result = await deleteInvoiceFromDB(invoiceId, adminId);
+    if (!result) {
+      throw new Error("Invoice not found or unauthorized");
+    }
+
+    const activityLog = {
+      action: 'Delete Invoice',
+      adminId: toObjectId(adminId),
+      detail: `Deleted invoice ${invoiceId}`,
+      timestamp: new Date()
+    };
+
+    await activityCollection.insertOne(activityLog);
+
+    return result;
+  } catch (err) {
+    throw new Error("Error deleting invoice: " + err.message);
+  }
+}
+
 // Wrapper functions that use the utility modules
 async function updateInvoiceStatusesByAdmin(adminId) {
   return await updateStatusesByAdmin(adminId);
@@ -251,6 +282,7 @@ export default {
     createInvoice,
     getInvoicesByAdminId,
     getInvoiceById,
+    deleteInvoiceById,
     generateInvoiceId,
     generateInvoiceDescription,
     validateInvoiceDate: determineInvoiceStatus, // Use new utility function

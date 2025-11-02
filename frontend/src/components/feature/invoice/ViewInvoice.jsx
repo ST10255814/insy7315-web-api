@@ -28,7 +28,7 @@ export default function ViewInvoice() {
   });
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/invoices`);
+    navigate(-1);
   };
 
   const isLoading = invoiceLoading || leaseLoading;

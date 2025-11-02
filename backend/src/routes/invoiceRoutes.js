@@ -16,6 +16,7 @@ router.use(checkAuth);
 router.post('/create', invoiceController.createInvoice);
 router.get('/', invoiceController.getInvoicesByAdminId);
 router.get('/:invoiceId', invoiceController.getInvoiceById);
+router.delete('/:invoiceId', invoiceController.deleteInvoice);
 router.patch('/:invoiceId/pay', invoiceController.markInvoiceAsPaid);
 
 // Invoice statistics and utilities

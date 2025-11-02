@@ -65,6 +65,28 @@ const getInvoiceById = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Controller to handle deleting an invoice by ID
+ */
+const deleteInvoice = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { invoiceId } = req.params;
+
+    logControllerAction('Delete Invoice', adminId, { invoiceId });
+
+    const success = await invoiceService.deleteInvoiceById(invoiceId, adminId);
+
+    if (success) {
+      sendSuccess(res, { invoiceId }, "Invoice deleted successfully");
+    } else {
+      sendNotFound(res, "Invoice not found or unauthorized");
+    }
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
  * Controller to handle marking an invoice as paid
  */
 const markInvoiceAsPaid = asyncHandler(async (req, res) => {
@@ -137,6 +159,7 @@ export default {
   createInvoice,
   getInvoicesByAdminId,
   getInvoiceById,
+  deleteInvoice,
   markInvoiceAsPaid,
   getInvoiceStats,
   regenerateInvoiceDescriptions

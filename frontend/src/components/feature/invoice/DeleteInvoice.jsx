@@ -24,7 +24,7 @@ export default function DeleteInvoice() {
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/invoices`);
+    navigate(-1);
   };
 
   const handleViewInvoice = () => {

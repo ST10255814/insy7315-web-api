@@ -180,7 +180,7 @@ export default function EditProperty() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <button
-              onClick={() => navigate(`/dashboard/${userId}/properties`)}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
             >
               <FaArrowLeft className="w-5 h-5" />

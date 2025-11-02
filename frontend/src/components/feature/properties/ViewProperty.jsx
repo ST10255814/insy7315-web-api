@@ -33,7 +33,7 @@ export default function ViewProperty() {
   };
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/properties`);
+    navigate(-1);
   };
 
   return (

@@ -54,6 +54,29 @@ export async function getInvoiceFromDB(invoiceId, adminId) {
 }
 
 /**
+ * Delete invoice by invoice ID and admin ID from database
+ * 
+ * @param {string} invoiceId - Invoice ID to delete
+ * @param {string} adminId - Admin ID to filter by
+ * @returns {Promise<boolean>} True if deletion was successful, false otherwise
+ */
+export async function deleteInvoiceFromDB(invoiceId, adminId) {
+  try {
+    const db = client.db("RentWise");
+    const invoicesCollection = db.collection("Invoices");
+
+    const result = await invoicesCollection.deleteOne({
+      invoiceId: invoiceId,
+      adminId: toObjectId(adminId)
+    });
+
+    return result.deletedCount > 0;
+  } catch (err) {
+    throw new Error("Error deleting invoice from database: " + err.message);
+  }
+}
+
+/**
  * Create invoice in database
  * 
  * @param {Object} invoiceData - Invoice data to insert
@@ -238,6 +261,8 @@ export async function regenerateDescriptionsInDB(adminId = null) {
 const invoiceDbOperations = {
   getInvoicesFromDB,
   createInvoiceInDB,
+  getInvoiceFromDB,
+  deleteInvoiceFromDB,
   findLeaseByLeaseId,
   markInvoiceAsPaidInDB,
   getInvoiceStatsFromDB,

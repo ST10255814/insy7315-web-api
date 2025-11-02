@@ -23,7 +23,7 @@ export default function DeleteProperty() {
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/properties`);
+    navigate(-1);
   };
 
   const handleViewProperty = () => {

@@ -24,7 +24,7 @@ export default function DeleteBooking() {
   const [confirmText, setConfirmText] = useState("");
 
   const handleBack = () => {
-    navigate(`/dashboard/${adminId}/bookings`);
+    navigate(-1);
   };
 
   const handleViewBooking = () => {
