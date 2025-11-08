@@ -1,5 +1,6 @@
 import { client } from "../utils/db.js";
 import Object from "../utils/ObjectIDConvert.js";
+import { generateCareTakerId } from "../utils/idGenerator.js";
 const { toObjectId } = Object;
 
 //get all maintenance requests for the admin
