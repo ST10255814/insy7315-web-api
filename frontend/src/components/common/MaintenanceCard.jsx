@@ -84,7 +84,7 @@ export default function MaintenanceCard({ request , onAction }) {
           <span className="font-medium text-gray-700 min-w-0">Caretaker:</span>
           <span
             className={
-              request.caretaker
+              request.caretakerId
                 ? "text-green-700 font-semibold"
                 : "text-red-500 italic font-medium"
             }

@@ -39,6 +39,7 @@ import { getAdminPropertiesReviews } from "../services/review.api.js";
 import {
   getCaretakersByAdminId,
   createCaretaker,
+  assignCaretakerToRequest,
 } from "../services/caretakers.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
@@ -565,6 +566,30 @@ export const useCreateCaretakerMutation = () => {
         error?.message ||
         "Failed to create caretaker";
       Toast.error(`Error creating caretaker: ${msg}`);
+    },
+  });
+};
+
+export const useAssignCaretakerMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ caretakerId, requestId }) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return assignCaretakerToRequest(caretakerId, requestId);
+    },
+    onSuccess: (response) => {
+      Toast.success(`Caretaker assigned to request successfully`);
+      // Invalidate maintenance requests to reflect assignment
+      invalidateEntityQueries(queryClient, "maintenanceRequests");
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to assign caretaker";
+      Toast.error(`Error assigning caretaker: ${msg}`);
     },
   });
 };
