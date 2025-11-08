@@ -233,7 +233,7 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
 
     // Get all maintenance requests and filter for admin's properties
     const maintenanceRequests = await maintenanceCollection.find({
-      "newMaintenanceRequest.status": { $ne: "Under Repair" },
+      "newMaintenanceRequest.status": { $ne: ["under repair", "Under Repair", "under maintenance", "Under Maintenance"] },
     }).toArray();
 
     const uniquePropertyIds = new Set();
@@ -356,7 +356,7 @@ async function returnPropertiesByStatus(adminId) {
       underMaintenance: underMaintenanceCount,
       activeBookings: activeBookingsCount,
     };
-    
+
   } catch (error) {
     console.error(`Error returning properties by status: ${error.message}`);
     throw new Error(`Error returning properties by status: ${error.message}`);
