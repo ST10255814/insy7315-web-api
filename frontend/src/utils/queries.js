@@ -22,6 +22,7 @@ import {
   deleteListingById,
   countNumberOfListingsByAdminId,
   countListingsAddedThisMonth,
+  returnPropertiesByStatus,
 } from "../services/listings.api.js";
 import {
   getMaintenanceRequestsByAdminId,
@@ -388,17 +389,13 @@ export const useTotalPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("totalPropertiesCount", { adminId }),
     queryFn: async () => {
-      console.log('[useTotalPropertiesCountQuery] Fetching count for admin:', adminId);
       if (!adminId) {
-        console.warn('[useTotalPropertiesCountQuery] No adminId provided!');
         throw new Error('Admin ID is required');
       }
       try {
         const count = await countNumberOfListingsByAdminId();
-        console.log('[useTotalPropertiesCountQuery] Count received:', count);
         return count;
       } catch (error) {
-        console.error('[useTotalPropertiesCountQuery] Error:', error);
         throw error;
       }
     },
@@ -412,17 +409,13 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("monthlyPropertiesCount", { adminId }),
     queryFn: async () => {
-      console.log('[useMonthlyPropertiesCountQuery] Fetching count for admin:', adminId);
       if (!adminId) {
-        console.warn('[useMonthlyPropertiesCountQuery] No adminId provided!');
         throw new Error('Admin ID is required');
       }
       try {
         const count = await countListingsAddedThisMonth();
-        console.log('[useMonthlyPropertiesCountQuery] Count received:', count);
         return count;
       } catch (error) {
-        console.error('[useMonthlyPropertiesCountQuery] Error:', error);
         throw error;
       }
     },
@@ -504,6 +497,18 @@ export const useRevenueTrendQuery = (adminId) => {
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getRevenueTrend();
+    },
+    ...CACHE_CONFIGS.DYNAMIC,
+  });
+};
+
+// Property Status Query
+export const useAdminPropertiesStatusQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("statusOverview", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return returnPropertiesByStatus();
     },
     ...CACHE_CONFIGS.DYNAMIC,
   });
