@@ -27,7 +27,7 @@ export default function PropertyDistributionChart() {
                         borderColor: "#ffffff",
                         borderWidth: 2,
                         borderRadius: 10,
-                        spacing: 2,
+                        spacing: 1,
                     },
                 ],
             };
