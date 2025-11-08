@@ -111,9 +111,11 @@ async function createCareTaker(adminId, careTakerData){
     }
 
     const role = "caretaker";
+    const caretakerId = await generateCareTakerId();
     //create caretaker
     const caretaker = {
       adminId: toObjectId(adminId),
+      caretakerId: caretakerId,
       firstName: careTakerData.firstName,
       surname: careTakerData.surname,
       email: careTakerData.email,
@@ -130,11 +132,24 @@ async function createCareTaker(adminId, careTakerData){
     }
   }
 
+  async function getAllAdminsCareTakers(adminId){
+    try{
+      const db = client.db("RentWise");
+      const userCollection = db.collection("Care-Takers");
+
+      const caretakers = await userCollection.find({ adminId: toObjectId(adminId) }).toArray();
+      return caretakers;
+    }catch (error) {
+      throw new Error(`Error fetching caretakers: ${error.message}`);
+    }
+  }
+
 
 const maintenanceService = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
   createCareTaker,
+  getAllAdminsCareTakers
 };
 export default maintenanceService;

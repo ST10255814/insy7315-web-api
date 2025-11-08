@@ -66,6 +66,10 @@ export async function generateListingId() {
   return generateEntityId('listing', 'LS', 'Listings', 'listingId');
 }
 
+export async function generateCareTakerId() {
+  return generateEntityId('caretaker', 'CT', 'Care-Takers', 'careTakerId');
+}
+
 // Export all functions for backwards compatibility
 const idGenerator = {
   generateInvoiceId,

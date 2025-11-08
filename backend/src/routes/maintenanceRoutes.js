@@ -18,6 +18,9 @@ router.get('/', maintenanceController.getAllMaintenanceRequests);
 // Caretaker management routes
 router.post('/create/caretaker', maintenanceController.createCareTaker);
 
+// get care Takers
+router.get('/caretakers', maintenanceController.getAllAdminsCareTakers);
+
 // Maintenance statistics routes
 router.get('/count', maintenanceController.countMaintenanceRequestsByAdminId);
 router.get('/count-high-priority', maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);
