@@ -125,8 +125,8 @@ async function createCareTaker(adminId, careTakerData){
       role: role
     };
 
-    const result = await userCollection.insertOne(caretaker);
-    return result.caretakerId;
+    await userCollection.insertOne(caretaker);
+    return caretaker.caretakerId;
 
     }catch (error) {
     throw new Error(`Error creating caretaker: ${error.message}`);
