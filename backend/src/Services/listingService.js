@@ -214,29 +214,58 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
   try {
     const db = client.db("RentWise");
     const maintenanceCollection = db.collection("Maintenance-Requests");
+    const listingsCollection = db.collection("Listings");
+    const bookingsCollection = db.collection("Bookings");
 
-    // Use aggregation pipeline to count distinct properties under maintenance
-    const pipeline = [
-      {
-        $match: {
-          "listingDetail.landlordID": toObjectId(adminId),
-          "newMaintenanceRequest.status": { $ne: "Under Repair" },
-        }
-      },
-      {
-        $group: {
-          _id: "$listingDetail.listingID", // Group by unique property/listing ID
-        }
-      },
-      {
-        $count: "uniqueProperties"
+    // First get all listing IDs for this admin
+    const adminListings = await listingsCollection.find({ 
+      $or: [
+        { "landlordInfo.userId": toObjectId(adminId) },
+        { "landlordInfo.landlord": toObjectId(adminId) },
+      ],
+    }, { projection: { _id: 1 } }).toArray();
+
+    const adminListingIds = adminListings.map(listing => listing._id);
+
+    if (adminListingIds.length === 0) {
+      return 0;
+    }
+
+    // Get all maintenance requests and filter for admin's properties
+    const maintenanceRequests = await maintenanceCollection.find({
+      "newMaintenanceRequest.status": { $ne: "Under Repair" },
+    }).toArray();
+
+    const uniquePropertyIds = new Set();
+
+    for (const request of maintenanceRequests) {
+      let propertyId = null;
+
+      // Check if maintenance request has direct listing ID
+      if (request.listingDetail?.listingID) {
+        propertyId = request.listingDetail.listingID.toString();
       }
-    ];
+      // If not, check if it has landlordID (direct admin ownership)
+      else if (request.listingDetail?.landlordID?.toString() === adminId) {
+        // This maintenance request belongs to the admin, but we need to find the property
+        // Try to get property ID from booking if available
+        if (request.listingDetail?.bookingId) {
+          const booking = await bookingsCollection.findOne({
+            "newBooking.bookingId": request.listingDetail.bookingId
+          });
+          if (booking?.listingDetail?.listingID) {
+            propertyId = booking.listingDetail.listingID.toString();
+          }
+        }
+      }
 
-    const result = await maintenanceCollection.aggregate(pipeline).toArray();
-    const propertyCount = result.length > 0 ? result[0].uniqueProperties : 0;
+      // Check if this property belongs to the admin
+      if (propertyId && adminListingIds.some(id => id.toString() === propertyId)) {
+        uniquePropertyIds.add(propertyId);
+      }
+    }
 
-    return propertyCount;
+    return uniquePropertyIds.size;
   } catch (error) {
     console.error(`Error checking maintenance requests: ${error.message}`);
     throw new Error(`Error checking maintenance requests: ${error.message}`);
