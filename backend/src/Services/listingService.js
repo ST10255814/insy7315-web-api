@@ -356,10 +356,7 @@ async function returnPropertiesByStatus(adminId) {
       underMaintenance: underMaintenanceCount,
       activeBookings: activeBookingsCount,
     };
-
-    console.log('vacant:', vacantCount);
-    console.log('underMaintenance:', underMaintenanceCount);
-    console.log('activeBookings:', activeBookingsCount);
+    
   } catch (error) {
     console.error(`Error returning properties by status: ${error.message}`);
     throw new Error(`Error returning properties by status: ${error.message}`);
