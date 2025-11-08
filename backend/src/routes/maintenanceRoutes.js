@@ -21,6 +21,9 @@ router.post('/create/caretaker', maintenanceController.createCareTaker);
 // get care Takers
 router.get('/caretakers', maintenanceController.getAllAdminsCareTakers);
 
+//assign caretaker to maintenance request
+router.post('/assign', maintenanceController.assignCareTakerToRequest);
+
 // Maintenance statistics routes
 router.get('/count', maintenanceController.countMaintenanceRequestsByAdminId);
 router.get('/count-high-priority', maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);

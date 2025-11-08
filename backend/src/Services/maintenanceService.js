@@ -145,12 +145,49 @@ async function createCareTaker(adminId, careTakerData){
     }
   }
 
+  async function assignCareTakerToRequest(caretakerId, maintenanceRequestId, adminId){
+    try{
+      const db = client.db("RentWise");
+      const maintenanceCollection = db.collection("Maintenance-Requests");
+      const userCollection = db.collection("Care-Takers");
+      const listingCollection = db.collection("Listings");
+
+      //verify caretaker belongs to admin
+      const caretaker = await userCollection.findOne({ caretakerId: caretakerId, adminId: toObjectId(adminId) });
+      if(!caretaker){
+        throw new Error("Caretaker not found for this admin");
+      }
+
+      //verify maintenance request belongs to admin
+      const maintenanceRequest = await maintenanceCollection.findOne({ "newMaintenanceRequest.maintenanceId": maintenanceRequestId, "listingDetail.landlordID": toObjectId(adminId) });
+      if(!maintenanceRequest){
+        throw new Error("Maintenance request not found for this admin");
+      }
+
+      //assign caretaker to maintenance request
+      await maintenanceCollection.updateOne(
+        { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
+        { $set: { "newMaintenanceRequest.caretakerId": caretakerId } }
+      );
+
+      //update listing status to 'under maintenance'
+      await listingCollection.updateOne(
+        { listingId: maintenanceRequest.listingDetail.listingID },
+        { $set: { status: "Under Maintenance" } }
+      );
+
+    }catch (error) {
+      throw new Error(`Error assigning caretaker to maintenance request: ${error.message}`);
+    }
+  }
+
 
 const maintenanceService = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
   createCareTaker,
-  getAllAdminsCareTakers
+  getAllAdminsCareTakers,
+  assignCareTakerToRequest,
 };
 export default maintenanceService;

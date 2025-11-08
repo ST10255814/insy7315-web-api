@@ -74,11 +74,25 @@ export const getAllAdminsCareTakers = asyncHandler(async (req, res) => {
   }
 });
 
+export const assignCareTakerToRequest = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { caretakerId, maintenanceRequestId } = req.body;
+
+    await maintenanceService.assignCareTakerToRequest(caretakerId, maintenanceRequestId, adminId);
+
+    sendSuccess(res, null, 'Caretaker assigned to maintenance request successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 const maintenanceController = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
   getAllAdminsCareTakers,
+  assignCareTakerToRequest,
   createCareTaker,
 };
 

@@ -242,6 +242,22 @@ async function checkAmountOfAdminPropertiesVacant(adminId) {
   }
 }
 
+async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const count = await listingsCollection.countDocuments({
+      "landlordInfo.userId": toObjectId(adminId),
+      status: "Under Maintenance",
+    });
+    return count;
+  } catch (error) {
+    console.error(`Error checking properties under maintenance: ${error.message}`);
+    throw new Error(`Error checking properties under maintenance: ${error.message}`);
+  }
+}
+
 async function returnPropertiesByStatus(adminId) {
   try {
     const vacantCount = await checkAmountOfAdminPropertiesVacant(adminId);
