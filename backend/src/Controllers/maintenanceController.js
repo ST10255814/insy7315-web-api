@@ -49,10 +49,24 @@ export const countHighPriorityMaintenanceRequestsByAdminId = asyncHandler(async 
   }
 });
 
+export const createCareTaker = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const careTakerData = req.body;
+
+    const caretakerId = await maintenanceService.createCareTaker(adminId, careTakerData);
+
+    sendSuccess(res, { caretakerId }, 'Caretaker created successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 const maintenanceController = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
+  createCareTaker,
 };
 
 export default maintenanceController;
