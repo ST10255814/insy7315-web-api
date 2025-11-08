@@ -9,16 +9,15 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement);
 export default function PropertyDistributionChart() {
     // Property Distribution Pie Chart Data
     const propertyData = useMemo(() => ({
-        labels: ["Occupied", "Vacant", "Under Repair", "Reserved"],
+        labels: ["Occupied", "Vacant", "Under Repair"],
         datasets: [
             {
             label: "Properties",
-            data: [18, 6, 2, 3], // example values
+            data: [18, 6, 2], // example values
             backgroundColor: [
                 "#93C5FD", // light blue - Occupied
                 "#D1D5DB", // light gray - Vacant
                 "#FCA5A5", // light red - Under Repair
-                "#FDBA74", // light orange - Reserved
             ],
             borderColor: "#ffffff", // white separation between slices
             borderWidth: 2,

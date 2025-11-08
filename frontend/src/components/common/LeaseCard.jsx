@@ -30,7 +30,7 @@ export default function LeaseCard({ lease, onAction }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ 
+      whileHover={{
         scale: 1.02,
         y: -2,
         boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
@@ -113,7 +113,7 @@ export default function LeaseCard({ lease, onAction }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: showOverlay ? 1 : 0 }}
         transition={{ duration: 0.2 }}
-        className="absolute inset-0 z-20 bg-gray-400/50 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none"
+        className="absolute inset-0 z-20 bg-gray-400/10 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none"
         style={{ pointerEvents: showOverlay ? 'auto' : 'none' }}
       >
         {/* Common Buttons */}
@@ -121,7 +121,7 @@ export default function LeaseCard({ lease, onAction }) {
           icon={<FaEye size={16} />}
           label="View"
           onClick={() => handleActionClick("View", lease)}
-          className="text-yellow-600 hover:bg-gray-50"
+          className="text-yellow-600 hover:bg-yellow-50"
         />
 
         <HoverActionButton
@@ -130,17 +130,6 @@ export default function LeaseCard({ lease, onAction }) {
           onClick={() => handleActionClick("Delete", lease)}
           className="text-red-600 hover:bg-red-50"
         />
-
-        {/* Status-specific Buttons */}
-        {statusActions[lease.status]?.map((btn, idx) => (
-          <HoverActionButton
-            key={idx}
-            icon={btn.icon}
-            label={btn.label}
-            onClick={() => handleActionClick(btn.action, lease)}
-            className={`${btn.color} ${btn.hover}`}
-          />
-        ))}
       </motion.div>
     </motion.div>
   );
