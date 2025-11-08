@@ -13,6 +13,7 @@ import InvoicesTab from "../feature/InvoicesTab.jsx";
 import MaintenanceTab from "../feature/MaintenanceTab.jsx";
 import BookingsTab from "../feature/BookingsTab.jsx";
 import ReviewsTab from "../feature/ReviewsTab.jsx";
+import CaretakerTab from "../feature/CaretakerTab.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import Sidebar, { tabs } from "./Sidebar.jsx";
 import DashboardHeader from "./DashboardHeader.jsx";
@@ -86,6 +87,7 @@ export default function Dashboard() {
             <Route path="maintenance/*" element={<MaintenanceTab />} />
             <Route path="bookings/*" element={<BookingsTab />} />
             <Route path="reviews" element={<ReviewsTab />} />
+            <Route path="caretakers/*" element={<CaretakerTab />} />
             {/* Catch-all route for invalid dashboard paths */}
             <Route path="*" element={<DashboardNotFound />} />
           </Routes>

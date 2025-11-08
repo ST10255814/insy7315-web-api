@@ -28,6 +28,22 @@ export const statusClasses = {
 };
 
 /**
+ * Profession styling classes for caretakers
+ */
+export const professionClasses = {
+  "Property Maintenance Specialist": "bg-blue-100 text-blue-700",
+  "Security & Safety Coordinator": "bg-red-100 text-red-700",
+  "Cleaning & Housekeeping Manager": "bg-green-100 text-green-700",
+  "Gardening & Landscaping Expert": "bg-emerald-100 text-emerald-700",
+  "General Property Caretaker": "bg-gray-100 text-gray-700",
+  "HVAC & Electrical Technician": "bg-orange-100 text-orange-700",
+  "Plumbing Specialist": "bg-cyan-100 text-cyan-700",
+  "Pest Control Expert": "bg-purple-100 text-purple-700",
+  "Building Maintenance": "bg-indigo-100 text-indigo-700",
+  "Facility Manager": "bg-pink-100 text-pink-700",
+};
+
+/**
  * Action buttons configuration for different lease statuses
  */
 export const statusActions = {
