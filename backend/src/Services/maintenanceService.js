@@ -94,6 +94,41 @@ async function countHighPriorityMaintenanceRequestsByAdminId(adminId) {
   }
 }
 
+async function createCareTaker(adminId, careTakerData){
+  try {
+    const db = client.db("RentWise");
+    const userCollection = db.collection("Care-Takers");
+
+    if(!adminId){
+      throw new Error("Admin ID is required");
+    }
+
+    
+    if(!careTakerData){
+      throw new Error("Caretaker data is required");
+    }
+
+    const role = "caretaker";
+    //create caretaker
+    const caretaker = {
+      adminId: toObjectId(adminId),
+      firstName: careTakerData.firstName,
+      surname: careTakerData.surname,
+      email: careTakerData.email,
+      phoneNumber: careTakerData.phoneNumber,
+      profession: careTakerData.profession,
+      role: role
+    };
+
+    const result = await userCollection.insertOne(caretaker);
+    return result.insertedId;
+
+    }catch (error) {
+    throw new Error(`Error creating caretaker: ${error.message}`);
+    }
+  }
+
+
 const maintenanceService = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,

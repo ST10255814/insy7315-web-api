@@ -15,6 +15,9 @@ router.use(checkAuth);
 // Maintenance request management routes
 router.get('/', maintenanceController.getAllMaintenanceRequests);
 
+// Caretaker management routes
+router.post('/create/caretaker', maintenanceController.createCareTaker);
+
 // Maintenance statistics routes
 router.get('/count', maintenanceController.countMaintenanceRequestsByAdminId);
 router.get('/count-high-priority', maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);

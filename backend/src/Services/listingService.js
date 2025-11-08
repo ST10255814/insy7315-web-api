@@ -210,115 +210,19 @@ async function countListingsAddedThisMonth(adminId) {
   }
 }
 
-async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
+async function checkAmountOfAdminPropertiesOccupied(adminId) {
   try {
     const db = client.db("RentWise");
-    const maintenanceCollection = db.collection("Maintenance-Requests");
-    const listingsCollection = db.collection("Listings");
-    const bookingsCollection = db.collection("Bookings");
-
-    // First get all listing IDs for this admin
-    const adminListings = await listingsCollection.find({ 
-      $or: [
-        { "landlordInfo.userId": toObjectId(adminId) },
-        { "landlordInfo.landlord": toObjectId(adminId) },
-      ],
-    }, { projection: { _id: 1 } }).toArray();
-
-    const adminListingIds = adminListings.map(listing => listing._id);
-
-    if (adminListingIds.length === 0) {
-      return 0;
-    }
-
-    // Get all maintenance requests and filter for admin's properties
-    const maintenanceRequests = await maintenanceCollection.find({
-      "newMaintenanceRequest.status": { $ne: ["under repair", "Under Repair", "Under maintenance", "Under Maintenance"] },
-    }).toArray();
-
-    const uniquePropertyIds = new Set();
-
-    for (const request of maintenanceRequests) {
-      let propertyId = null;
-
-      // Check if maintenance request has direct listing ID
-      if (request.listingDetail?.listingID) {
-        propertyId = request.listingDetail.listingID.toString();
-      }
-      // If not, check if it has landlordID (direct admin ownership)
-      else if (request.listingDetail?.landlordID?.toString() === adminId) {
-        // This maintenance request belongs to the admin, but we need to find the property
-        // Try to get property ID from booking if available
-        if (request.listingDetail?.bookingId) {
-          const booking = await bookingsCollection.findOne({
-            "newBooking.bookingId": request.listingDetail.bookingId
-          });
-          if (booking?.listingDetail?.listingID) {
-            propertyId = booking.listingDetail.listingID.toString();
-          }
-        }
-      }
-
-      // Check if this property belongs to the admin
-      if (propertyId && adminListingIds.some(id => id.toString() === propertyId)) {
-        uniquePropertyIds.add(propertyId);
-      }
-    }
-
-    return uniquePropertyIds.size;
-  } catch (error) {
-    console.error(`Error checking maintenance requests: ${error.message}`);
-    throw new Error(`Error checking maintenance requests: ${error.message}`);
-  }
-}
-
-async function checkAmountOfAdminPropertiesWithActiveBookings(adminId) {
-  try {
-    const db = client.db("RentWise");
-    const bookingsCollection = db.collection("Bookings");
     const listingsCollection = db.collection("Listings");
 
-    // First get all listing IDs for this admin
-    const adminListings = await listingsCollection.find({ 
-      $or: [
-        { "landlordInfo.userId": toObjectId(adminId) },
-        { "landlordInfo.landlord": toObjectId(adminId) },
-      ],
-    }, { projection: { _id: 1 } }).toArray();
-
-    const adminListingIds = adminListings.map(listing => listing._id);
-
-    if (adminListingIds.length === 0) {
-      return 0;
-    }
-
-    // Use aggregation pipeline to count distinct properties with active bookings
-    const pipeline = [
-      {
-        $match: {
-          "listingDetail.listingID": { $in: adminListingIds },
-          "newBooking.status": { 
-            $nin: ["Cancelled", "cancelled", "Expired", "expired"] 
-          },
-        }
-      },
-      {
-        $group: {
-          _id: "$listingDetail.listingID", // Group by unique property/listing ID
-        }
-      },
-      {
-        $count: "uniqueProperties"
-      }
-    ];
-
-    const result = await bookingsCollection.aggregate(pipeline).toArray();
-    const propertyCount = result.length > 0 ? result[0].uniqueProperties : 0;
-
-    return propertyCount;
+    const count = await listingsCollection.countDocuments({
+      "landlordInfo.userId": toObjectId(adminId),
+      status: "Occupied",
+    });
+    return count;
   } catch (error) {
-    console.error(`Error checking active bookings: ${error.message}`);
-    throw new Error(`Error checking active bookings: ${error.message}`);
+    console.error(`Error checking occupied properties: ${error.message}`);
+    throw new Error(`Error checking occupied properties: ${error.message}`);
   }
 }
 
@@ -327,17 +231,10 @@ async function checkAmountOfAdminPropertiesVacant(adminId) {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
-    // Use the same search criteria pattern as other functions
-    const searchCriteria = {
-      $or: [
-        { "landlordInfo.userId": toObjectId(adminId) },
-        { "landlordInfo.landlord": toObjectId(adminId) },
-      ],
+    const count = await listingsCollection.countDocuments({
+      "landlordInfo.userId": toObjectId(adminId),
       status: "Vacant",
-    };
-
-    const count = await listingsCollection.countDocuments(searchCriteria);
-
+    });
     return count;
   } catch (error) {
     console.error(`Error checking vacant properties: ${error.message}`);
@@ -349,7 +246,7 @@ async function returnPropertiesByStatus(adminId) {
   try {
     const vacantCount = await checkAmountOfAdminPropertiesVacant(adminId);
     const underMaintenanceCount = await checkAmountOfAdminPropertiesUnderMaintenance(adminId);
-    const activeBookingsCount = await checkAmountOfAdminPropertiesWithActiveBookings(adminId);
+    const activeBookingsCount = await checkAmountOfAdminPropertiesOccupied(adminId);
 
     return {
       vacant: vacantCount,
@@ -371,9 +268,6 @@ const listingService = {
   returnPropertiesByStatus,
   countListingsAddedThisMonth,
   deleteListingById,
-  checkAmountOfAdminPropertiesUnderMaintenance,
-  checkAmountOfAdminPropertiesWithActiveBookings,
-  checkAmountOfAdminPropertiesVacant,
 };
 
 export default listingService;
