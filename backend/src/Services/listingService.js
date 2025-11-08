@@ -232,8 +232,11 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
     }
 
     // Get all maintenance requests and filter for admin's properties
+    // Include all maintenance requests that are NOT completed/resolved
     const maintenanceRequests = await maintenanceCollection.find({
-      "newMaintenanceRequest.status": { $ne: ["under repair", "Under Repair", "under maintenance", "Under Maintenance"] },
+      "newMaintenanceRequest.status": { 
+        $nin: ["Completed", "completed", "Resolved", "resolved", "Closed", "closed"] 
+      },
     }).toArray();
 
     const uniquePropertyIds = new Set();
