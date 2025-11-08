@@ -36,6 +36,10 @@ import {
   getCurrentMonthRevenue,
 } from "../services/bookings.api.js";
 import { getAdminPropertiesReviews } from "../services/review.api.js";
+import {
+  getCaretakersByAdminId,
+  createCaretaker,
+} from "../services/caretakers.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -347,7 +351,6 @@ export const useDeleteBookingMutation = () => {
       invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
-      console.error("Delete booking mutation error:", error);
       // Don't show toast if error was already handled by 401 interceptor
       if (error.isHandledBy401Interceptor) return;
       const msg =
@@ -523,5 +526,45 @@ export const useAdminPropertiesReviewsQuery = (adminId) => {
       return getAdminPropertiesReviews();
     },
     ...CACHE_CONFIGS.DYNAMIC,
+  });
+};
+
+// Caretaker Queries and Mutations
+export const useCaretakersQuery = (adminId) => {
+  return useQuery({
+    queryKey: createQueryKey("caretakers", { adminId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getCaretakersByAdminId();
+    },
+    enabled: !!adminId,
+    ...CACHE_CONFIGS.MEDIUM,
+  });
+};
+
+export const useCreateCaretakerMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (caretakerData) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return createCaretaker(caretakerData);
+    },
+    onSuccess: (response) => {
+      const caretakerID = response?.caretakerId || response;
+      Toast.success(
+        `Caretaker created successfully: Caretaker ID: ${caretakerID}`
+      );
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "caretakers");
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to create caretaker";
+      Toast.error(`Error creating caretaker: ${msg}`);
+    },
   });
 };

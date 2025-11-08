@@ -110,7 +110,6 @@ export default function AddProperty() {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("[handleSubmit] formData:", formData);
     if (!validateForm()) {
       return;
     }

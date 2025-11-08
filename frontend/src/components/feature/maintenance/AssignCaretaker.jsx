@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TabWrapper } from "../../common";
 import { FaHardHat, FaArrowLeft } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";

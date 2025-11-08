@@ -49,7 +49,7 @@ function BookingsListView() {
   };
 
   return (
-    <TabWrapper decorativeElements="blue-green">
+    <TabWrapper decorativeElements="default">
       <SectionHeading title="Current Bookings:" />
       
       <StateHandler

@@ -10,7 +10,8 @@ import {
   FaCalendarCheck,
   FaTimes,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
+  FaHardHat
 } from "react-icons/fa";
 
 const tabs = [
@@ -20,7 +21,8 @@ const tabs = [
   { key: "invoices", label: "Your Invoices", description: "Track payments, generate invoices, and manage billing.", icon: FaFileInvoice },
   { key: "maintenance", label: "Your Maintenance Requests", description: "Monitor and schedule maintenance requests and tasks.", icon: FaWrench },
   { key: "bookings", label: "Your Bookings", description: "Manage property bookings and reservations.", icon: FaCalendarCheck },
-  { key: "reviews", label: "Your Reviews", description: "View reviews from your tenants.", icon: FaRegStar }
+  { key: "reviews", label: "Your Reviews", description: "View reviews from your tenants.", icon: FaRegStar },
+  { key: "caretakers", label: "Caretaker Management", description: "Manage your caretakers and their assignments.", icon: FaHardHat }
 ];
 
 export default function Sidebar({ 
