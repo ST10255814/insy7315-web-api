@@ -2,7 +2,7 @@ import api from '../lib/axios.js';
 
 export async function getCaretakersByAdminId() {
     try{
-        const response = await api.get('/api/caretakers', { withCredentials: true });
+        const response = await api.get('/api/maintenance/caretakers', { withCredentials: true });
         return response.data.data;
     } catch (error) {
         throw error;

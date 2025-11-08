@@ -25,7 +25,7 @@ function CaretakerListView() {
   const navigate = useNavigate();
   const { userId: adminId } = useParams();
 
-  const { data: caretakers, isLoading, isError } = useCaretakersQuery(adminId);
+  const { data: caretakers = [], isLoading, isError } = useCaretakersQuery(adminId);
 
   const handleAddCaretaker = () => {
     navigate("add");

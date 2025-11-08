@@ -37,7 +37,7 @@ export default function CaretakerCard({ caretaker, onAction }) {
             <div className="flex items-center text-gray-500 text-xs gap-1.5">
               <FaIdBadge className="flex-shrink-0" size={11} />
               <span className="font-mono truncate">
-                ID: {caretaker.id || caretaker._id}
+                ID: {caretaker.caretakerId}
               </span>
             </div>
           </div>
