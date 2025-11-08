@@ -135,5 +135,6 @@ const maintenanceService = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
+  createCareTaker,
 };
 export default maintenanceService;
