@@ -164,10 +164,10 @@ async function createCareTaker(adminId, careTakerData){
         throw new Error("Maintenance request not found for this admin");
       }
 
-      //assign caretaker to maintenance request
+      //assign caretaker to maintenance request & update maintenance status to 'in progress'
       await maintenanceCollection.updateOne(
         { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
-        { $set: { "newMaintenanceRequest.caretakerId": caretakerId } }
+        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress" } }
       );
 
       //update listing status to 'under maintenance'
