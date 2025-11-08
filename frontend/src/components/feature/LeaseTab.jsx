@@ -3,9 +3,9 @@ import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { useLeasesQuery } from "../../utils/queries";
 import { FaPlusCircle } from "react-icons/fa";
 import { TabWrapper, StateHandler, ActionButton, LeaseCard } from "../common/index.js";
-import Toast from "../../lib/toast.js";
 import AddLease from "./lease/AddLease.jsx";
 import DeleteLease from "./lease/DeleteLease.jsx";
+import ViewLease from "./lease/ViewLease.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 
 export default function LeaseTab() {
@@ -13,6 +13,7 @@ export default function LeaseTab() {
     <Routes>
       <Route path="add" element={<AddLease />} />
       <Route path="delete/:leaseId" element={<DeleteLease />} />
+      <Route path="view/:leaseId" element={<ViewLease />} />
       <Route index element={<LeaseListView />} />
       <Route path="*" element={<DashboardNotFound />} />
     </Routes>
@@ -29,18 +30,6 @@ function LeaseListView() {
     switch (action) {
       case "Delete":
         navigate(`delete/${lease.leaseId}`);
-        break;
-      case "Activate":
-        //TODO: Implement activate functionality
-        Toast.info(`Activating lease ${lease.leaseId}`);
-        break;
-      case "Cancel":
-        //TODO: Implement cancel functionality
-        Toast.warning(`Cancelling lease ${lease.leaseId}`);
-        break;
-      case "Renew":
-        //TODO: Implement renew functionality
-        Toast.info(`Renewing lease ${lease.leaseId}`);
         break;
       case "View":
         navigate(`view/${lease.leaseId}`);

@@ -19,9 +19,6 @@ import { useParams } from "react-router-dom";
 
 export default function StatsCardContainer() {
   const { userId: adminId } = useParams();
-  
-  console.log('[StatsCardContainer] AdminId from useParams:', adminId);
-  
   // Fetch all data with React Query hooks
   const { data: monthlyRevenue, isLoading: revenueLoading, isError: revenueError } = useMonthlyRevenueQuery(adminId);
   const { data: totalProperties, isLoading: totalPropertiesLoading, isError: totalPropertiesError, error: totalPropertiesErrorObj } = useTotalPropertiesCountQuery(adminId);
@@ -30,14 +27,6 @@ export default function StatsCardContainer() {
   const { data: leasedPercentage, isLoading: percentageLoading, isError: percentageError } = useLeasedPercentageQuery(adminId);
   const { data: maintenanceCount, isLoading: maintenanceLoading, isError: maintenanceError } = useMaintenanceCountQuery(adminId);
   const { data: highPriorityCount, isLoading: highPriorityLoading, isError: highPriorityError } = useHighPriorityMaintenanceCountQuery(adminId);
-
-  // Log errors for debugging
-  if (totalPropertiesError) {
-    console.error('[StatsCardContainer] Total Properties Error:', totalPropertiesErrorObj);
-  }
-  if (monthlyPropertiesError) {
-    console.error('[StatsCardContainer] Monthly Properties Error:', monthlyPropertiesErrorObj);
-  }
 
   // Format currency for display
   const formatCurrency = (amount) => {

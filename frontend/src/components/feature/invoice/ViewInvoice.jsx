@@ -24,7 +24,7 @@ export default function ViewInvoice() {
     isLoading: leaseLoading,
     isError: leaseError,
   } = useLeaseByIdQuery(adminId, invoice?.leaseId, {
-    enabled: !!invoice?.leaseId, // Only fetch if invoice has leaseId
+    enabled: !!invoice?.lease?.leaseId, // Only fetch if invoice has leaseId
   });
 
   const handleBack = () => {

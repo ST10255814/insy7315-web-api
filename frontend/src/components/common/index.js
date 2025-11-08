@@ -22,3 +22,5 @@ export { default as TabWrapper } from './TabWrapper.jsx';
 export { default as PropertyLoadingSkeleton } from '../feature/properties/PropertyLoadingSkeleton.jsx';
 export { default as DataStateHandler } from './DataStateHandler.jsx';
 export { default as DataLoading } from './DataLoading.jsx';
+export { default as ChartLoading } from './ChartLoading.jsx';
+export { default as ChartError } from './ChartError.jsx';
