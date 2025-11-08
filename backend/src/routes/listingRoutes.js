@@ -28,15 +28,16 @@ router.get('/count-this-month', (req, res, next) => {
 router.post('/create', upload.array('imageURL', 10), listingController.createListing);
 router.get('/', listingController.getListingsByAdminId);
 
+// Status route must come before /:id route to avoid parameter conflicts
+router.get('/status', (req, res, next) => {
+  console.log('[ROUTE] Hit /status route');
+  next();
+}, listingController.returnPropertiesByStatus);
+
 router.get('/:id', (req, res, next) => {
   console.log('[ROUTE] Hit /:id route with id:', req.params.id);
   next();
 }, listingController.getListingById);
-
-router.get('/status', (req, res, next) => {
-  console.log('[ROUTE] Hit /status/:adminId route with adminId:', req.params.adminId);
-  next();
-}, listingController.returnPropertiesByStatus);
 
 router.delete('/delete/:id', listingController.deleteListingById);
 
