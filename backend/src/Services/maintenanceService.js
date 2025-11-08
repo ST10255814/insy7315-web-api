@@ -99,13 +99,15 @@ async function createCareTaker(adminId, careTakerData){
     const db = client.db("RentWise");
     const userCollection = db.collection("Care-Takers");
 
+    const { firstName, surname, email, phoneNumber, profession } = careTakerData;
+
     if(!adminId){
       throw new Error("Admin ID is required");
     }
 
     
-    if(!careTakerData){
-      throw new Error("Caretaker data is required");
+    if(!firstName || !surname || !email || !phoneNumber || !profession){
+      throw new Error("All caretaker fields are required");
     }
 
     const role = "caretaker";
