@@ -32,7 +32,7 @@ export default function CaretakerCard({ caretaker, onAction }) {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 pb-3 border-b border-gray-200">
           <div className="flex-1 min-w-0">
             <h4 className="font-bold text-blue-700 text-base sm:text-lg break-words line-clamp-2 mb-1">
-              {caretaker.firstname} {caretaker.surname}
+              {caretaker.firstName} {caretaker.surname}
             </h4>
             <div className="flex items-center text-gray-500 text-xs gap-1.5">
               <FaIdBadge className="flex-shrink-0" size={11} />
