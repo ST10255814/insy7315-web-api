@@ -6,6 +6,7 @@ import {
   FaHome,
   FaCalendarAlt,
   FaMoneyBillWave,
+  FaHandHoldingUsd,
 } from "react-icons/fa";
 import { formatDateUS, formatAmount } from "../../utils/formatters";
 import { statusClasses } from "../../constants/constants.js";
@@ -104,13 +105,13 @@ export default function InvoiceCard({ invoice, onAction }) {
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
-        className="absolute inset-0 z-20 bg-gray-400/50 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none group-hover:pointer-events-auto"
+        className="absolute inset-0 z-20 bg-gray-400/10 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
         <HoverActionButton
           icon={<FaEye size={16} />}
           label="View"
           onClick={() => onAction("View", invoice)}
-          className="text-yellow-600 hover:bg-gray-50"
+          className="text-yellow-600 hover:bg-yellow-50"
         />
 
         <HoverActionButton
@@ -118,6 +119,13 @@ export default function InvoiceCard({ invoice, onAction }) {
           label="Delete"
           onClick={() => onAction("Delete", invoice)}
           className="text-red-600 hover:bg-red-50"
+        />
+
+        <HoverActionButton
+          icon={<FaHandHoldingUsd size={16} />}
+          label="Mark as Paid"
+          onClick={() => onAction("Paid", invoice)}
+          className="text-green-600 hover:bg-green-50"
         />
       </motion.div>
     </motion.div>

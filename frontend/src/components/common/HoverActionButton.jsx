@@ -41,8 +41,8 @@ export default function HoverActionButton({
         transition={{ duration: 0.12, ease: "easeOut" }}
         disabled={disabled}
         className={`peer bg-white p-3 rounded-full shadow transition-all ${
-          disabled 
-            ? "opacity-50 cursor-not-allowed" 
+          disabled
+            ? "opacity-50 cursor-not-allowed"
             : "hover:shadow-md"
         } ${className}`}
         type="button"

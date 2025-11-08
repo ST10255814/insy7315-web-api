@@ -95,7 +95,7 @@ export default function PropertyCard({ property, getStatusClasses, onAction }) {
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         transition={{ duration: 0.25 }}
-        className="absolute inset-0 z-20 bg-gradient-to-br from-gray-400/50 via-gray-400/50 to-gray-400/50 backdrop-blur-md rounded-xl flex flex-wrap items-center justify-center gap-3 sm:gap-4 p-4 pointer-events-none group-hover:pointer-events-auto"
+        className="absolute inset-0 z-20 bg-gradient-to-br from-gray-400/10 via-gray-400/10 to-gray-400/10 backdrop-blur-md rounded-xl flex flex-wrap items-center justify-center gap-3 sm:gap-4 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
         {/* Action Buttons */}
         <HoverActionButton
