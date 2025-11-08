@@ -5,6 +5,8 @@ import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
 import occupansyService from '../Services/occupansyService.js';
 import { determineLeaseStatus, determineBookingStatus } from '../utils/statusManager.js';
+import ObjectIDConvert from '../utils/ObjectIDConvert.js';
+const { toObjectId } = ObjectIDConvert;
 
 // Function to update all lease statuses
 async function updateAllLeaseStatuses() {
@@ -157,6 +159,43 @@ async function updateAllBookingStatuses() {
             statusUpdates.toActive++;
           } else if (newStatus === 'Expired') {
             statusUpdates.toExpired++;
+            // If a booking was set to Expired, ensure the associated listing is set to Vacant
+            try {
+              const db = client.db("RentWise");
+              const listingsCollection = db.collection("Listings");
+              const maintenanceCollection = db.collection("Maintenance-Requests");
+
+              const listingRef = booking.listingDetail?.listingID;
+              if (listingRef) {
+                const listingIdObj = toObjectId(listingRef);
+
+                // Check if there are any other active/confirmed bookings for this listing
+                const otherActiveBookings = await bookingsCollection.findOne({
+                  "listingDetail.listingID": listingIdObj,
+                  "newBooking.status": { $in: ["Active", "active", "confirmed", "Confirmed"] }
+                });
+
+                // Check if there are active maintenance requests for this listing
+                const activeMaintenance = await maintenanceCollection.findOne({
+                  "listingDetail.listingID": listingIdObj,
+                  "newMaintenanceRequest.status": { $nin: ["Completed", "completed", "Resolved", "resolved", "Closed", "closed"] }
+                });
+
+                // If no other active bookings and no active maintenance, set listing to Vacant
+                if (!otherActiveBookings && !activeMaintenance) {
+                  const existingListing = await listingsCollection.findOne({ _id: listingIdObj });
+                  if (existingListing && existingListing.status !== 'Vacant') {
+                    await listingsCollection.updateOne(
+                      { _id: listingIdObj },
+                      { $set: { status: 'Vacant', lastStatusUpdate: new Date() } }
+                    );
+                    console.log(`Set listing ${existingListing.listingId || listingRef} to Vacant because booking ${booking.newBooking.bookingId} expired and there are no active bookings/maintenance`);
+                  }
+                }
+              }
+            } catch (listingUpdateError) {
+              console.error(`Error updating listing status after booking expired for booking ${booking.newBooking?.bookingId}:`, listingUpdateError);
+            }
           } else {
             statusUpdates.other++;
           }
