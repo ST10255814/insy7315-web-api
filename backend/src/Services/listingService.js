@@ -210,13 +210,140 @@ async function countListingsAddedThisMonth(adminId) {
   }
 }
 
+async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const maintenanceCollection = db.collection("Maintenance-Requests");
+
+    // Use aggregation pipeline to count distinct properties under maintenance
+    const pipeline = [
+      {
+        $match: {
+          "listingDetail.landlordID": toObjectId(adminId),
+          "newMaintenanceRequest.status": { $ne: "Under Repair" },
+        }
+      },
+      {
+        $group: {
+          _id: "$listingDetail.listingID", // Group by unique property/listing ID
+        }
+      },
+      {
+        $count: "uniqueProperties"
+      }
+    ];
+
+    const result = await maintenanceCollection.aggregate(pipeline).toArray();
+    const propertyCount = result.length > 0 ? result[0].uniqueProperties : 0;
+
+    return propertyCount;
+  } catch (error) {
+    console.error(`Error checking maintenance requests: ${error.message}`);
+    throw new Error(`Error checking maintenance requests: ${error.message}`);
+  }
+}
+
+async function checkAmountOfAdminPropertiesWithActiveBookings(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const bookingsCollection = db.collection("Bookings");
+    const listingsCollection = db.collection("Listings");
+
+    // First get all listing IDs for this admin
+    const adminListings = await listingsCollection.find({ 
+      $or: [
+        { "landlordInfo.userId": toObjectId(adminId) },
+        { "landlordInfo.landlord": toObjectId(adminId) },
+      ],
+    }, { projection: { _id: 1 } }).toArray();
+
+    const adminListingIds = adminListings.map(listing => listing._id);
+
+    if (adminListingIds.length === 0) {
+      return 0;
+    }
+
+    // Use aggregation pipeline to count distinct properties with active bookings
+    const pipeline = [
+      {
+        $match: {
+          "listingDetail.listingID": { $in: adminListingIds },
+          "newBooking.status": { 
+            $nin: ["Cancelled", "cancelled", "Expired", "expired"] 
+          },
+        }
+      },
+      {
+        $group: {
+          _id: "$listingDetail.listingID", // Group by unique property/listing ID
+        }
+      },
+      {
+        $count: "uniqueProperties"
+      }
+    ];
+
+    const result = await bookingsCollection.aggregate(pipeline).toArray();
+    const propertyCount = result.length > 0 ? result[0].uniqueProperties : 0;
+
+    return propertyCount;
+  } catch (error) {
+    console.error(`Error checking active bookings: ${error.message}`);
+    throw new Error(`Error checking active bookings: ${error.message}`);
+  }
+}
+
+async function checkAmountOfAdminPropertiesVacant(adminId) {
+  try {
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    // Use the same search criteria pattern as other functions
+    const searchCriteria = {
+      $or: [
+        { "landlordInfo.userId": toObjectId(adminId) },
+        { "landlordInfo.landlord": toObjectId(adminId) },
+      ],
+      status: "Vacant",
+    };
+
+    const count = await listingsCollection.countDocuments(searchCriteria);
+
+    return count;
+  } catch (error) {
+    console.error(`Error checking vacant properties: ${error.message}`);
+    throw new Error(`Error checking vacant properties: ${error.message}`);
+  }
+}
+
+async function returnPropertiesByStatus(adminId) {
+  try {
+    const vacantCount = await checkAmountOfAdminPropertiesVacant(adminId);
+    const underMaintenanceCount = await checkAmountOfAdminPropertiesUnderMaintenance(adminId);
+    const activeBookingsCount = await checkAmountOfAdminPropertiesWithActiveBookings(adminId);
+
+    return {
+      vacant: vacantCount,
+      underMaintenance: underMaintenanceCount,
+      activeBookings: activeBookingsCount,
+    };
+  } catch (error) {
+    console.error(`Error returning properties by status: ${error.message}`);
+    throw new Error(`Error returning properties by status: ${error.message}`);
+  }
+}
+
 const listingService = {
   createListing,
   getListingById,
   getListingsByAdminId,
   countNumberOfListingsByAdminId,
+  returnPropertiesByStatus,
   countListingsAddedThisMonth,
   deleteListingById,
+  checkAmountOfAdminPropertiesUnderMaintenance,
+  checkAmountOfAdminPropertiesWithActiveBookings,
+  checkAmountOfAdminPropertiesVacant,
 };
 
 export default listingService;

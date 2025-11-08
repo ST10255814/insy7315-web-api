@@ -33,6 +33,11 @@ router.get('/:id', (req, res, next) => {
   next();
 }, listingController.getListingById);
 
+router.get('/status/:adminId', (req, res, next) => {
+  console.log('[ROUTE] Hit /status/:adminId route with adminId:', req.params.adminId);
+  next();
+}, listingController.returnPropertiesByStatus);
+
 router.delete('/delete/:id', listingController.deleteListingById);
 
 export default router;

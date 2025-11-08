@@ -139,6 +139,21 @@ const countListingsAddedThisMonth = asyncHandler(async (req, res) => {
   }
 });
 
+const returnPropertiesByStatus = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+
+    logControllerAction('Return Properties By Status', adminId);
+
+    const count = await listingService.returnPropertiesByStatus(adminId);
+
+    console.log(`[returnPropertiesByStatus] Retrieved property status counts for admin ${adminId}`);
+    sendSuccess(res, count, 'Property status counts retrieved successfully');
+  } catch (error) {
+    console.error(`[returnPropertiesByStatus] Error in controller: ${error.message}`);
+    sendBadRequest(res, error.message, error.details);
+  }
+});
 // Export individual functions for named imports
 export {
     createListing,
@@ -146,7 +161,8 @@ export {
     getListingsByAdminId,
     deleteListingById,
     countNumberOfListingsByAdminId,
-    countListingsAddedThisMonth
+    countListingsAddedThisMonth,
+    returnPropertiesByStatus
 };
 
 // Export default object for backward compatibility
@@ -157,4 +173,5 @@ export default {
     deleteListingById,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth,
+    returnPropertiesByStatus
 };
