@@ -11,7 +11,7 @@ export default function AddCaretaker() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    firstname: "",
+    firstName: "",
     surname: "",
     email: "",
     phoneNumber: "",
@@ -25,7 +25,7 @@ export default function AddCaretaker() {
   // Reset form function
   const resetForm = useCallback(() => {
     setFormData({
-      firstname: "",
+      firstName: "",
       surname: "",
       email: "",
       phoneNumber: "",
@@ -46,7 +46,7 @@ export default function AddCaretaker() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.firstname.trim()) newErrors.firstname = "First name is required";
+    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
     if (!formData.surname.trim()) newErrors.surname = "Surname is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -113,11 +113,11 @@ export default function AddCaretaker() {
                   <FormField label="First Name" error={errors.firstname}>
                     <FormInput
                       type="text"
-                      name="firstname"
-                      value={formData.firstname}
-                      onChange={(e) => handleInputChange("firstname", e.target.value)}
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
                       placeholder="e.g., John"
-                      hasError={!!errors.firstname}
+                      hasError={!!errors.firstName}
                       disabled={createCaretakerMutation.isPending}
                     />
                   </FormField>
@@ -260,10 +260,10 @@ export default function AddCaretaker() {
                     <span className="text-gray-600">First Name:</span>
                     <span
                       className={`font-medium ${
-                        formData.firstname ? "text-blue-700" : "text-gray-400"
+                        formData.firstName ? "text-blue-700" : "text-gray-400"
                       }`}
                     >
-                      {formData.firstname ? "Yes" : "No"}
+                      {formData.firstName ? "Yes" : "No"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -313,7 +313,7 @@ export default function AddCaretaker() {
                       </span>
                       <span
                         className={`font-bold ${
-                          formData.firstname &&
+                          formData.firstName &&
                           formData.surname &&
                           formData.email &&
                           formData.phoneNumber &&
@@ -322,7 +322,7 @@ export default function AddCaretaker() {
                             : "text-yellow-600"
                         }`}
                       >
-                        {formData.firstname &&
+                        {formData.firstName &&
                         formData.surname &&
                         formData.email &&
                         formData.phoneNumber &&
