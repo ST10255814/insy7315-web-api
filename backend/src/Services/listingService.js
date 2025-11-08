@@ -217,6 +217,8 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
     const listingsCollection = db.collection("Listings");
     const bookingsCollection = db.collection("Bookings");
 
+    console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Checking for admin: ${adminId}`);
+
     // First get all listing IDs for this admin
     const adminListings = await listingsCollection.find({ 
       $or: [
@@ -226,6 +228,7 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
     }, { projection: { _id: 1 } }).toArray();
 
     const adminListingIds = adminListings.map(listing => listing._id);
+    console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Admin has ${adminListingIds.length} listings:`, adminListingIds.map(id => id.toString()));
 
     if (adminListingIds.length === 0) {
       return 0;
@@ -239,25 +242,54 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
       },
     }).toArray();
 
+    console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Found ${maintenanceRequests.length} active maintenance requests`);
+
     const uniquePropertyIds = new Set();
 
     for (const request of maintenanceRequests) {
+      console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Processing request ${request._id}:`, {
+        listingID: request.listingDetail?.listingID,
+        landlordID: request.listingDetail?.landlordID,
+        bookingId: request.listingDetail?.bookingId,
+        status: request.newMaintenanceRequest?.status
+      });
+
       let propertyId = null;
 
       // Check if maintenance request has direct listing ID
       if (request.listingDetail?.listingID) {
         propertyId = request.listingDetail.listingID.toString();
+        console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Found direct listingID: ${propertyId}`);
       }
       // If not, check if it has landlordID (direct admin ownership)
       else if (request.listingDetail?.landlordID?.toString() === adminId) {
+        console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Request belongs to admin via landlordID`);
         // This maintenance request belongs to the admin, but we need to find the property
         // Try to get property ID from booking if available
         if (request.listingDetail?.bookingId) {
+          console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Looking up booking: ${request.listingDetail.bookingId}`);
           const booking = await bookingsCollection.findOne({
             "newBooking.bookingId": request.listingDetail.bookingId
           });
           if (booking?.listingDetail?.listingID) {
             propertyId = booking.listingDetail.listingID.toString();
+            console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Found propertyId via booking: ${propertyId}`);
+          }
+        }
+      }
+      // NEW: If only bookingId exists, try to find the property through booking
+      else if (request.listingDetail?.bookingId) {
+        console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Only bookingId available, looking up: ${request.listingDetail.bookingId}`);
+        const booking = await bookingsCollection.findOne({
+          "newBooking.bookingId": request.listingDetail.bookingId
+        });
+        if (booking?.listingDetail?.listingID) {
+          const potentialPropertyId = booking.listingDetail.listingID.toString();
+          console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Found property via booking: ${potentialPropertyId}`);
+          // Check if this property belongs to the admin
+          if (adminListingIds.some(id => id.toString() === potentialPropertyId)) {
+            propertyId = potentialPropertyId;
+            console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Property belongs to admin!`);
           }
         }
       }
@@ -265,9 +297,11 @@ async function checkAmountOfAdminPropertiesUnderMaintenance(adminId) {
       // Check if this property belongs to the admin
       if (propertyId && adminListingIds.some(id => id.toString() === propertyId)) {
         uniquePropertyIds.add(propertyId);
+        console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Added property to count: ${propertyId}`);
       }
     }
 
+    console.log(`[checkAmountOfAdminPropertiesUnderMaintenance] Final count: ${uniquePropertyIds.size}`);
     return uniquePropertyIds.size;
   } catch (error) {
     console.error(`Error checking maintenance requests: ${error.message}`);
