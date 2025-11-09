@@ -96,8 +96,8 @@ export const csrfProtection = (req, res, next) => {
   }
   
   // Get token from various possible locations
-  const token = req.body._csrf || 
-                req.query._csrf || 
+  const token = (req.body && req.body._csrf) || 
+                (req.query && req.query._csrf) || 
                 req.headers['csrf-token'] || 
                 req.headers['xsrf-token'] || 
                 req.headers['x-csrf-token'] || 
