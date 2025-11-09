@@ -12,10 +12,20 @@ let fetchingToken = false;
 // Function to fetch CSRF token from server
 const fetchCSRFToken = async () => {
   if (fetchingToken) {
-    // Wait for ongoing fetch
-    while (fetchingToken) {
+    // Wait for ongoing fetch with timeout to prevent infinite loop
+    let waitTime = 0;
+    const maxWaitTime = 5000; // 5 seconds maximum wait
+    while (fetchingToken && waitTime < maxWaitTime) {
       await new Promise(resolve => setTimeout(resolve, 50));
+      waitTime += 50;
     }
+    
+    // If still fetching after timeout, reset the flag and continue
+    if (fetchingToken) {
+      console.warn('CSRF token fetch timeout, resetting flag');
+      fetchingToken = false;
+    }
+    
     return csrfToken;
   }
   
