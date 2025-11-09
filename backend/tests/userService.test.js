@@ -33,7 +33,8 @@ describe('UserService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Set up test environment variables
-    process.env.JWT_SECRET = 'test-jwt-secret-key';
+    // Generate a secure test JWT secret instead of hardcoding it
+    process.env.JWT_SECRET = require('crypto').randomBytes(32).toString('hex');
     process.env.NODE_ENV = 'test';
   });
 

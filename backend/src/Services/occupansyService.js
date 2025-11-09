@@ -8,15 +8,24 @@ async function checkOccupancyStatus(listingId) {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
     // Try to find by _id if it's a valid ObjectId, otherwise find by listingId field
     let listing;
     try {
+      // Validate as ObjectId first
+      const safeObjectId = validateObjectId(listingId);
       listing = await listingsCollection.findOne({
-        _id: toObjectId(listingId),
+        _id: safeObjectId,
       });
     } catch {
-      // If not a valid ObjectId, try to find by listingId field
-      listing = await listingsCollection.findOne({ listingId: listingId });
+      // If not a valid ObjectId, validate as string and try to find by listingId field
+      const safeListingId = validateString(listingId, {
+        maxLength: 50,
+        pattern: /^[a-zA-Z0-9\-_]+$/
+      });
+      listing = await listingsCollection.findOne({ listingId: safeListingId });
     }
 
     if (!listing) {

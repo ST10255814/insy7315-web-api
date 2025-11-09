@@ -153,22 +153,44 @@ async function createCareTaker(adminId, careTakerData){
       const userCollection = db.collection("Care-Takers");
       const listingCollection = db.collection("Listings");
 
+      // Import validation utilities
+      const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+      // Validate and sanitize inputs
+      const safeCaretakerId = validateString(caretakerId, {
+        maxLength: 50,
+        pattern: /^[a-zA-Z0-9\-_]+$/
+      });
+
+      const safeMaintenanceRequestId = validateString(maintenanceRequestId, {
+        maxLength: 50,
+        pattern: /^[a-zA-Z0-9\-_]+$/
+      });
+
+      const safeAdminId = validateObjectId(adminId);
+
       //verify caretaker belongs to admin
-      const caretaker = await userCollection.findOne({ caretakerId: caretakerId, adminId: toObjectId(adminId) });
+      const caretaker = await userCollection.findOne({ 
+        caretakerId: safeCaretakerId, 
+        adminId: safeAdminId 
+      });
       if(!caretaker){
         throw new Error("Caretaker not found for this admin");
       }
 
       //verify maintenance request belongs to admin
-      const maintenanceRequest = await maintenanceCollection.findOne({ "newMaintenanceRequest.maintenanceId": maintenanceRequestId, "listingDetail.landlordID": toObjectId(adminId) });
+      const maintenanceRequest = await maintenanceCollection.findOne({ 
+        "newMaintenanceRequest.maintenanceId": safeMaintenanceRequestId, 
+        "listingDetail.landlordID": safeAdminId 
+      });
       if(!maintenanceRequest){
         throw new Error("Maintenance request not found for this admin");
       }
 
       //assign caretaker to maintenance request & update maintenance status to 'in progress'
       await maintenanceCollection.updateOne(
-        { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
-        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress" } }
+        { "newMaintenanceRequest.maintenanceId": safeMaintenanceRequestId },
+        { $set: { "newMaintenanceRequest.caretakerId": safeCaretakerId, "newMaintenanceRequest.status": "In Progress" } }
       );
 
       //update listing status to 'under maintenance'

@@ -87,9 +87,20 @@ async function getListingById(listingId, adminId) {
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+    // Validate and sanitize inputs
+    const safeListingId = validateString(listingId, {
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9\-_]+$/
+    });
+
+    const safeAdminId = validateObjectId(adminId);
+
     const listing = await listingsCollection.findOne({
-      listingId: listingId,
-      "landlordInfo.userId": toObjectId(adminId),
+      listingId: safeListingId,
+      "landlordInfo.userId": safeAdminId,
     });
 
     return listing;
@@ -119,9 +130,20 @@ async function deleteListingById(listingId, adminId) {
     const listingsCollection = db.collection("Listings");
     const activityCollection = db.collection("User-Activity-Logs");
 
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+    // Validate and sanitize inputs
+    const safeListingId = validateString(listingId, {
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9\-_]+$/
+    });
+
+    const safeAdminId = validateObjectId(adminId);
+
     const result = await listingsCollection.deleteOne({
-      listingId: listingId,
-      "landlordInfo.userId": toObjectId(adminId),
+      listingId: safeListingId,
+      "landlordInfo.userId": safeAdminId,
     });
 
     const activityLog = {

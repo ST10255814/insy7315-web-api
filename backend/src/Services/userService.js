@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import * as validation from '../utils/validation.js';
@@ -218,12 +217,16 @@ const login = async (data) => {
     // Create fullname from firstName and surname
     const fullname = `${user.firstName || ''} ${user.surname || ''}`.trim();
 
-    // Create and sign JWT token
-    const token = jwt.sign(
-        { userId: user._id, fullname: fullname, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    );
+    // Import JWT utilities
+    const { generateToken } = await import('../utils/jwtUtils.js');
+
+    // Create and sign JWT token using secure utilities
+    const token = generateToken({
+        userId: user._id,
+        fullname: fullname,
+        role: user.role,
+        email: user.email
+    });
     
     // Add fullname to user object for response
     const userResponse = {
