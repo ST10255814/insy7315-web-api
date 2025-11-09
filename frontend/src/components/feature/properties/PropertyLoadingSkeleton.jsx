@@ -1,5 +1,4 @@
 // PropertyLoadingSkeleton.jsx
-import React from "react";
 
 /**
  * Loading skeleton for single property edit/view tabs

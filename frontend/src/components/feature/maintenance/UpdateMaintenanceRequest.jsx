@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TabWrapper, FormField, FormInput } from "../../common";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
@@ -9,7 +9,7 @@ export default function UpdateMaintenanceRequest({ onUpdate }) {
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const { userId, maintenanceId } = useParams();
+  const { maintenanceId } = useParams();
 
   const handleUpdate = (e) => {
     e.preventDefault();

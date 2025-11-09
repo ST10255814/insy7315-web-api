@@ -1,8 +1,14 @@
 import { useCallback, useState, useEffect, useRef } from "react";
-import { FaPlusCircle, FaArrowLeft, FaChevronDown } from "react-icons/fa";
-import TabWrapper from "../../common/TabWrapper.jsx";
-import FormField from "../../common/FormField.jsx";
-import FormInput from "../../common/FormInput.jsx";
+import { FaPlusCircle, FaChevronDown } from "react-icons/fa";
+import { 
+  TabWrapper,
+  FormField,
+  FormInput,
+  FormLayout,
+  FormSection,
+  FormValidationPreview,
+  FormButtonGroup
+} from "../../common/index.js";
 import InvoicePreview from "./InvoicePreview.jsx";
 import {
   useCreateInvoiceMutation,
@@ -101,37 +107,38 @@ export default function AddInvoice() {
   // Get selected lease details for preview
   const selectedLease = leases.find((lease) => lease.leaseId === formData.leaseId);
 
+  // Validation items for preview
+  const validationItems = [
+    { label: "Lease Selected", isValid: !!formData.leaseId },
+    { label: "Amount", isValid: !!formData.amount },
+    { label: "Due Date", isValid: !!formData.date },
+  ];
+
+  const overallStatus = {
+    isComplete: formData.leaseId && formData.amount && formData.date,
+    text: (formData.leaseId && formData.amount && formData.date) ? "Ready" : "Incomplete"
+  };
+
   return (
     <TabWrapper decorativeElements="blue-purple">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
-            onClick={() => navigate(-1)}
-          >
-            <FaArrowLeft /> Back to Invoices
-          </button>
-          <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
-            Add a New Invoice
-          </h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content - Left Side */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Invoice Information */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    1
-                  </span>
-                  Invoice Details
-                </h2>
-                <div className="space-y-6">
-                  <FormField label="Select Lease" error={errors.leaseId}>
-                    <div className="relative" ref={dropdownRef}>
+      <FormLayout
+        title="Add a New Invoice"
+        backButtonText="Back to Invoices"
+        backButtonAction={() => navigate(-1)}
+        maxWidth="max-w-6xl"
+        formProps={{ onSubmit: handleSubmit }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content - Left Side */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Invoice Information */}
+            <FormSection
+              title="Invoice Details"
+              stepNumber={1}
+            >
+              <div className="space-y-6">
+                <FormField label="Select Lease" error={errors.leaseId}>
+                  <div className="relative" ref={dropdownRef}>
                       <button
                         type="button"
                         className={`w-full px-3 py-2.5 border rounded-xl outline-none shadow-sm transition text-sm flex items-center justify-between ${
@@ -235,135 +242,51 @@ export default function AddInvoice() {
                     </FormField>
                   </div>
                 </div>
-              </div>
+            </FormSection>
 
-              {/* Invoice Preview */}
-                <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                  <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                      2
-                    </span>
-                    Invoice Preview
-                  </h2>
-                  <InvoicePreview
-                    selectedLease={selectedLease}
-                    formData={formData}
-                  />
-              </div>
-            </div>
-            {/* Sidebar - Right Side */}
-            <div className="space-y-6 flex flex-col justify-start">
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    3
-                  </span>
-                  Actions
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition-all duration-200 text-base font-bold border-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60 ${
-                      isPending ? "animate-pulse" : ""
-                    }`}
-                    disabled={isPending}
-                  >
-                    {isPending ? (
-                      <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
-                    ) : (
-                      <FaPlusCircle className="text-lg" />
-                    )}
-                    <span className="tracking-wide">
-                      {isPending ? "Creating..." : "Create Invoice"}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-full border border-gray-300 shadow-sm hover:bg-gray-200 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-gray-300 disabled:opacity-60"
-                    onClick={resetForm}
-                    disabled={isPending}
-                  >
-                    <span className="tracking-wide">Reset Form</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-50 text-red-700 rounded-full border border-red-400 shadow-sm hover:bg-red-100 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-red-300 disabled:opacity-60"
-                    onClick={() => navigate(`/dashboard/${userId}/invoices`)}
-                    disabled={isPending}
-                  >
-                    <FaArrowLeft className="text-lg" />
-                    <span className="tracking-wide">Cancel</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Form Preview */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    4
-                  </span>
-                  Form Validation
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Lease Selected:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.leaseId ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.leaseId ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amount:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.amount ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.amount
-                        ? `R ${parseFloat(formData.amount).toFixed(2)}`
-                        : "Not filled"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Due Date:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.date ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.date
-                        ? new Date(formData.date).toLocaleDateString()
-                        : "Not filled"}
-                    </span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-3 mt-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 font-semibold">
-                        Form Status:
-                      </span>
-                      <span
-                        className={`font-bold ${
-                          formData.leaseId && formData.amount && formData.date
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }`}
-                      >
-                        {formData.leaseId && formData.amount && formData.date
-                          ? "Ready"
-                          : "Incomplete"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Invoice Preview */}
+            <FormSection
+              title="Invoice Preview"
+              stepNumber={2}
+            >
+              <InvoicePreview
+                selectedLease={selectedLease}
+                formData={formData}
+              />
+            </FormSection>
           </div>
-        </form>
-      </div>
+          
+          {/* Sidebar - Right Side */}
+          <div className="space-y-6 flex flex-col justify-start">
+            {/* Action Buttons */}
+            <FormSection
+              title="Actions"
+              stepNumber={3}
+            >
+              <FormButtonGroup
+                submitText="Create Invoice"
+                submitLoadingText="Creating..."
+                isSubmitting={isPending}
+                submitIcon={<FaPlusCircle className="text-lg" />}
+                showReset={true}
+                onReset={resetForm}
+                showCancel={true}
+                onCancel={() => navigate(`/dashboard/${userId}/invoices`)}
+                cancelText="Cancel"
+                errors={errors}
+              />
+            </FormSection>
+
+            {/* Form Preview */}
+            <FormValidationPreview
+              title="Form Validation"
+              stepNumber={4}
+              validationItems={validationItems}
+              overallStatus={overallStatus}
+            />
+          </div>
+        </div>
+      </FormLayout>
     </TabWrapper>
   );
 }

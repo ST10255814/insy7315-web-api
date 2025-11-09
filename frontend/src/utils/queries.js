@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import Toast from "../lib/toast.js";
 import {
@@ -42,7 +42,6 @@ import {
   assignCaretakerToRequest,
 } from "../services/caretakers.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   CACHE_CONFIGS,
   createQueryKey,
