@@ -30,6 +30,7 @@ describe('ActivityService', () => {
   describe('Service Import', () => {
     test('should import activityService successfully', () => {
       expect(activityService).toBeDefined();
+      expect(activityService).toHaveProperty('getRecentActivities');
       expect(typeof activityService.getRecentActivities).toBe('function');
     });
   });

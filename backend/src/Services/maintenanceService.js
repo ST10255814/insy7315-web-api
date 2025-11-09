@@ -1,6 +1,7 @@
 import { client } from "../utils/db.js";
 import Object from "../utils/ObjectIDConvert.js";
 import { generateCareTakerId } from "../utils/idGenerator.js";
+import { validateEmail, validateFullname, sanitizeInput, validateId } from "../utils/validation.js";
 const { toObjectId } = Object;
 
 //get all maintenance requests for the admin
@@ -102,28 +103,56 @@ async function createCareTaker(adminId, careTakerData){
     const db = client.db("RentWise");
     const userCollection = db.collection("Care-Takers");
 
-    const { firstName, surname, email, phoneNumber, profession } = careTakerData;
-
+    // Validate adminId
     if(!adminId){
       throw new Error("Admin ID is required");
     }
+    if(!validateId(adminId)){
+      throw new Error("Invalid admin ID format");
+    }
 
+    // Extract and validate required fields
+    const { firstName, surname, email, phoneNumber, profession } = careTakerData;
     
     if(!firstName || !surname || !email || !phoneNumber || !profession){
       throw new Error("All caretaker fields are required");
     }
 
+    // Validate email format and security
+    if(!validateEmail(email)){
+      throw new Error("Invalid email format or contains security threats");
+    }
+
+    // Validate names for security threats
+    if(!validateFullname(firstName) || !validateFullname(surname)){
+      throw new Error("Name contains invalid characters or security threats");
+    }
+
+    // Sanitize all input fields to prevent XSS and injection attacks
+    const sanitizedFirstName = sanitizeInput(firstName.trim());
+    const sanitizedSurname = sanitizeInput(surname.trim());
+    const sanitizedEmail = sanitizeInput(email.trim().toLowerCase());
+    const sanitizedPhoneNumber = sanitizeInput(phoneNumber.trim());
+    const sanitizedProfession = sanitizeInput(profession.trim());
+
+    // Additional validation for phone number (basic format check)
+    const phonePattern = /^[+]?[0-9\s\-()]{7,15}$/;
+    if(!phonePattern.test(sanitizedPhoneNumber)){
+      throw new Error("Invalid phone number format");
+    }
+
     const role = "caretaker";
     const caretakerId = await generateCareTakerId();
-    //create caretaker
+    
+    // Create caretaker object with sanitized data
     const caretaker = {
       adminId: toObjectId(adminId),
       caretakerId: caretakerId,
-      firstName: careTakerData.firstName,
-      surname: careTakerData.surname,
-      email: careTakerData.email,
-      phoneNumber: careTakerData.phoneNumber,
-      profession: careTakerData.profession,
+      firstName: sanitizedFirstName,
+      surname: sanitizedSurname,
+      email: sanitizedEmail,
+      phoneNumber: sanitizedPhoneNumber,
+      profession: sanitizedProfession,
       role: role
     };
 
@@ -188,10 +217,21 @@ async function createCareTaker(adminId, careTakerData){
         throw new Error("Maintenance request not found for this admin");
       }
 
+      // Validate and sanitize inputs to prevent NoSQL injection
+      if (!maintenanceRequestId || typeof maintenanceRequestId !== 'string') {
+        throw new Error("Invalid maintenance request ID");
+      }
+      if (!caretakerId || typeof caretakerId !== 'string') {
+        throw new Error("Invalid caretaker ID");
+      }
+
+      const sanitizedMaintenanceId = maintenanceRequestId.replace(/[^a-zA-Z0-9_-]/g, '');
+      const sanitizedCaretakerId = caretakerId.replace(/[^a-zA-Z0-9_-]/g, '');
+
       //assign caretaker to maintenance request & update maintenance status to 'in progress'
       await maintenanceCollection.updateOne(
-        { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
-        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress", "newMaintenanceRequest.updatedAt": new Date() } }
+        { "newMaintenanceRequest.maintenanceId": sanitizedMaintenanceId },
+        { $set: { "newMaintenanceRequest.caretakerId": sanitizedCaretakerId, "newMaintenanceRequest.status": "In Progress", "newMaintenanceRequest.updatedAt": new Date() } }
       );
 
       //update listing status to 'under maintenance'

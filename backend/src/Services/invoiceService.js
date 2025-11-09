@@ -193,7 +193,17 @@ async function deleteInvoiceById(invoiceId, adminId) {
       throw new Error("Invoice ID and Admin ID are required");
     }
 
-    const result = await deleteInvoiceFromDB(invoiceId, adminId);
+    // Validate and sanitize invoiceId to prevent NoSQL injection
+    if (typeof invoiceId !== 'string') {
+      throw new Error("Invalid invoice ID format");
+    }
+    
+    const sanitizedInvoiceId = invoiceId.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (sanitizedInvoiceId !== invoiceId) {
+      throw new Error("Invalid characters in invoice ID");
+    }
+
+    const result = await deleteInvoiceFromDB(sanitizedInvoiceId, adminId);
     if (!result) {
       throw new Error("Invoice not found or unauthorized");
     }
@@ -201,7 +211,7 @@ async function deleteInvoiceById(invoiceId, adminId) {
     const activityLog = {
       action: 'Delete Invoice',
       adminId: toObjectId(adminId),
-      detail: `Deleted invoice ${invoiceId}`,
+      detail: `Deleted invoice ${sanitizedInvoiceId}`,
       timestamp: new Date()
     };
 

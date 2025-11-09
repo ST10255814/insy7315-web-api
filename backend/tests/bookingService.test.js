@@ -27,7 +27,9 @@ describe('BookingService', () => {
   describe('Service Import', () => {
     test('should import bookingService successfully', () => {
       expect(bookingService).toBeDefined();
+      expect(bookingService).toHaveProperty('getBookings');
       expect(typeof bookingService.getBookings).toBe('function');
+      expect(bookingService).toHaveProperty('getCurrentMonthRevenue');
       expect(typeof bookingService.getCurrentMonthRevenue).toBe('function');
     });
   });
@@ -100,14 +102,14 @@ describe('BookingService', () => {
           listingTitle: 'Test Property',
           checkIn: '15-12-2024',
           checkOut: '20-12-2024',
-          nights: 5,
+          nights: 5, // 20-12 - 15-12 = 5 nights
           guests: 2,
           price: 750,
           status: 'Confirmed',
           createdAt: expect.any(Date),
           tenantInfo: expect.objectContaining({
             name: 'Jane Smith',
-            userId: 'user123'  // Updated to match actual structure
+            userId: 'user123'
           })
         })
       );
