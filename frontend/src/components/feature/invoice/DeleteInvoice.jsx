@@ -1,40 +1,22 @@
-import { DeleteEntityComponent } from "../../common/index.js";
+import { DeleteEntityComponent, EntityDetailsCard } from "../../common/index.js";
 import { formatAmount } from "../../../utils/formatters.js";
 import {
   useInvoiceByIdQuery,
   useDeleteInvoiceMutation,
 } from "../../../utils/queries.js";
+import { formatDate } from "../../../utils/formatters.js";
 
 export default function DeleteInvoice() {
   const renderInvoiceDetails = (invoice) => (
-    <div className="space-y-2 text-sm">
-      <div className="flex justify-between">
-        <span className="text-gray-600">Invoice ID:</span>
-        <span className="font-medium text-blue-700">{invoice.invoiceNumber}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Property:</span>
-        <span className="font-medium text-blue-700">{invoice.propertyTitle}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Amount:</span>
-        <span className="font-medium text-blue-700">
-          {formatAmount(invoice.amount)}
-        </span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Due Date:</span>
-        <span className="font-medium text-blue-700">
-          {invoice.dueDate}
-        </span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Status:</span>
-        <span className="font-medium text-blue-700">
-          {invoice.status}
-        </span>
-      </div>
-    </div>
+    <EntityDetailsCard
+      heading="Invoice Details"
+      fields={[
+        { label: "Invoice ID", value: invoice.invoice.invoiceId },
+        { label: "Tenant", value: invoice.invoice.lease.tenant },
+        { label: "Amount", value: `R${formatAmount(invoice.invoice.amount)}` },
+        { label: "Due Date", value: formatDate(invoice.invoice.date) },
+      ]}
+    />
   );
 
   return (

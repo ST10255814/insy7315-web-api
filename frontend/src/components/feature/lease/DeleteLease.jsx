@@ -1,34 +1,21 @@
-import { DeleteEntityComponent } from "../../common/index.js";
-import { formatAmount } from "../../../utils/formatters.js";
+import { DeleteEntityComponent, EntityDetailsCard } from "../../common/index.js";
 import {
   useLeaseByIdQuery,
   useDeleteLeaseMutation,
 } from "../../../utils/queries.js";
+import { formatAmount, formatDate } from "../../../utils/formatters.js";
 
 export default function DeleteLease() {
   const renderLeaseDetails = (lease) => (
-    <div className="space-y-2 text-sm">
-      <div className="flex justify-between">
-        <span className="text-gray-600">Property:</span>
-        <span className="font-medium text-blue-700">{lease.propertyTitle}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Tenant:</span>
-        <span className="font-medium text-blue-700">{lease.tenantName}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Monthly Rent:</span>
-        <span className="font-medium text-blue-700">
-          {formatAmount(lease.monthlyRent)}
-        </span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-600">Duration:</span>
-        <span className="font-medium text-blue-700">
-          {lease.startDate} to {lease.endDate}
-        </span>
-      </div>
-    </div>
+    <EntityDetailsCard
+      heading="Lease Details"
+      fields={[
+        { label: "Lease ID", value: lease.leaseId },
+        { label: "Tenant", value: `${lease.tenant.firstName} ${lease.tenant.lastName}` },
+        { label: "Nightly Price", value: `R${formatAmount(lease.bookingDetails.rentAmount)}` },
+        { label: "Duration", value: `${formatDate(lease.bookingDetails.startDate)} to ${formatDate(lease.bookingDetails.endDate)}` },
+      ]}
+    />
   );
 
   return (

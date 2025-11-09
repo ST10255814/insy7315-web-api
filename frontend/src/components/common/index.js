@@ -27,9 +27,8 @@ export { default as ChartLoading } from './ChartLoading.jsx';
 export { default as ChartError } from './ChartError.jsx';
 export { default as CaretakerCard } from './CaretakerCard.jsx';
 export { default as ProfessionSelect } from './ProfessionSelect.jsx';
-
-// Form Components
 export { default as FormLayout } from './FormLayout.jsx';
 export { default as FormSection } from './FormSection.jsx';
 export { default as FormValidationPreview } from './FormValidationPreview.jsx';
 export { default as FormButtonGroup } from './FormButtonGroup.jsx';
+export { default as EntityDetailsCard } from './EntityDetailsCard.jsx';
