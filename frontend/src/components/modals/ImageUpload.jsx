@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FaImage, FaPlusCircle, FaTimes, FaCloudUploadAlt, FaCheckCircle } from "react-icons/fa";
 

@@ -1,10 +1,16 @@
 import { useEffect, useCallback, useState } from "react";
-import { FaPlusCircle, FaArrowLeft } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import { availableAmenities } from "../../../constants/amenities.js";
 import { AmenitiesSelector, ImageUpload } from "../../modals/index.js";
-import TabWrapper from "../../common/TabWrapper.jsx";
-import FormField from "../../common/FormField.jsx";
-import FormInput from "../../common/FormInput.jsx";
+import { 
+  TabWrapper,
+  FormField,
+  FormInput,
+  FormLayout,
+  FormSection,
+  FormValidationPreview,
+  FormButtonGroup
+} from "../../common/index.js";
 import { useCreateListingMutation } from "../../../utils/queries.js";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -122,35 +128,39 @@ export default function AddProperty() {
     });
   };
 
+  // Validation items for preview
+  const validationItems = [
+    { label: "Title", isValid: !!formData.title },
+    { label: "Address", isValid: !!formData.address },
+    { label: "Price", isValid: !!formData.price },
+    { label: "Description", isValid: !!formData.description },
+    { label: "Amenities", isValid: formData.amenities.length > 0 },
+    { label: "Images", isValid: formData.imageURL.length > 0 },
+  ];
+
+  const overallStatus = {
+    isComplete: formData.title && formData.address && formData.price && formData.description && formData.amenities.length > 0 && formData.imageURL.length > 0,
+    text: (formData.title && formData.address && formData.price && formData.description && formData.amenities.length > 0 && formData.imageURL.length > 0) ? "Ready" : "Incomplete"
+  };
+
   return (
     <TabWrapper decorativeElements="default">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
-            onClick={() => navigate(-1)}
-          >
-            <FaArrowLeft /> Back to Properties
-          </button>
-          <h1 className="text-3xl font-bold text-blue-700 flex items-center gap-2">
-            {" "}
-            Add a New Property
-          </h1>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content - Left Side */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Basic Information */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    1
-                  </span>
-                  Basic Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <FormLayout
+        title="Add a New Property"
+        backButtonText="Back to Properties"
+        backButtonAction={() => navigate(-1)}
+        maxWidth="max-w-6xl"
+        formProps={{ onSubmit: handleSubmit }}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content - Left Side */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Basic Information */}
+            <FormSection
+              title="Basic Information"
+              stepNumber={1}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField label="Property Title" error={errors.title}>
                     <FormInput
                       type="text"
@@ -215,198 +225,67 @@ export default function AddProperty() {
                     />
                   </FormField>
                 </div>
-              </div>
-              {/* Amenities */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    2
-                  </span>
-                  Property Extra's
-                </h2>
-                <FormField label="Amenities">
-                  <AmenitiesSelector
-                    availableOptions={availableAmenities}
-                    selectedAmenities={formData.amenities}
-                    onAmenitiesChange={handleAmenitiesChange}
-                    error={errors.amenities}
-                  />
-                </FormField>
-              </div>
-              {/* Images */}
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    3
-                  </span>
-                  Property Images
-                </h2>
-                <ImageUpload
-                  imageURLs={formData.imageURL}
-                  imageFiles={formData.imageFiles}
-                  onImagesChange={handleImagesChange}
-                  error={errors.images}
+            </FormSection>
+
+            {/* Amenities */}
+            <FormSection
+              title="Property Extra's"
+              stepNumber={2}
+            >
+              <FormField label="Amenities">
+                <AmenitiesSelector
+                  availableOptions={availableAmenities}
+                  selectedAmenities={formData.amenities}
+                  onAmenitiesChange={handleAmenitiesChange}
+                  error={errors.amenities}
                 />
-              </div>
-            </div>
-            {/* Sidebar - Right Side */}
-            <div className="space-y-6 flex flex-col justify-start">
-              <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    4
-                  </span>
-                  Actions
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-700 text-white rounded-full shadow hover:bg-blue-800 transition-all duration-200 text-base font-bold border-none focus:ring-2 focus:ring-blue-300 disabled:opacity-60 ${
-                      isPending ? "animate-pulse" : ""
-                    }`}
-                    disabled={isPending}
-                  >
-                    {isPending ? (
-                      <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
-                    ) : (
-                      <FaPlusCircle className="text-lg" />
-                    )}
-                    <span className="tracking-wide">
-                      {isPending ? "Adding..." : "Add Property"}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-full border border-gray-300 shadow-sm hover:bg-gray-200 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-gray-300 disabled:opacity-60"
-                    onClick={resetForm}
-                    disabled={isPending}
-                  >
-                    <span className="tracking-wide">Reset Form</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-red-50 text-red-700 rounded-full border border-red-400 shadow-sm hover:bg-red-100 transition-all duration-200 text-base font-bold focus:ring-2 focus:ring-red-300 disabled:opacity-60"
-                    onClick={() => navigate(`/dashboard/${userId}/properties`)}
-                    disabled={isPending}
-                  >
-                    <FaArrowLeft className="text-lg" />
-                    <span className="tracking-wide">Cancel</span>
-                  </button>
-                </div>
-              </div>
-              {/* Form Preview */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-                    5
-                  </span>
-                  Form Validation
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Title:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.title ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.title ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Address:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.address ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.address ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.price ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.price
-                        ? `R ${parseFloat(formData.price).toFixed(2)}`
-                        : "Not filled"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Description:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.description ? "text-blue-700" : "text-gray-400"
-                      }`}
-                    >
-                      {formData.description ? "Yes" : "No"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Amenities:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.amenities.length > 0
-                          ? "text-blue-700"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {formData.amenities.length > 0
-                        ? `${formData.amenities.length} selected`
-                        : "None"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Images:</span>
-                    <span
-                      className={`font-medium ${
-                        formData.imageURL.length > 0
-                          ? "text-blue-700"
-                          : "text-gray-400"
-                      }`}
-                    >
-                      {formData.imageURL.length > 0
-                        ? `${formData.imageURL.length} uploaded`
-                        : "None"}
-                    </span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-3 mt-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600 font-semibold">
-                        Form Status:
-                      </span>
-                      <span
-                        className={`font-bold ${
-                          formData.title &&
-                          formData.address &&
-                          formData.price &&
-                          formData.description &&
-                          formData.amenities.length > 0 &&
-                          formData.imageURL.length > 0
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }`}
-                      >
-                        {formData.title &&
-                        formData.address &&
-                        formData.price &&
-                        formData.description &&
-                        formData.amenities.length > 0 &&
-                        formData.imageURL.length > 0
-                          ? "Ready"
-                          : "Incomplete"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </FormField>
+            </FormSection>
+            
+            {/* Images */}
+            <FormSection
+              title="Property Images"
+              stepNumber={3}
+            >
+              <ImageUpload
+                imageURLs={formData.imageURL}
+                imageFiles={formData.imageFiles}
+                onImagesChange={handleImagesChange}
+                error={errors.images}
+              />
+            </FormSection>
           </div>
-        </form>
-      </div>
+          
+          {/* Sidebar - Right Side */}
+          <div className="space-y-6 flex flex-col justify-start">
+            {/* Action Buttons */}
+            <FormSection
+              title="Actions"
+              stepNumber={4}
+            >
+              <FormButtonGroup
+                submitText="Add Property"
+                submitLoadingText="Adding..."
+                isSubmitting={isPending}
+                submitIcon={<FaPlusCircle className="text-lg" />}
+                showReset={true}
+                onReset={resetForm}
+                showCancel={true}
+                onCancel={() => navigate(`/dashboard/${userId}/properties`)}
+                cancelText="Cancel"
+                errors={errors}
+              />
+            </FormSection>
+            {/* Form Preview */}
+            <FormValidationPreview
+              title="Form Validation"
+              stepNumber={5}
+              validationItems={validationItems}
+              overallStatus={overallStatus}
+            />
+          </div>
+        </div>
+      </FormLayout>
     </TabWrapper>
   );
 }

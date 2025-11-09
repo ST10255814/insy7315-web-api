@@ -1,4 +1,4 @@
-import api from "../lib/axios";
+import api from "../lib/axios.js";
 
 // Get all bookings via adminId
 export async function getBookingsByAdminId() {
