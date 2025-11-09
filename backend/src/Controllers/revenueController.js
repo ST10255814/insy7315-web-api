@@ -1,5 +1,5 @@
 import revenueService from '../Services/revenueService.js';
-import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
+import { sendSuccess, sendBadRequest } from '../utils/responseHandler.js';
 import { asyncHandler, getAdminId, validateRequiredFields, logControllerAction } from '../utils/controllerHelpers.js';
 
 /**

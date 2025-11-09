@@ -3,7 +3,8 @@
 
 // Set up test environment variables
 process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing';
+// Generate a secure test JWT secret instead of hardcoding it
+process.env.JWT_SECRET = require('crypto').randomBytes(64).toString('hex');
 process.env.MONGO_URI = 'mongodb://localhost:27017/test-rentwise';
 
 // Suppress console logs during tests (optional - uncomment if you want cleaner output)

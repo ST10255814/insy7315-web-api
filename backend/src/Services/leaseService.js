@@ -21,7 +21,7 @@ async function getLeasesByAdminId(adminId) {
 
     // Update lease statuses in real-time
     const updatedLeases = await Promise.all(
-      leases.map(async (lease, index) => {
+      leases.map(async (lease, _index) => {
         try {
           const currentStatus = lease.status;
           
@@ -146,7 +146,7 @@ async function createLease(bookingID, adminId) {
     };
     await activityCollection.insertOne(activityLog);
 
-    const result = await leasesCollection.insertOne(lease);
+    const _result = await leasesCollection.insertOne(lease);
     return leaseId;
   } catch (err) {
     throw new Error("Error creating lease: " + err.message);
@@ -158,9 +158,21 @@ async function getLeaseById(leaseId, adminId) {
   try {
     const db = client.db("RentWise");
     const leasesCollection = db.collection("Leases");
+
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+    // Validate and sanitize inputs
+    const safeLeaseId = validateString(leaseId, {
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9\-_]+$/
+    });
+
+    const safeAdminId = validateObjectId(adminId);
+
     const lease = await leasesCollection.findOne({
-      leaseId: leaseId,
-      adminId: toObjectId(adminId)
+      leaseId: safeLeaseId,
+      adminId: safeAdminId
     });
     if (!lease) {
       throw new Error("Lease not found");
@@ -177,9 +189,21 @@ async function deleteLease(leaseId, adminId) {
     const db = client.db("RentWise");
     const leasesCollection = db.collection("Leases");
     const activityCollection = db.collection("User-Activity-Logs");
+
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+    // Validate and sanitize inputs
+    const safeLeaseId = validateString(leaseId, {
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9\-_]+$/
+    });
+
+    const safeAdminId = validateObjectId(adminId);
+
     const result = await leasesCollection.deleteOne({
-      leaseId: leaseId,
-      adminId: toObjectId(adminId)
+      leaseId: safeLeaseId,
+      adminId: safeAdminId
     });
     if (result.deletedCount === 0) {
       throw new Error("Lease not found or could not be deleted");

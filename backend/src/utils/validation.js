@@ -13,7 +13,7 @@ const endDatePattern = /^\d{2}-\d{2}-\d{4}$/; //DD-MM-YYYY
 const rentAmountPattern = /^\d+(\.\d{1,2})?$/; //numeric with up to 2 decimal places
 
 //patterns to protect against NoSQL injection (excluding dot for emails)
-const noSqlInjectionPattern = /[\$]/; // Only block $ symbol, allow dots for emails
+const noSqlInjectionPattern = /[$]/; // Only block $ symbol, allow dots for emails
 
 //common patterns to protect against XSS
 const xssPattern = /<script.*?>.*?<\/script.*?>/i;
@@ -57,6 +57,7 @@ function containsExplicitProfanity(text) {
         }
         
         // Check for word boundaries to avoid false positives
+        // eslint-disable-next-line security/detect-non-literal-regexp
         const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
         if (wordRegex.test(lowerText)) {
             return true;
@@ -97,7 +98,7 @@ export function validateEmail(email) {
 export function validatePassword(password) {
     if (containsExplicitProfanity(password)) {
         return false;
-    } else if (noSqlInjectionPattern.test(password) || xssPattern.test(password) || htmlTagPattern.test(password) || jsEventPattern.test(password) || jsProtocolPattern.test(password) || dataProtocolPattern.test(password)) {
+    } else if (hasSecurityThreat(password)) {
         return false;
     }
 
@@ -108,7 +109,7 @@ export function validatePassword(password) {
 export function validateUsername(username) {
     if(containsExplicitProfanity(username)){
         return false;
-    }else if(noSqlInjectionPattern.test(username) || xssPattern.test(username) || htmlTagPattern.test(username) || jsEventPattern.test(username) || jsProtocolPattern.test(username) || dataProtocolPattern.test(username)) {
+    }else if(hasSecurityThreat(username)) {
         return false;
     }
     return usernamePattern.test(username);
@@ -118,31 +119,45 @@ export function validateUsername(username) {
 export function validateFullname(fullname) {
     if(containsExplicitProfanity(fullname)){
         return false;
-    }else if(noSqlInjectionPattern.test(fullname) || xssPattern.test(fullname) || htmlTagPattern.test(fullname) || jsEventPattern.test(fullname) || jsProtocolPattern.test(fullname) || dataProtocolPattern.test(fullname)) {
+    }else if(hasSecurityThreat(fullname)) {
         return false;
     }
     return true; //allow any characters in fullname as long as it passes the above checks
 }
 
 export function validateStartDate(startDate) {
-    if(noSqlInjectionPattern.test(startDate) || xssPattern.test(startDate) || htmlTagPattern.test(startDate) || jsEventPattern.test(startDate) || jsProtocolPattern.test(startDate) || dataProtocolPattern.test(startDate)) {
+    if(hasSecurityThreat(startDate)) {
         return false;
     }
     return startDatePattern.test(startDate);
 }
 
 export function validateEndDate(endDate) {
-    if(noSqlInjectionPattern.test(endDate) || xssPattern.test(endDate) || htmlTagPattern.test(endDate) || jsEventPattern.test(endDate) || jsProtocolPattern.test(endDate) || dataProtocolPattern.test(endDate)) {
+    if(hasSecurityThreat(endDate)) {
         return false;
     }
     return endDatePattern.test(endDate);
 }
 
 export function validateRentAmount(rentAmount) {
-    if(noSqlInjectionPattern.test(rentAmount) || xssPattern.test(rentAmount) || htmlTagPattern.test(rentAmount) || jsEventPattern.test(rentAmount) || jsProtocolPattern.test(rentAmount) || dataProtocolPattern.test(rentAmount)) {
+    if(hasSecurityThreat(rentAmount)) {
         return false;
     }
     return rentAmountPattern.test(rentAmount);
+}
+
+//common security validation function to reduce duplication
+function hasSecurityThreat(input) {
+    if (typeof input !== 'string') {
+        return false;
+    }
+    
+    return noSqlInjectionPattern.test(input) || 
+           xssPattern.test(input) || 
+           htmlTagPattern.test(input) || 
+           jsEventPattern.test(input) || 
+           jsProtocolPattern.test(input) || 
+           dataProtocolPattern.test(input);
 }
 
 //function to sanitize input strings

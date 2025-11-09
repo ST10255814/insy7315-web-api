@@ -42,9 +42,20 @@ export async function getInvoiceFromDB(invoiceId, adminId) {
     const db = client.db("RentWise");
     const invoicesCollection = db.collection("Invoices");
 
+    // Import validation utilities
+    const { validateString, validateObjectId } = await import('./inputValidation.js');
+
+    // Validate and sanitize inputs
+    const safeInvoiceId = validateString(invoiceId, {
+      maxLength: 50,
+      pattern: /^[a-zA-Z0-9\-_]+$/
+    });
+
+    const safeAdminId = validateObjectId(adminId);
+
     const invoice = await invoicesCollection.findOne({
-      invoiceId: invoiceId,
-      adminId: toObjectId(adminId)
+      invoiceId: safeInvoiceId,
+      adminId: safeAdminId
     });
 
     return invoice;

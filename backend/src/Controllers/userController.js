@@ -2,7 +2,6 @@ import userService from "../Services/userService.js";
 import { setAuthCookie, clearAuthCookie } from "../utils/cookieUtils.js";
 import {
   sendSuccess,
-  sendError,
   sendCreated,
   sendBadRequest,
 } from "../utils/responseHandler.js";
@@ -53,7 +52,7 @@ export const login = asyncHandler(async (req, res) => {
     setAuthCookie(res, result.token);
 
     // Remove token from response (it's in cookie now)
-    const { token, ...userResponse } = result;
+    const { token: _, ...userResponse } = result;
 
     // Log activity
     logControllerAction("User Login", result.user._id, {

@@ -1,6 +1,5 @@
 import { client } from "../utils/db.js";
 import Object from '../utils/ObjectIDConvert.js';
-import { generateListingId } from '../utils/idGenerator.js';
 const { toObjectId } = Object;
 
 // Helper function to decode Cloudinary filename from URL
@@ -205,7 +204,7 @@ async function getCurrentMonthRevenue(adminId) {
             
             // Parse check-in date (DD-MM-YYYY format)
             try {
-                const [day, month, year] = checkInDate.split('-');
+                const [_day, month, year] = checkInDate.split('-');
                 const bookingMonth = parseInt(month);
                 const bookingYear = parseInt(year);
                 

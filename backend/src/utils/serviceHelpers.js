@@ -38,7 +38,7 @@ export const validateAndConvertAdminId = (adminId) => {
   
   try {
     return toObjectId(adminId);
-  } catch (error) {
+  } catch {
     throw new Error('Invalid admin ID format');
   }
 };

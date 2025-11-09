@@ -1,0 +1,7 @@
+organization=st10255814
+projectKey=insy7315-web-api
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.76401
+dashboardUrl=https://sonarcloud.io/dashboard?id=insy7315-web-api
+ceTaskId=AZpqYoKode2smo2_1U_Y
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZpqYoKode2smo2_1U_Y

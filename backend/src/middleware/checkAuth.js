@@ -1,9 +1,6 @@
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwtUtils.js';
+import { sanitizeForDatabase } from '../utils/inputValidation.js';
 import dotenv from 'dotenv';
-import { client } from '../utils/db.js';
-import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
-import Object from '../utils/ObjectIDConvert.js';
-const { toObjectId } = Object;
 dotenv.config();
 
 /**
@@ -42,12 +39,18 @@ export const checkAuth = async (req, res, next) => {
       return res.status(401).json({ error: "No token provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    // Sanitize token input
+    const sanitizedToken = sanitizeForDatabase(token);
+    
+    // Use secure JWT verification with revocation checking
+    const decoded = await verifyToken(sanitizedToken);
+    
+    // Sanitize decoded user data before attaching to request
+    req.user = sanitizeForDatabase(decoded);
 
     next();
-  } catch (err) {
-    console.error("checkAuth error:", err.message);
+  } catch {
+    // Log error internally without exposing details
     res.status(401).json({ error: "Your session is expired. Please login again." });
   }
 };

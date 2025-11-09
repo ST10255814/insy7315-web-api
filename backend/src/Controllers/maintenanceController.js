@@ -1,5 +1,5 @@
 import maintenanceService from "../Services/maintenanceService.js";
-import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
+import { sendSuccess, sendBadRequest } from '../utils/responseHandler.js';
 import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
 
 /**

@@ -49,7 +49,7 @@ async function getAllMaintenanceRequests(adminId) {
           updatedAt: request.newMaintenanceRequest?.updatedAt || request.updatedAt,
           property: request.listingDetail?.address,
           tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",
-          caretaker: request.newMaintenanceRequest?.caretakerId || null,
+          careTaker: request.newMaintenanceRequest?.caretakerId || null,
         };
 
         maintenanceRequests.push(formattedRequest);
@@ -154,14 +154,36 @@ async function createCareTaker(adminId, careTakerData){
       const userCollection = db.collection("Care-Takers");
       const listingCollection = db.collection("Listings");
 
+      // Import validation utilities
+      const { validateString, validateObjectId } = await import('../utils/inputValidation.js');
+
+      // Validate and sanitize inputs
+      const safeCaretakerId = validateString(caretakerId, {
+        maxLength: 50,
+        pattern: /^[a-zA-Z0-9\-_]+$/
+      });
+
+      const safeMaintenanceRequestId = validateString(maintenanceRequestId, {
+        maxLength: 50,
+        pattern: /^[a-zA-Z0-9\-_]+$/
+      });
+
+      const safeAdminId = validateObjectId(adminId);
+
       //verify caretaker belongs to admin
-      const caretaker = await userCollection.findOne({ caretakerId: caretakerId, adminId: toObjectId(adminId) });
+      const caretaker = await userCollection.findOne({ 
+        caretakerId: safeCaretakerId, 
+        adminId: safeAdminId 
+      });
       if(!caretaker){
         throw new Error("Caretaker not found for this admin");
       }
 
       //verify maintenance request belongs to admin
-      const maintenanceRequest = await maintenanceCollection.findOne({ "newMaintenanceRequest.maintenanceId": maintenanceRequestId, "listingDetail.landlordID": toObjectId(adminId) });
+      const maintenanceRequest = await maintenanceCollection.findOne({ 
+        "newMaintenanceRequest.maintenanceId": safeMaintenanceRequestId, 
+        "listingDetail.landlordID": safeAdminId 
+      });
       if(!maintenanceRequest){
         throw new Error("Maintenance request not found for this admin");
       }

@@ -3,7 +3,7 @@
  * Contains logic for handling review-related operations
  */
 import reviewService from "../Services/reviewService.js";
-import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
+import { sendSuccess, sendBadRequest } from '../utils/responseHandler.js';
 import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
 
 export const getAdminReviews = asyncHandler(async (req, res) => {
