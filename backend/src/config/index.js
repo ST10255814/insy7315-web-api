@@ -30,7 +30,15 @@ export const databaseConfig = {
  * JWT configuration
  */
 export const jwtConfig = {
-    secret: process.env.JWT_SECRET || 'fallback-secret-key',
+    secret: (() => {
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET environment variable is required for security');
+        }
+        if (process.env.JWT_SECRET.length < 32) {
+            throw new Error('JWT_SECRET must be at least 32 characters long for security');
+        }
+        return process.env.JWT_SECRET;
+    })(),
     expiresIn: process.env.JWT_EXPIRES_IN || '1h'
 };
 

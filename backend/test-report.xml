@@ -1,123 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\maintenanceService.test.js">
-    <testCase name="MaintenanceService Service Import should import maintenanceService successfully" duration="2"/>
+    <testCase name="MaintenanceService Service Import should import maintenanceService successfully" duration="1"/>
     <testCase name="MaintenanceService getAllMaintenanceRequests should throw error when adminId is missing" duration="7"/>
-    <testCase name="MaintenanceService getAllMaintenanceRequests should return empty array when no maintenance requests found" duration="0"/>
-    <testCase name="MaintenanceService getAllMaintenanceRequests should fetch maintenance requests successfully" duration="0"/>
+    <testCase name="MaintenanceService getAllMaintenanceRequests should return empty array when no maintenance requests found" duration="1"/>
+    <testCase name="MaintenanceService getAllMaintenanceRequests should fetch maintenance requests successfully" duration="1"/>
     <testCase name="MaintenanceService getAllMaintenanceRequests should handle missing user information gracefully" duration="0"/>
-    <testCase name="MaintenanceService getAllMaintenanceRequests should handle maintenance requests with missing newMaintenanceRequest fields" duration="0"/>
-    <testCase name="MaintenanceService getAllMaintenanceRequests should handle database errors gracefully" duration="1"/>
-    <testCase name="MaintenanceService countMaintenanceRequestsByAdminId should count maintenance requests for admin successfully" duration="0"/>
-    <testCase name="MaintenanceService countMaintenanceRequestsByAdminId should return 0 when no maintenance requests found" duration="1"/>
+    <testCase name="MaintenanceService getAllMaintenanceRequests should handle maintenance requests with missing newMaintenanceRequest fields" duration="1"/>
+    <testCase name="MaintenanceService getAllMaintenanceRequests should handle database errors gracefully" duration="0"/>
+    <testCase name="MaintenanceService countMaintenanceRequestsByAdminId should count maintenance requests for admin successfully" duration="1"/>
+    <testCase name="MaintenanceService countMaintenanceRequestsByAdminId should return 0 when no maintenance requests found" duration="0"/>
     <testCase name="MaintenanceService countMaintenanceRequestsByAdminId should handle database errors gracefully" duration="0"/>
-    <testCase name="MaintenanceService countHighPriorityMaintenanceRequestsByAdminId should count high priority maintenance requests successfully" duration="0"/>
+    <testCase name="MaintenanceService countHighPriorityMaintenanceRequestsByAdminId should count high priority maintenance requests successfully" duration="1"/>
     <testCase name="MaintenanceService countHighPriorityMaintenanceRequestsByAdminId should return 0 when no high priority requests found" duration="0"/>
     <testCase name="MaintenanceService countHighPriorityMaintenanceRequestsByAdminId should handle database errors gracefully" duration="0"/>
   </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\userService.test.js">
-    <testCase name="UserService Service Import should import userService successfully" duration="0"/>
-    <testCase name="UserService register should throw error when required fields are missing" duration="4"/>
-    <testCase name="UserService register should handle fullname parsing correctly" duration="1"/>
+    <testCase name="UserService Service Import should import userService successfully" duration="1"/>
+    <testCase name="UserService register should throw error when required fields are missing" duration="5"/>
+    <testCase name="UserService register should handle fullname parsing correctly" duration="0"/>
     <testCase name="UserService login should throw error when required fields are missing" duration="0"/>
-    <testCase name="UserService login should handle email login successfully" duration="4"/>
+    <testCase name="UserService login should handle email login successfully" duration="5"/>
     <testCase name="UserService resetPassword should throw error when email is missing" duration="1"/>
     <testCase name="UserService resetPassword should call email handler for valid request" duration="0"/>
   </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\revenueService.test.js">
-    <testCase name="Revenue Service Tests Revenue Calculation should calculate monthly revenue for admin" duration="3"/>
+    <testCase name="Revenue Service Tests Revenue Calculation should calculate monthly revenue for admin" duration="7"/>
     <testCase name="Revenue Service Tests Revenue Calculation should store monthly revenue in database" duration="1"/>
     <testCase name="Revenue Service Tests Revenue Calculation should retrieve stored revenue data" duration="0"/>
-    <testCase name="Revenue Service Tests Revenue Calculation should get revenue trend for last 12 months" duration="2"/>
+    <testCase name="Revenue Service Tests Revenue Calculation should get revenue trend for last 12 months" duration="3"/>
     <testCase name="Revenue Service Tests Database Operations should get collection statistics" duration="0"/>
-    <testCase name="Revenue Service Tests Scheduled Tasks should manually trigger revenue calculation" duration="1"/>
+    <testCase name="Revenue Service Tests Scheduled Tasks should manually trigger revenue calculation" duration="2"/>
     <testCase name="Revenue Service Edge Cases should handle admin with no listings" duration="1"/>
     <testCase name="Revenue Service Edge Cases should handle invalid date parameters" duration="1"/>
   </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\occupansyService.test.js">
-    <testCase name="Occupancy Service checkOccupancyStatus should return the status of a listing" duration="1"/>
+    <testCase name="Occupancy Service checkOccupancyStatus should return the status of a listing" duration="0"/>
     <testCase name="Occupancy Service checkOccupancyStatus should throw an error if listing not found" duration="5"/>
     <testCase name="Occupancy Service updateListingStatuses should update listing to Occupied when there is an active booking" duration="1"/>
     <testCase name="Occupancy Service updateListingStatuses should update listing to Under Maintenance when there are maintenance requests but no active booking" duration="0"/>
-    <testCase name="Occupancy Service updateListingStatuses should update listing to Vacant when there are no active bookings or maintenance requests" duration="0"/>
+    <testCase name="Occupancy Service updateListingStatuses should update listing to Vacant when there are no active bookings or maintenance requests" duration="1"/>
     <testCase name="Occupancy Service updateListingStatuses should not update listing if status has not changed" duration="1"/>
     <testCase name="Occupancy Service updateListingStatuses should handle listings with expired bookings" duration="1"/>
     <testCase name="Occupancy Service updateAllListingStatuses should update listings for all admins" duration="1"/>
     <testCase name="Occupancy Service updateAllListingStatuses should handle case when no admins exist" duration="0"/>
   </file>
+  <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\leaseService.test.js">
+    <testCase name="LeaseService Service Import should import leaseService successfully" duration="0"/>
+    <testCase name="LeaseService getLeasesByAdminId should throw error when adminId is missing" duration="11"/>
+    <testCase name="LeaseService getLeasesByAdminId should fetch leases for admin successfully" duration="1"/>
+    <testCase name="LeaseService getLeasesByAdminId should update lease status when it changes" duration="1"/>
+    <testCase name="LeaseService getLeasesByAdminId should handle leases with missing booking details" duration="0"/>
+    <testCase name="LeaseService createLease should throw error when bookingID is missing" duration="1"/>
+    <testCase name="LeaseService createLease should throw error when booking is not found" duration="0"/>
+    <testCase name="LeaseService createLease should create lease successfully with valid booking" duration="1"/>
+    <testCase name="LeaseService createLease should throw error when user is not found" duration="1"/>
+    <testCase name="LeaseService createLease should throw error when listing is not found" duration="0"/>
+    <testCase name="LeaseService updateLeaseStatusesByAdmin should update statuses for admin leases only" duration="0"/>
+    <testCase name="LeaseService updateAllLeaseStatuses should update all lease statuses across all admins" duration="0"/>
+    <testCase name="LeaseService countActiveLeasesByAdminId should count active leases for admin successfully" duration="0"/>
+    <testCase name="LeaseService countActiveLeasesByAdminId should return 0 when no active leases found" duration="1"/>
+    <testCase name="LeaseService countActiveLeasesByAdminId should handle database errors gracefully" duration="0"/>
+    <testCase name="LeaseService getLeasedPropertyPercentage should calculate leased property percentage successfully" duration="1"/>
+    <testCase name="LeaseService getLeasedPropertyPercentage should return 0 when admin has no properties" duration="0"/>
+    <testCase name="LeaseService getLeasedPropertyPercentage should return 0 when admin has no active leases" duration="2"/>
+    <testCase name="LeaseService getLeasedPropertyPercentage should handle 100% leased scenario" duration="0"/>
+    <testCase name="LeaseService getLeasedPropertyPercentage should handle database errors gracefully" duration="1"/>
+  </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\listingService.test.js">
     <testCase name="ListingService Service Import should import listingService successfully" duration="0"/>
-    <testCase name="ListingService createListing should throw error when required fields are missing" duration="10"/>
-    <testCase name="ListingService createListing should throw error when price is invalid" duration="0"/>
+    <testCase name="ListingService createListing should throw error when required fields are missing" duration="9"/>
+    <testCase name="ListingService createListing should throw error when price is invalid" duration="1"/>
     <testCase name="ListingService createListing should throw error when price is zero or negative" duration="1"/>
     <testCase name="ListingService createListing should create listing successfully with valid data" duration="1"/>
-    <testCase name="ListingService createListing should handle amenities array normalization" duration="0"/>
+    <testCase name="ListingService createListing should handle amenities array normalization" duration="1"/>
     <testCase name="ListingService getListingsByAdminId should fetch listings for admin successfully" duration="0"/>
     <testCase name="ListingService getListingsByAdminId should handle database errors gracefully" duration="0"/>
     <testCase name="ListingService countNumberOfListingsByAdminId should count listings for admin successfully" duration="0"/>
-    <testCase name="ListingService countNumberOfListingsByAdminId should return 0 when no listings found" duration="1"/>
+    <testCase name="ListingService countNumberOfListingsByAdminId should return 0 when no listings found" duration="0"/>
     <testCase name="ListingService countNumberOfListingsByAdminId should handle database errors gracefully" duration="0"/>
     <testCase name="ListingService countListingsAddedThisMonth should count listings added this month successfully" duration="1"/>
     <testCase name="ListingService countListingsAddedThisMonth should return 0 when no listings added this month" duration="0"/>
-    <testCase name="ListingService countListingsAddedThisMonth should handle different months correctly" duration="1"/>
-    <testCase name="ListingService countListingsAddedThisMonth should handle February (leap year) correctly" duration="1"/>
+    <testCase name="ListingService countListingsAddedThisMonth should handle different months correctly" duration="0"/>
+    <testCase name="ListingService countListingsAddedThisMonth should handle February (leap year) correctly" duration="0"/>
     <testCase name="ListingService countListingsAddedThisMonth should handle database errors gracefully" duration="0"/>
     <testCase name="ListingService getListingById should fetch listing by ID successfully" duration="1"/>
-    <testCase name="ListingService getListingById should return null when listing not found" duration="0"/>
+    <testCase name="ListingService getListingById should return null when listing not found" duration="1"/>
     <testCase name="ListingService getListingById should handle database errors gracefully" duration="0"/>
-    <testCase name="ListingService deleteListingById should delete listing successfully" duration="1"/>
+    <testCase name="ListingService deleteListingById should delete listing successfully" duration="0"/>
     <testCase name="ListingService deleteListingById should return false when listing not found" duration="0"/>
-    <testCase name="ListingService deleteListingById should handle database errors gracefully" duration="1"/>
+    <testCase name="ListingService deleteListingById should handle database errors gracefully" duration="0"/>
     <testCase name="ListingService deleteListingById should log activity when deleting listing" duration="0"/>
   </file>
-  <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\leaseService.test.js">
-    <testCase name="LeaseService Service Import should import leaseService successfully" duration="0"/>
-    <testCase name="LeaseService getLeasesByAdminId should throw error when adminId is missing" duration="9"/>
-    <testCase name="LeaseService getLeasesByAdminId should fetch leases for admin successfully" duration="0"/>
-    <testCase name="LeaseService getLeasesByAdminId should update lease status when it changes" duration="0"/>
-    <testCase name="LeaseService getLeasesByAdminId should handle leases with missing booking details" duration="1"/>
-    <testCase name="LeaseService createLease should throw error when bookingID is missing" duration="0"/>
-    <testCase name="LeaseService createLease should throw error when booking is not found" duration="0"/>
-    <testCase name="LeaseService createLease should create lease successfully with valid booking" duration="1"/>
-    <testCase name="LeaseService createLease should throw error when user is not found" duration="0"/>
-    <testCase name="LeaseService createLease should throw error when listing is not found" duration="1"/>
-    <testCase name="LeaseService updateLeaseStatusesByAdmin should update statuses for admin leases only" duration="0"/>
-    <testCase name="LeaseService updateAllLeaseStatuses should update all lease statuses across all admins" duration="2"/>
-    <testCase name="LeaseService countActiveLeasesByAdminId should count active leases for admin successfully" duration="1"/>
-    <testCase name="LeaseService countActiveLeasesByAdminId should return 0 when no active leases found" duration="0"/>
-    <testCase name="LeaseService countActiveLeasesByAdminId should handle database errors gracefully" duration="0"/>
-    <testCase name="LeaseService getLeasedPropertyPercentage should calculate leased property percentage successfully" duration="0"/>
-    <testCase name="LeaseService getLeasedPropertyPercentage should return 0 when admin has no properties" duration="0"/>
-    <testCase name="LeaseService getLeasedPropertyPercentage should return 0 when admin has no active leases" duration="0"/>
-    <testCase name="LeaseService getLeasedPropertyPercentage should handle 100% leased scenario" duration="0"/>
-    <testCase name="LeaseService getLeasedPropertyPercentage should handle database errors gracefully" duration="0"/>
-  </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\bookingService.test.js">
-    <testCase name="BookingService Service Import should import bookingService successfully" duration="1"/>
-    <testCase name="BookingService getBookings should fetch bookings for admin successfully" duration="1"/>
+    <testCase name="BookingService Service Import should import bookingService successfully" duration="0"/>
+    <testCase name="BookingService getBookings should fetch bookings for admin successfully" duration="2"/>
     <testCase name="BookingService getBookings should filter out bookings not belonging to admin" duration="0"/>
-    <testCase name="BookingService getBookings should handle missing tenant information gracefully" duration="1"/>
+    <testCase name="BookingService getBookings should handle missing tenant information gracefully" duration="0"/>
     <testCase name="BookingService getBookings should calculate nights correctly" duration="0"/>
-    <testCase name="BookingService getBookings should handle database errors gracefully" duration="7"/>
+    <testCase name="BookingService getBookings should handle database errors gracefully" duration="10"/>
     <testCase name="BookingService getCurrentMonthRevenue should calculate current month revenue for admin successfully" duration="1"/>
-    <testCase name="BookingService getCurrentMonthRevenue should return 0 when no bookings found for current month" duration="0"/>
-    <testCase name="BookingService getCurrentMonthRevenue should exclude invalid booking statuses" duration="1"/>
+    <testCase name="BookingService getCurrentMonthRevenue should return 0 when no bookings found for current month" duration="1"/>
+    <testCase name="BookingService getCurrentMonthRevenue should exclude invalid booking statuses" duration="0"/>
     <testCase name="BookingService getCurrentMonthRevenue should handle invalid date formats gracefully" duration="1"/>
-    <testCase name="BookingService getCurrentMonthRevenue should handle database errors gracefully" duration="2"/>
+    <testCase name="BookingService getCurrentMonthRevenue should handle database errors gracefully" duration="1"/>
     <testCase name="BookingService getCurrentMonthRevenue should return 0 when admin has no listings" duration="0"/>
   </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\invoiceService.test.js">
-    <testCase name="InvoiceService Service Import should import invoiceService successfully" duration="0"/>
-    <testCase name="InvoiceService createInvoice should throw error when required fields are missing" duration="15"/>
+    <testCase name="InvoiceService Service Import should import invoiceService successfully" duration="1"/>
+    <testCase name="InvoiceService createInvoice should throw error when required fields are missing" duration="9"/>
     <testCase name="InvoiceService createInvoice should throw error when lease is not found" duration="0"/>
-    <testCase name="InvoiceService createInvoice should create invoice successfully with valid data" duration="1"/>
-    <testCase name="InvoiceService createInvoice should auto-generate description when not provided" duration="0"/>
-    <testCase name="InvoiceService createInvoice should validate inputs" duration="1"/>
-    <testCase name="InvoiceService getInvoicesByAdminId should throw error when adminId is missing" duration="1"/>
+    <testCase name="InvoiceService createInvoice should create invoice successfully with valid data" duration="0"/>
+    <testCase name="InvoiceService createInvoice should auto-generate description when not provided" duration="1"/>
+    <testCase name="InvoiceService createInvoice should validate inputs" duration="0"/>
+    <testCase name="InvoiceService getInvoicesByAdminId should throw error when adminId is missing" duration="0"/>
     <testCase name="InvoiceService getInvoicesByAdminId should fetch and update invoices successfully" duration="0"/>
-    <testCase name="InvoiceService getInvoicesByAdminId should update invoice status when it changes" duration="1"/>
-    <testCase name="InvoiceService getInvoicesByAdminId should handle invoices with missing date gracefully" duration="0"/>
-    <testCase name="InvoiceService markInvoiceAsPaid should mark invoice as paid successfully" duration="1"/>
+    <testCase name="InvoiceService getInvoicesByAdminId should update invoice status when it changes" duration="0"/>
+    <testCase name="InvoiceService getInvoicesByAdminId should handle invoices with missing date gracefully" duration="1"/>
+    <testCase name="InvoiceService markInvoiceAsPaid should mark invoice as paid successfully" duration="0"/>
     <testCase name="InvoiceService markInvoiceAsPaid should throw error when invoice not found" duration="0"/>
     <testCase name="InvoiceService getInvoiceStats should return formatted invoice statistics" duration="1"/>
     <testCase name="InvoiceService getInvoiceStats should handle missing status categories" duration="0"/>
@@ -125,12 +125,12 @@
     <testCase name="InvoiceService regenerateAllInvoiceDescriptions should regenerate descriptions for specific admin" duration="1"/>
   </file>
   <file path="C:\RentWise(web)\insy7315-web-api\backend\tests\activityService.test.js">
-    <testCase name="ActivityService Service Import should import activityService successfully" duration="1"/>
+    <testCase name="ActivityService Service Import should import activityService successfully" duration="0"/>
     <testCase name="ActivityService getRecentActivities should throw error when adminId is missing" duration="3"/>
-    <testCase name="ActivityService getRecentActivities should fetch recent activities successfully with default limit" duration="1"/>
-    <testCase name="ActivityService getRecentActivities should fetch recent activities with custom limit" duration="0"/>
-    <testCase name="ActivityService getRecentActivities should return empty array when no activities found" duration="1"/>
-    <testCase name="ActivityService getRecentActivities should handle database errors gracefully" duration="0"/>
-    <testCase name="ActivityService getRecentActivities should handle invalid adminId format" duration="1"/>
+    <testCase name="ActivityService getRecentActivities should fetch recent activities successfully with default limit" duration="0"/>
+    <testCase name="ActivityService getRecentActivities should fetch recent activities with custom limit" duration="1"/>
+    <testCase name="ActivityService getRecentActivities should return empty array when no activities found" duration="0"/>
+    <testCase name="ActivityService getRecentActivities should handle database errors gracefully" duration="1"/>
+    <testCase name="ActivityService getRecentActivities should handle invalid adminId format" duration="0"/>
   </file>
 </testExecutions>

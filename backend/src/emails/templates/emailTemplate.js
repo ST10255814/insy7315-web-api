@@ -1,4 +1,48 @@
+/**
+ * Sanitize URL to prevent XSS attacks
+ * @param {string} url - URL to sanitize
+ * @returns {string} - Sanitized URL
+ */
+function sanitizeUrl(url) {
+  if (!url || typeof url !== 'string') {
+    return '#';
+  }
+  
+  // Remove any JavaScript protocol attempts
+  const cleanUrl = url.replace(/javascript:/gi, '').replace(/data:/gi, '').replace(/vbscript:/gi, '');
+  
+  // Ensure URL starts with http:// or https://
+  if (!cleanUrl.match(/^https?:\/\//)) {
+    return `https://${cleanUrl}`;
+  }
+  
+  return cleanUrl;
+}
+
+/**
+ * Sanitize name to prevent XSS
+ * @param {string} name - Name to sanitize
+ * @returns {string} - Sanitized name
+ */
+function sanitizeName(name) {
+  if (!name || typeof name !== 'string') {
+    return 'User';
+  }
+  
+  return name.replace(/[<>'"&]/g, (match) => {
+    if (match === '<') return '&lt;';
+    if (match === '>') return '&gt;';
+    if (match === '"') return '&quot;';
+    if (match === "'") return '&#x27;';
+    if (match === '&') return '&amp;';
+    return match;
+  });
+}
+
 export function createPasswordResetEmailTemplate(name, clientURL) {
+  const safeName = sanitizeName(name);
+  const safeURL = sanitizeUrl(clientURL);
+  
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -15,10 +59,10 @@ export function createPasswordResetEmailTemplate(name, clientURL) {
       <h1 style="color: #ffffff; margin-top: 25px; font-size: 28px; font-weight: 700;">Reset Your Password</h1>
     </div>
     <div style="background-color: #ffffff; padding: 40px; border-radius: 0 0 12px 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.05); line-height: 1.6;">
-      <p style="font-size: 18px; color: #2563EB; font-weight: 600; margin-bottom: 15px;">Hello ${name},</p>
+      <p style="font-size: 18px; color: #2563EB; font-weight: 600; margin-bottom: 15px;">Hello ${safeName},</p>
       <p style="margin-bottom: 25px;">We received a request to reset your password for your RentWise account. If you made this request, click the button below to choose a new password.</p>
       <div style="text-align: center; margin: 35px 0;">
-        <a href="${clientURL}" style="
+        <a href="${safeURL}" style="
           background-color: #2563EB;
           color: #ffffff;
           text-decoration: none;
@@ -38,7 +82,7 @@ export function createPasswordResetEmailTemplate(name, clientURL) {
         <p style="margin-bottom: 5px;">This link will expire in <strong>1 hour</strong> for security reasons.</p>
         <p style="margin-bottom: 5px;">If you’re having trouble, copy and paste this link into your browser:</p>
         <div style="background: #EFF6FF; padding: 12px; border-radius: 8px; color: #1D4ED8; word-wrap: break-word; font-size: 13px;">
-          ${clientURL}
+          ${safeURL}
         </div>
       </div>
       <p style="margin-top: 35px; margin-bottom: 0; font-size: 15px;">Best regards,<br><strong>RentWise Support</strong></p>
