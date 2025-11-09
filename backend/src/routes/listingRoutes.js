@@ -6,11 +6,12 @@
 import { Router } from 'express';
 import listingController from '../Controllers/listingController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
+import { csrfProtection } from '../middleware/csrfProtection.js';
 import { upload } from '../utils/cloudinary.js';
 
 const router = Router();
 
-// All listing routes require authentication
+// All listing routes require authentication and CSRF protection for state-changing operations
 router.use(checkAuth);
 
 // Listing statistics routes (must come before /:id route)
@@ -25,7 +26,7 @@ router.get('/count-this-month', (req, res, next) => {
 }, listingController.countListingsAddedThisMonth);
 
 // Listing management routes
-router.post('/create', upload.array('imageURL', 10), listingController.createListing);
+router.post('/create', csrfProtection, upload.array('imageURL', 10), listingController.createListing);
 router.get('/', listingController.getListingsByAdminId);
 
 // Status route must come before /:id route to avoid parameter conflicts
@@ -39,6 +40,6 @@ router.get('/:id', (req, res, next) => {
   next();
 }, listingController.getListingById);
 
-router.delete('/delete/:id', listingController.deleteListingById);
+router.delete('/delete/:id', csrfProtection, listingController.deleteListingById);
 
 export default router;

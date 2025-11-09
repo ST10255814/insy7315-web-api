@@ -6,11 +6,13 @@
 import { Router } from 'express';
 import bookingController from '../Controllers/bookingController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
+import { csrfProtection } from '../middleware/csrfProtection.js';
 
 const router = Router();
 
-// All booking routes require authentication
+// All booking routes require authentication and CSRF protection
 router.use(checkAuth);
+router.use(csrfProtection);
 
 // Booking management routes
 router.get('/', bookingController.getBookings);

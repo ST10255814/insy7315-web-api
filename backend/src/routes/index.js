@@ -16,10 +16,12 @@ import activityRoutes from './activityRoutes.js';
 import revenueRoutes from './revenueRoutes.js';
 import occupancyRoutes from './occupancyRoutes.js';
 import reviewRoutes from './reviewRoutes.js';
+import securityRoutes from './securityRoutes.js';
 
 const router = Router();
 
 // Mount route modules to match your existing API structure
+router.use('/security', securityRoutes);
 router.use('/user', userRoutes);
 router.use('/leases', leaseRoutes);
 router.use('/invoices', invoiceRoutes);

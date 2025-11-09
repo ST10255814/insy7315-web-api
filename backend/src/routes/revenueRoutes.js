@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import revenueController from '../Controllers/revenueController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
+import { csrfProtection } from '../middleware/csrfProtection.js';
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.get('/current-month', revenueController.getCurrentMonthRevenue);
 router.get('/summary', revenueController.getRevenueSummary);
 
 // Revenue management routes
-router.post('/calculate', revenueController.calculateRevenue);
+router.post('/calculate', csrfProtection, revenueController.calculateRevenue);
 
 // Test endpoint for revenue system (remove in production)
 router.get('/test-calculation', async (req, res) => {

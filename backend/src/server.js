@@ -18,7 +18,7 @@ app.set('trust proxy', true);
 
 app.use(cookieParser());
 
-//helmet for security headers
+//helmet for security headers including HSTS
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -34,6 +34,15 @@ app.use(
         ],
       },
     },
+    hsts: {
+      maxAge: 31536000, // 1 year in seconds
+      includeSubDomains: true,
+      preload: true,
+    },
+    // Additional security headers
+    noSniff: true,
+    xssFilter: true,
+    referrerPolicy: { policy: "same-origin" },
   })
 );
 
@@ -65,7 +74,16 @@ app.use(cors({
   },
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-CSRF-Token', 
+    'x-csrf-token', 
+    'CSRF-Token', 
+    'csrf-token',
+    'X-XSRF-Token',
+    'x-xsrf-token'
+  ],
 }));
 
 // Connect to MongoDB
