@@ -4,6 +4,7 @@
  */
 
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { client } from './db.js';
 import { jwtConfig } from '../config/index.js';
 
@@ -21,7 +22,7 @@ export function generateToken(payload) {
         const tokenPayload = {
             ...payload,
             iat: Math.floor(Date.now() / 1000),
-            jti: require('crypto').randomUUID(), // Unique token ID for revocation
+            jti: crypto.randomUUID(), // Unique token ID for revocation
         };
 
         return jwt.sign(tokenPayload, jwtConfig.secret, {
