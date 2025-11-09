@@ -46,8 +46,10 @@ async function getAllMaintenanceRequests(adminId) {
           documentURL: request.newMaintenanceRequest?.documentURL,
           notes: request.newMaintenanceRequest?.notes || "",
           createdAt: request.newMaintenanceRequest?.createdAt || request.createdAt,
+          updatedAt: request.newMaintenanceRequest?.updatedAt || request.updatedAt,
           property: request.listingDetail?.address,
           tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",
+          caretaker: request.newMaintenanceRequest?.caretakerId || null,
         };
 
         maintenanceRequests.push(formattedRequest);
@@ -167,7 +169,7 @@ async function createCareTaker(adminId, careTakerData){
       //assign caretaker to maintenance request & update maintenance status to 'in progress'
       await maintenanceCollection.updateOne(
         { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
-        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress" } }
+        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress", "newMaintenanceRequest.updatedAt": new Date() } }
       );
 
       //update listing status to 'under maintenance'

@@ -43,7 +43,7 @@ export default function ViewInvoice() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium shadow hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           >
             <FaArrowLeft className="w-5 h-5" />
-            Back to Properties
+            Back to Invoices
           </button>
         </div>
 
