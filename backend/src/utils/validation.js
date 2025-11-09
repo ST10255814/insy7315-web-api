@@ -160,6 +160,22 @@ function hasSecurityThreat(input) {
            dataProtocolPattern.test(input);
 }
 
+//function to validate ID parameters (invoiceId, leaseId, listingId, etc.)
+export function validateId(id) {
+    if (!id || typeof id !== 'string') {
+        return false;
+    }
+    
+    // Check for security threats
+    if (hasSecurityThreat(id)) {
+        return false;
+    }
+    
+    // ID pattern - alphanumeric, hyphens, underscores only
+    const idPattern = /^[a-zA-Z0-9_-]+$/;
+    return idPattern.test(id) && id.length >= 1 && id.length <= 50;
+}
+
 //function to sanitize input strings
 export function sanitizeInput(input) {
     return sanitizer.sanitize(input);

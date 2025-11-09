@@ -212,7 +212,7 @@ async function deleteLease(leaseId, adminId) {
     const activityLog = {
       action: 'Delete Lease',
       adminId: toObjectId(adminId),
-      detail: `Deleted lease ${leaseId}`,
+      detail: `Deleted lease ${safeLeaseId}`,
       timestamp: new Date()
     };
     await activityCollection.insertOne(activityLog);

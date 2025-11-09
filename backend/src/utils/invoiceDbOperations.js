@@ -76,8 +76,19 @@ export async function deleteInvoiceFromDB(invoiceId, adminId) {
     const db = client.db("RentWise");
     const invoicesCollection = db.collection("Invoices");
 
+    // Validate inputs to prevent NoSQL injection
+    if (!invoiceId || typeof invoiceId !== 'string' || !adminId) {
+      throw new Error("Invalid invoiceId or adminId provided");
+    }
+
+    // Sanitize invoiceId to prevent injection
+    const sanitizedInvoiceId = invoiceId.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (sanitizedInvoiceId !== invoiceId) {
+      throw new Error("Invalid characters in invoiceId");
+    }
+
     const result = await invoicesCollection.deleteOne({
-      invoiceId: invoiceId,
+      invoiceId: sanitizedInvoiceId,
       adminId: toObjectId(adminId)
     });
 

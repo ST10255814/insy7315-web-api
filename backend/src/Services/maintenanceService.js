@@ -188,10 +188,21 @@ async function createCareTaker(adminId, careTakerData){
         throw new Error("Maintenance request not found for this admin");
       }
 
+      // Validate and sanitize inputs to prevent NoSQL injection
+      if (!maintenanceRequestId || typeof maintenanceRequestId !== 'string') {
+        throw new Error("Invalid maintenance request ID");
+      }
+      if (!caretakerId || typeof caretakerId !== 'string') {
+        throw new Error("Invalid caretaker ID");
+      }
+
+      const sanitizedMaintenanceId = maintenanceRequestId.replace(/[^a-zA-Z0-9_-]/g, '');
+      const sanitizedCaretakerId = caretakerId.replace(/[^a-zA-Z0-9_-]/g, '');
+
       //assign caretaker to maintenance request & update maintenance status to 'in progress'
       await maintenanceCollection.updateOne(
-        { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
-        { $set: { "newMaintenanceRequest.caretakerId": caretakerId, "newMaintenanceRequest.status": "In Progress", "newMaintenanceRequest.updatedAt": new Date() } }
+        { "newMaintenanceRequest.maintenanceId": sanitizedMaintenanceId },
+        { $set: { "newMaintenanceRequest.caretakerId": sanitizedCaretakerId, "newMaintenanceRequest.status": "In Progress", "newMaintenanceRequest.updatedAt": new Date() } }
       );
 
       //update listing status to 'under maintenance'

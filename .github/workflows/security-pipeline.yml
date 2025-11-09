@@ -625,7 +625,7 @@ jobs:
         
         # Test with expired token
         echo "Testing with expired token..."
-        EXPIRED_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0IiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.invalid"
+        EXPIRED_TOKEN="$(echo '{"alg":"HS256","typ":"JWT"}' | base64 -w 0).$(echo '{"userId":"test","iat":'$(date +%s)',"exp":'$(date +%s)'}' | base64 -w 0).invalid_signature"
         curl -s -X GET "$BASE_URL/api/users/profile" \
           -H "Authorization: Bearer $EXPIRED_TOKEN" \
           -w "\nStatus: %{http_code}\n"

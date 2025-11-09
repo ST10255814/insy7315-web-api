@@ -149,7 +149,7 @@ async function deleteListingById(listingId, adminId) {
     const activityLog = {
       action: "Delete Listing",
       adminId: toObjectId(adminId),
-      detail: `Deleted listing ${listingId}`,
+      detail: `Deleted listing ${safeListingId}`,
       timestamp: new Date(),
     };
     await activityCollection.insertOne(activityLog);
