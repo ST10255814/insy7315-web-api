@@ -8,9 +8,22 @@
   ],
   "collectCoverageFrom": [
     "src/**/*.js",
-    "!src/server.js"
+    "!src/server.js",
+    "!src/config/**",
+    "!**/node_modules/**"
   ],
+  "coverageDirectory": "coverage",
+  "coverageReporters": ["text", "lcov", "html"],
+  "coverageThreshold": {
+    "global": {
+      "branches": 25,
+      "functions": 24,
+      "lines": 30,
+      "statements": 30
+    }
+  },
   "moduleFileExtensions": ["js", "json"],
   "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
-  "verbose": false
+  "verbose": false,
+  "testResultsProcessor": "jest-sonar-reporter"
 }

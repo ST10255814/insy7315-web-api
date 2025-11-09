@@ -27,6 +27,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "sonar": "sonar-scanner",
+    "sonar:local": "sonar-scanner -Dsonar.host.url=http://localhost:9000",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -48,6 +51,7 @@
     ]
   },
   "devDependencies": {
+    "jest-sonar-reporter": "^2.0.0",
     "tailwindcss": "^3.4.18"
   }
 }
