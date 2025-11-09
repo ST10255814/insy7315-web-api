@@ -63,7 +63,7 @@ async function calculateMonthlyRevenue(adminId, month, year) {
             
             // Parse check-in date (DD-MM-YYYY format)
             try {
-                const [day, monthStr, yearStr] = checkInDate.split('-');
+                const [_day, monthStr, yearStr] = checkInDate.split('-');
                 const bookingMonth = parseInt(monthStr);
                 const bookingYear = parseInt(yearStr);
                 
@@ -215,7 +215,7 @@ async function getStoredRevenue(adminId, year = null, month = null) {
         const currentDate = new Date();
         const defaultYear = year || currentDate.getFullYear();
 
-        let query = {
+        const query = {
             adminId: adminId,
             year: defaultYear
         };

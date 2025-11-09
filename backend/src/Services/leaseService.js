@@ -21,7 +21,7 @@ async function getLeasesByAdminId(adminId) {
 
     // Update lease statuses in real-time
     const updatedLeases = await Promise.all(
-      leases.map(async (lease, index) => {
+      leases.map(async (lease, _index) => {
         try {
           const currentStatus = lease.status;
           
@@ -146,7 +146,7 @@ async function createLease(bookingID, adminId) {
     };
     await activityCollection.insertOne(activityLog);
 
-    const result = await leasesCollection.insertOne(lease);
+    const _result = await leasesCollection.insertOne(lease);
     return leaseId;
   } catch (err) {
     throw new Error("Error creating lease: " + err.message);

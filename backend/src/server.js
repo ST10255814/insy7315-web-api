@@ -1,11 +1,9 @@
 import express from "express";
-import { client, mongoConnection } from './utils/db.js';
-import { checkAuth } from './middleware/checkAuth.js';
+import { mongoConnection } from './utils/db.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-import { upload } from './utils/cloudinary.js';
 import { startStatusScheduler } from './Schedule_Updates/scheduledTasks.js';
 import revenueDbOperations from './utils/revenueDbOperations.js';
 

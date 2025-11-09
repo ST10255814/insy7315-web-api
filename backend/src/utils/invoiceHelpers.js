@@ -26,7 +26,7 @@ export function generateInvoiceDescription(invoiceData) {
     const month = monthNames[parsedDate.getMonth()];
     const year = parsedDate.getFullYear();
     formattedDate = `${month} ${year}`;
-  } catch (error) {
+  } catch {
     formattedDate = "Current Period";
   }
 
@@ -110,7 +110,7 @@ export function calculateDaysOverdue(dueDate) {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return diffDays > 0 ? diffDays : 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 }

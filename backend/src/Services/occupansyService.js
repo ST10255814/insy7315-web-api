@@ -14,7 +14,7 @@ async function checkOccupancyStatus(listingId) {
       listing = await listingsCollection.findOne({
         _id: toObjectId(listingId),
       });
-    } catch (idError) {
+    } catch {
       // If not a valid ObjectId, try to find by listingId field
       listing = await listingsCollection.findOne({ listingId: listingId });
     }

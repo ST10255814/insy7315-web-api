@@ -13,7 +13,7 @@ const endDatePattern = /^\d{2}-\d{2}-\d{4}$/; //DD-MM-YYYY
 const rentAmountPattern = /^\d+(\.\d{1,2})?$/; //numeric with up to 2 decimal places
 
 //patterns to protect against NoSQL injection (excluding dot for emails)
-const noSqlInjectionPattern = /[\$]/; // Only block $ symbol, allow dots for emails
+const noSqlInjectionPattern = /[$]/; // Only block $ symbol, allow dots for emails
 
 //common patterns to protect against XSS
 const xssPattern = /<script.*?>.*?<\/script.*?>/i;
@@ -57,6 +57,7 @@ function containsExplicitProfanity(text) {
         }
         
         // Check for word boundaries to avoid false positives
+        // eslint-disable-next-line security/detect-non-literal-regexp
         const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
         if (wordRegex.test(lowerText)) {
             return true;

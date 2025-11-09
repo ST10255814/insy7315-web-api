@@ -1,6 +1,6 @@
 import activityService from "../Services/activityService.js";
-import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
-import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
+import { sendSuccess, sendBadRequest } from '../utils/responseHandler.js';
+import { asyncHandler, getAdminId } from '../utils/controllerHelpers.js';
 
 /**
  * Get recent activities for the authenticated admin

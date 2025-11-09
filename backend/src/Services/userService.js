@@ -1,11 +1,10 @@
-import { client } from '../utils/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 import * as validation from '../utils/validation.js';
 import { sendResetPasswordEmail } from '../emails/emailHandler.js';
-import { serviceHandler, getCollection, validateServiceParams, logActivity } from '../utils/serviceHelpers.js';
+import { getCollection, logActivity } from '../utils/serviceHelpers.js';
 
 /**
  * Helper function to parse fullname into firstName and surname

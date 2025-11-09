@@ -1,5 +1,5 @@
 import bookingService from "../Services/bookingService.js";
-import { sendSuccess, sendError, sendBadRequest } from '../utils/responseHandler.js';
+import { sendSuccess, sendBadRequest } from '../utils/responseHandler.js';
 import { asyncHandler, getAdminId, logControllerAction } from '../utils/controllerHelpers.js';
 
 /**

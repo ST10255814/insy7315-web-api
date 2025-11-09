@@ -1,4 +1,4 @@
-import { parseDate, hasDatePassed, isToday, isFutureDate } from './dateUtils.js';
+import { parseDate, hasDatePassed, isFutureDate } from './dateUtils.js';
 
 /**
  * Status management utility for invoices and leases

@@ -1,9 +1,5 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { client } from '../utils/db.js';
-import { setAuthCookie, clearAuthCookie } from '../utils/cookieUtils.js';
-import Object from '../utils/ObjectIDConvert.js';
-const { toObjectId } = Object;
 dotenv.config();
 
 /**

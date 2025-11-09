@@ -3,7 +3,7 @@ import { client } from "../utils/db.js";
 import * as validation from '../utils/validation.js';
 import Object from '../utils/ObjectIDConvert.js';
 import { generateInvoiceId } from '../utils/idGenerator.js';
-import { generateInvoiceDescription, formatCurrency, truncateText } from '../utils/invoiceHelpers.js';
+import { generateInvoiceDescription } from '../utils/invoiceHelpers.js';
 import { determineInvoiceStatus } from '../utils/statusManager.js';
 import {
   getInvoicesFromDB,
@@ -109,7 +109,7 @@ async function getInvoicesByAdminId(adminId) {
 
     // Update invoice statuses in real-time
     const updatedInvoices = await Promise.all(
-      invoices.map(async (invoice, index) => {
+      invoices.map(async (invoice, _index) => {
         try {
           const currentStatus = invoice.status;
           
@@ -213,13 +213,78 @@ async function deleteInvoiceById(invoiceId, adminId) {
   }
 }
 
-// Wrapper functions that use the utility modules
+// Function to update all invoice statuses for a specific admin
 async function updateInvoiceStatusesByAdmin(adminId) {
-  return await updateStatusesByAdmin(adminId);
+  try {
+    const { invoices, invoicesCollection } = await getInvoicesFromDB(adminId);
+    let updatedCount = 0;
+
+    for (const invoice of invoices) {
+      const currentStatus = invoice.status;
+      
+      if (!invoice.date) continue;
+      
+      const newStatus = determineInvoiceStatus(invoice.date, currentStatus);
+
+      if (currentStatus !== newStatus) {
+        await invoicesCollection.updateOne(
+          { _id: invoice._id },
+          { 
+            $set: { 
+              status: newStatus,
+              lastStatusUpdate: new Date()
+            }
+          }
+        );
+        updatedCount++;
+      }
+    }
+
+    return updatedCount;
+  } catch (err) {
+    throw new Error("Error updating invoice statuses: " + err.message);
+  }
 }
 
+// Function to update ALL invoice statuses across ALL admins (for scheduled tasks)
 async function updateAllInvoiceStatuses() {
-  return await updateAllStatuses();
+  try {
+    const db = client.db("RentWise");
+    const invoicesCollection = db.collection("Invoices");
+
+    const invoices = await invoicesCollection
+      .find({ 
+        status: { $in: ["Pending", "Active", "Overdue"] } 
+      })
+      .toArray();
+
+    let updatedCount = 0;
+
+    for (const invoice of invoices) {
+      const currentStatus = invoice.status;
+      
+      if (!invoice.date) continue;
+      
+      const newStatus = determineInvoiceStatus(invoice.date, currentStatus);
+
+      if (currentStatus !== newStatus) {
+        await invoicesCollection.updateOne(
+          { _id: invoice._id },
+          { 
+            $set: { 
+              status: newStatus,
+              lastStatusUpdate: new Date()
+            }
+          }
+        );
+        updatedCount++;
+      }
+    }
+
+    return updatedCount;
+  } catch (error) {
+    throw new Error("Error updating all invoice statuses: " + error.message);
+  }
 }
 
 async function markInvoiceAsPaid(invoiceId, adminId) {

@@ -1,6 +1,5 @@
 import cron from 'node-cron';
 import { client } from '../utils/db.js';
-import leaseService from '../Services/leaseService.js';
 import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
 import occupansyService from '../Services/occupansyService.js';
@@ -227,8 +226,8 @@ async function calculateMonthlyRevenueForAllAdmins() {
     const currentDate = new Date();
     // For testing purposes, calculate for the current month
     // In production, you might want to calculate for the previous month
-    let targetMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed (1-12)
-    let targetYear = currentDate.getFullYear();
+    const targetMonth = currentDate.getMonth() + 1; // Convert from 0-indexed to 1-indexed (1-12)
+    const targetYear = currentDate.getFullYear();
     
     // If you want to calculate for previous month instead, uncomment below:
     // targetMonth = currentDate.getMonth(); // 0-indexed month
