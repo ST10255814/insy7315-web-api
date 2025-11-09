@@ -48,6 +48,7 @@ async function getAllMaintenanceRequests(adminId) {
           createdAt: request.newMaintenanceRequest?.createdAt || request.createdAt,
           property: request.listingDetail?.address,
           tenantName: user ? `${user.firstName} ${user.surname}` : "Unknown Tenant",
+          careTaker: request.newMaintenanceRequest?.caretakerId || null,
         };
 
         maintenanceRequests.push(formattedRequest);
