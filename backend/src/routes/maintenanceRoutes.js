@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import maintenanceController from '../Controllers/maintenanceController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
+import { csrfProtection } from '../middleware/csrfProtection.js';
 
 const router = Router();
 
@@ -16,13 +17,13 @@ router.use(checkAuth);
 router.get('/', maintenanceController.getAllMaintenanceRequests);
 
 // Caretaker management routes
-router.post('/create/caretaker', maintenanceController.createCareTaker);
+router.post('/create/caretaker', csrfProtection, maintenanceController.createCareTaker);
 
 // get care Takers
 router.get('/caretakers', maintenanceController.getAllAdminsCareTakers);
 
 //assign caretaker to maintenance request
-router.post('/assign', maintenanceController.assignCareTakerToRequest);
+router.post('/assign', csrfProtection, maintenanceController.assignCareTakerToRequest);
 
 // Maintenance statistics routes
 router.get('/count', maintenanceController.countMaintenanceRequestsByAdminId);

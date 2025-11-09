@@ -6,6 +6,7 @@
 import { Router } from 'express';
 import invoiceController from '../Controllers/invoiceController.js';
 import { checkAuth } from '../middleware/checkAuth.js';
+import { csrfProtection } from '../middleware/csrfProtection.js';
 
 const router = Router();
 
@@ -13,14 +14,14 @@ const router = Router();
 router.use(checkAuth);
 
 // Invoice management routes
-router.post('/create', invoiceController.createInvoice);
+router.post('/create', csrfProtection, invoiceController.createInvoice);
 router.get('/', invoiceController.getInvoicesByAdminId);
 router.get('/:invoiceId', invoiceController.getInvoiceById);
-router.delete('/:invoiceId', invoiceController.deleteInvoice);
-router.patch('/:invoiceId/pay', invoiceController.markInvoiceAsPaid);
+router.delete('/:invoiceId', csrfProtection, invoiceController.deleteInvoice);
+router.patch('/:invoiceId/pay', csrfProtection, invoiceController.markInvoiceAsPaid);
 
 // Invoice statistics and utilities
 router.get('/stats', invoiceController.getInvoiceStats);
-router.post('/regenerate-descriptions', invoiceController.regenerateInvoiceDescriptions);
+router.post('/regenerate-descriptions', csrfProtection, invoiceController.regenerateInvoiceDescriptions);
 
 export default router;
