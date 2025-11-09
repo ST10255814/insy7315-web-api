@@ -127,7 +127,7 @@ export class UserServiceTestBase extends ServiceTestBase {
   }
 
   createLoginScenario(userData = {}) {
-    const user = createMockUser({ password: 'hashedPassword', ...userData });
+    const user = createMockUser({ password: require('crypto').randomBytes(32).toString('hex'), ...userData });
     return {
       collections: {
         'System-Users': createCollectionMocks.withFindOneResult(user),

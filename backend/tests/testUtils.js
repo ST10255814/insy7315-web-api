@@ -42,7 +42,7 @@ export const createMockUser = (overrides = {}) => ({
   email: 'john@example.com',
   username: 'johndoe',
   role: 'landlord',
-  password: 'hashedPassword',
+  password: require('crypto').randomBytes(32).toString('hex'), // Dynamic hash generation
   ...overrides
 });
 
@@ -135,12 +135,13 @@ export class DateMockHelper {
 
   mockGlobalDate() {
     const mockDate = this.mockDate;
-    global.Date = class extends Date {
+    const OriginalDate = this.originalDate;
+    global.Date = class extends OriginalDate {
       constructor(...args) {
         if (args.length === 0) {
           return mockDate;
         }
-        return new Date(...args);
+        return new OriginalDate(...args);
       }
       static now() {
         return mockDate.getTime();
