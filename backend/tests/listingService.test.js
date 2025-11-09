@@ -33,9 +33,13 @@ describe('ListingService', () => {
   describe('Service Import', () => {
     test('should import listingService successfully', () => {
       expect(listingService).toBeDefined();
+      expect(listingService).toHaveProperty('createListing');
       expect(typeof listingService.createListing).toBe('function');
+      expect(listingService).toHaveProperty('getListingsByAdminId');
       expect(typeof listingService.getListingsByAdminId).toBe('function');
+      expect(listingService).toHaveProperty('countNumberOfListingsByAdminId');
       expect(typeof listingService.countNumberOfListingsByAdminId).toBe('function');
+      expect(listingService).toHaveProperty('countListingsAddedThisMonth');
       expect(typeof listingService.countListingsAddedThisMonth).toBe('function');
     });
   });
@@ -530,6 +534,7 @@ describe('ListingService', () => {
 
   describe('getListingById', () => {
     test('should fetch listing by ID successfully', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockListing = {
         _id: 'listing123',
         listingId: 'L-001',
@@ -538,7 +543,7 @@ describe('ListingService', () => {
         description: 'A test property',
         price: 1500,
         landlordInfo: {
-          userId: { _id: 'admin123' }
+          userId: { _id: validAdminId }
         }
       };
 
@@ -553,16 +558,17 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      const result = await listingService.getListingById('L-001', 'admin123');
+      const result = await listingService.getListingById('L-001', validAdminId);
 
       expect(mockListingsCollection.findOne).toHaveBeenCalledWith({
         listingId: 'L-001',
-        'landlordInfo.userId': { _id: 'admin123' }
+        'landlordInfo.userId': expect.any(Object) // ObjectId from validateObjectId
       });
       expect(result).toEqual(mockListing);
     });
 
     test('should return null when listing not found', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockListingsCollection = {
         findOne: jest.fn().mockResolvedValue(null)
       };
@@ -574,12 +580,13 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      const result = await listingService.getListingById('L-999', 'admin123');
+      const result = await listingService.getListingById('L-999', validAdminId);
 
       expect(result).toBeNull();
     });
 
     test('should handle database errors gracefully', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockListingsCollection = {
         findOne: jest.fn().mockRejectedValue(new Error('Database error'))
       };
@@ -591,7 +598,7 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      await expect(listingService.getListingById('L-001', 'admin123'))
+      await expect(listingService.getListingById('L-001', validAdminId))
         .rejects
         .toThrow('Error fetching listing by ID: Database error');
     });
@@ -599,6 +606,7 @@ describe('ListingService', () => {
 
   describe('deleteListingById', () => {
     test('should delete listing successfully', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockActivityCollection = {
         insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
       };
@@ -617,17 +625,18 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      const result = await listingService.deleteListingById('L-001', 'admin123');
+      const result = await listingService.deleteListingById('L-001', validAdminId);
 
       expect(mockListingsCollection.deleteOne).toHaveBeenCalledWith({
         listingId: 'L-001',
-        'landlordInfo.userId': { _id: 'admin123' }
+        'landlordInfo.userId': expect.any(Object) // ObjectId from validateObjectId
       });
       expect(mockActivityCollection.insertOne).toHaveBeenCalled();
       expect(result).toBe(true);
     });
 
     test('should return false when listing not found', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockActivityCollection = {
         insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
       };
@@ -646,12 +655,13 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      const result = await listingService.deleteListingById('L-999', 'admin123');
+      const result = await listingService.deleteListingById('L-999', validAdminId);
 
       expect(result).toBe(false);
     });
 
     test('should handle database errors gracefully', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockListingsCollection = {
         deleteOne: jest.fn().mockRejectedValue(new Error('Database error'))
       };
@@ -663,12 +673,13 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      await expect(listingService.deleteListingById('L-001', 'admin123'))
+      await expect(listingService.deleteListingById('L-001', validAdminId))
         .rejects
         .toThrow('Error deleting listing by ID: Database error');
     });
 
     test('should log activity when deleting listing', async () => {
+      const validAdminId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
       const mockActivityCollection = {
         insertOne: jest.fn().mockResolvedValue({ acknowledged: true })
       };
@@ -687,12 +698,12 @@ describe('ListingService', () => {
       const { client } = await import('../src/utils/db.js');
       client.db.mockReturnValue(mockDb);
 
-      await listingService.deleteListingById('L-001', 'admin123');
+      await listingService.deleteListingById('L-001', validAdminId);
 
-      expect(mockActivityCollection.insertOne).toHaveBeenCalledWith(
+        expect(mockActivityCollection.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'Delete Listing',
-          adminId: { _id: 'admin123' },
+          adminId: expect.any(Object), // ObjectId from toObjectId
           detail: 'Deleted listing L-001',
           timestamp: expect.any(Date)
         })

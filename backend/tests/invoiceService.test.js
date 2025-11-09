@@ -47,8 +47,6 @@ jest.mock('../src/utils/invoiceHelpers.js', () => ({
 jest.mock('../src/utils/statusManager.js', () => ({
   determineInvoiceStatus: jest.fn(() => 'Pending')
 }));
-
-// Mock invoice database operations
 jest.mock('../src/utils/invoiceDbOperations.js', () => ({
   getInvoicesFromDB: jest.fn(),
   createInvoiceInDB: jest.fn(),

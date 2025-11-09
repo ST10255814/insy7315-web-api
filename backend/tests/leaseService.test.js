@@ -40,12 +40,19 @@ describe('LeaseService', () => {
   describe('Service Import', () => {
     test('should import leaseService successfully', () => {
       expect(leaseService).toBeDefined();
+      expect(leaseService).toHaveProperty('getLeasesByAdminId');
       expect(typeof leaseService.getLeasesByAdminId).toBe('function');
+      expect(leaseService).toHaveProperty('createLease');
       expect(typeof leaseService.createLease).toBe('function');
+      expect(leaseService).toHaveProperty('validateDate');
       expect(typeof leaseService.validateDate).toBe('function');
+      expect(leaseService).toHaveProperty('updateLeaseStatusesByAdmin');
       expect(typeof leaseService.updateLeaseStatusesByAdmin).toBe('function');
+      expect(leaseService).toHaveProperty('updateAllLeaseStatuses');
       expect(typeof leaseService.updateAllLeaseStatuses).toBe('function');
+      expect(leaseService).toHaveProperty('countActiveLeasesByAdminId');
       expect(typeof leaseService.countActiveLeasesByAdminId).toBe('function');
+      expect(leaseService).toHaveProperty('getLeasedPropertyPercentage');
       expect(typeof leaseService.getLeasedPropertyPercentage).toBe('function');
     });
   });
