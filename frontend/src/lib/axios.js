@@ -7,50 +7,50 @@ let isHandling401 = false;
 
 // CSRF token management
 let csrfToken = null;
-let fetchingToken = false;
+let fetchingPromise = null;
 
 // Function to fetch CSRF token from server
 const fetchCSRFToken = async () => {
-  if (fetchingToken) {
-    // Wait for ongoing fetch with timeout to prevent infinite loop
-    let waitTime = 0;
-    const maxWaitTime = 5000; // 5 seconds maximum wait
-    while (fetchingToken && waitTime < maxWaitTime) {
-      await new Promise(resolve => setTimeout(resolve, 50));
-      waitTime += 50;
+  if (fetchingPromise) {
+    // Wait for ongoing fetch with timeout
+    try {
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      );
+      await Promise.race([fetchingPromise, timeoutPromise]);
+      return csrfToken;
+    } catch (error) {
+      console.warn('CSRF token fetch timeout or error, retrying...');
+      fetchingPromise = null;
     }
-    
-    // If still fetching after timeout, reset the flag and continue
-    if (fetchingToken) {
-      console.warn('CSRF token fetch timeout, resetting flag');
-      fetchingToken = false;
-    }
-    
-    return csrfToken;
   }
   
-  try {
-    fetchingToken = true;
-    const response = await axios.get('/api/security/csrf-token', {
-      baseURL: process.env.REACT_APP_BASE_URL,
-      withCredentials: true
-    });
-    csrfToken = response.data.csrfToken;
-    console.log('CSRF token fetched successfully');
-    return csrfToken;
-  } catch (error) {
-    console.warn('Failed to fetch CSRF token:', error);
-    csrfToken = null;
-    return null;
-  } finally {
-    fetchingToken = false;
-  }
+  // Create and store the fetching promise
+  fetchingPromise = (async () => {
+    try {
+      const response = await axios.get('/api/security/csrf-token', {
+        baseURL: process.env.REACT_APP_BASE_URL,
+        withCredentials: true
+      });
+      csrfToken = response.data.csrfToken;
+      console.log('CSRF token fetched successfully');
+      return csrfToken;
+    } catch (error) {
+      console.warn('Failed to fetch CSRF token:', error);
+      csrfToken = null;
+      return null;
+    } finally {
+      fetchingPromise = null;
+    }
+  })();
+  
+  return fetchingPromise;
 };
 
 // Function to clear CSRF token
 const clearCSRFToken = () => {
   csrfToken = null;
-  fetchingToken = false;
+  fetchingPromise = null;
 };
 
 // Avoid circular dependency by defining logout logic here
