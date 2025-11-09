@@ -189,7 +189,8 @@ export function validateEmail(email) {
     }
 
     const sanitized = sanitizeForDatabase(email).toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Use a more secure regex pattern to prevent ReDoS attacks
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!emailRegex.test(sanitized)) {
         throw new Error('Invalid email format');

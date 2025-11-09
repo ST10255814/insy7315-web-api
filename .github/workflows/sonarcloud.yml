@@ -55,7 +55,7 @@ jobs:
           npx eslint src/ --format json --output-file eslint-report.json || true
           
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@v2.3.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # This should be set in your repository secrets
@@ -65,7 +65,7 @@ jobs:
             -Dsonar.organization=st10255814
             
       - name: Quality Gate check
-        uses: sonarqube-quality-gate-action@master
+        uses: sonarqube-quality-gate-action@v1.3.0
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

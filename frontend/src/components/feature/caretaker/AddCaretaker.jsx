@@ -50,12 +50,12 @@ export default function AddCaretaker() {
     if (!formData.surname.trim()) newErrors.surname = "Surname is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone number is required";
-    } else if (!/^[+]?[0-9\s\-()]{10,}$/.test(formData.phoneNumber)) {
+    } else if (!/^\+?[1-9]\d{1,14}$/.test(formData.phoneNumber.replace(/[\s\-()]/g, ''))) {
       newErrors.phoneNumber = "Please enter a valid phone number";
     }
     if (!formData.profession) newErrors.profession = "Profession is required";
