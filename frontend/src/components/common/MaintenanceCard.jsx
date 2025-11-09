@@ -73,10 +73,26 @@ export default function MaintenanceCard({ request , onAction }) {
           <span className="text-gray-900 font-medium truncate">{request.tenantName}</span>
         </div>
 
-        <div className="flex items-center gap-3 text-gray-700 text-sm">
-          <FaHome className="text-green-500 text-sm flex-shrink-0" />
-          <span className="font-medium min-w-0">Property:</span>
-          <span className="text-gray-900 font-medium truncate">{request.property}</span>
+        <div className="w-full">
+          <div className="flex items-center gap-2 mb-2">
+            <FaHome className="text-green-500 text-sm flex-shrink-0" />
+            <span className="font-medium text-gray-700">Property:</span>
+          </div>
+          <div className="bg-green-50 rounded-lg px-3 py-2">
+            <span
+              className="text-gray-900 font-medium text-sm leading-relaxed block"
+              title={request.property}
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                wordBreak: 'break-word'
+              }}
+            >
+              {request.property}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3 text-sm">
@@ -84,7 +100,7 @@ export default function MaintenanceCard({ request , onAction }) {
           <span className="font-medium text-gray-700 min-w-0">Caretaker:</span>
           <span
             className={
-              request.caretakerId
+              request.caretaker
                 ? "text-green-700 font-semibold"
                 : "text-red-500 italic font-medium"
             }
@@ -126,14 +142,6 @@ export default function MaintenanceCard({ request , onAction }) {
           {formatDateTimeUS(request.createdAt) || "No Created At Date"}
         </i>
       </div>
-
-      {/* Updated Time */}
-      {request.updatedAt && (
-        <p className="text-gray-400 text-xs mb-4 text-center truncate">
-          Last updated: {formatDateTimeUS(request.updatedAt)}
-        </p>
-      )}
-
       {/* Action Buttons */}
       <div className="space-y-2 mt-3 sm:mt-4">
         {/* Primary Action Button */}
@@ -207,7 +215,7 @@ export default function MaintenanceCard({ request , onAction }) {
       {/* Updated Time - Moved to bottom */}
       {request.updatedAt && (
         <p className="text-gray-400 text-xs mt-2 sm:mt-3 text-center truncate">
-          Last updated: {request.updatedAt}
+          Last updated: {formatDateTimeUS(request.updatedAt)}
         </p>
       )}
     </motion.div>

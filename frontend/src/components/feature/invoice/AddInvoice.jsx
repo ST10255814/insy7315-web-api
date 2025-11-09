@@ -238,12 +238,19 @@ export default function AddInvoice() {
               </div>
 
               {/* Invoice Preview */}
-              <InvoicePreview
-                selectedLease={selectedLease}
-                formData={formData}
-              />
+                <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
+                  <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
+                      2
+                    </span>
+                    Invoice Preview
+                  </h2>
+                  <InvoicePreview
+                    selectedLease={selectedLease}
+                    formData={formData}
+                  />
+              </div>
             </div>
-
             {/* Sidebar - Right Side */}
             <div className="space-y-6 flex flex-col justify-start">
               <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">

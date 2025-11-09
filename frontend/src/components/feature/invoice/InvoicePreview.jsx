@@ -12,15 +12,6 @@ import { statusClasses } from "../../../constants/constants.js";
  */
 export default function InvoicePreview({ selectedLease, formData }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-white/20 p-6">
-      <h2 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2">
-        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white font-bold mr-2">
-          2
-        </span>
-        Invoice Preview
-      </h2>
-      
-      {/* Professional Invoice Layout */}
       <div className="border-2 border-blue-200 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50/30 to-white">
         {/* Invoice Header */}
         <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white p-6">
@@ -32,7 +23,7 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div className="text-right">
               <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <p className="text-xs text-blue-100 mb-1">Invoice #</p>
-                <p className="text-lg font-bold">INV-{new Date().getFullYear()}-XXXX</p>
+                <p className="text-lg font-bold">{formData.invoiceId || `INV-${new Date().getFullYear()}-XXXX`}</p>
               </div>
             </div>
           </div>
@@ -45,21 +36,21 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Issue Date</p>
               <p className="text-sm font-medium text-gray-900">
-                {new Date().toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Due Date</p>
               <p className={`text-sm font-medium ${formData.date ? 'text-blue-700' : 'text-gray-400'}`}>
-                {formData.date 
-                  ? new Date(formData.date).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                {formData.date
+                  ? new Date(formData.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
                     })
                   : 'Not specified'}
               </p>
@@ -72,8 +63,8 @@ export default function InvoicePreview({ selectedLease, formData }) {
               <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Bill To</p>
               <div className="space-y-1">
                 <p className={`font-semibold ${selectedLease ? 'text-gray-900' : 'text-gray-400'}`}>
-                  {selectedLease 
-                    ? `${selectedLease.tenant?.firstName || ''} ${selectedLease.tenant?.surname || 'Tenant Name'}`
+                  {selectedLease
+                    ? `${selectedLease.tenant?.firstName || ''} ${selectedLease.tenant?.surname || ''}`.trim() || 'Tenant Name'
                     : 'Select a lease to view tenant'}
                 </p>
                 <p className="text-sm text-gray-600">
@@ -171,6 +162,5 @@ export default function InvoicePreview({ selectedLease, formData }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }
