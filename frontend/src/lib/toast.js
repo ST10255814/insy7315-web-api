@@ -57,6 +57,24 @@ class Toast {
       ...options,
     });
   }
+
+  static promise(promise, messages, options = {}) {
+    toast.promise(
+      promise,
+      messages,
+      {
+        position: options.position || "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        transition: Slide,
+        ...options,
+      }
+    );
+  }
 }
 
 export default Toast;

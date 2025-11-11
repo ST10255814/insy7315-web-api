@@ -1,6 +1,6 @@
 import { statusClasses } from "../../../constants/constants.js";
 import { formatDateUS } from "../../../utils/formatters.js";
-import { FaFileContract, FaCalendarAlt, FaMapMarkerAlt, FaUser, FaDollarSign, FaClock } from "react-icons/fa";
+import { FaFileContract, FaCalendarAlt, FaMapMarkerAlt, FaUser, FaClock } from "react-icons/fa";
 
 export default function LeaseDocument({ lease }) {
   const calculateLeaseDuration = () => {
@@ -175,8 +175,7 @@ export default function LeaseDocument({ lease }) {
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm text-blue-700 font-semibold mb-1 flex items-center gap-2">
-                  <FaDollarSign className="w-4 h-4" />
-                  Monthly Rental Amount
+                  Nightly Rental Amount
                 </p>
                 <p className="text-xs text-blue-600">As per lease agreement</p>
               </div>
@@ -184,7 +183,7 @@ export default function LeaseDocument({ lease }) {
                 <p className="text-3xl font-bold text-blue-700">
                   R {lease.bookingDetails?.rentAmount?.toLocaleString() || '0'}
                 </p>
-                <p className="text-xs text-blue-600">per month</p>
+                <p className="text-xs text-blue-600">per night</p>
               </div>
             </div>
           </div>

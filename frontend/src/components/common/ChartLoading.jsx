@@ -1,6 +1,16 @@
 import { motion } from "framer-motion";
+import { useRef, useLayoutEffect, useState } from "react";
 
-export default function ChartLoading( {subtitle} ) {
+export default function ChartLoading({ subtitle }) {
+  const subtitleRef = useRef(null);
+  const [subtitleWidth, setSubtitleWidth] = useState(null);
+
+  useLayoutEffect(() => {
+    if (subtitleRef.current) {
+      setSubtitleWidth(subtitleRef.current.offsetWidth);
+    }
+  }, [subtitle]);
+
   return (
     <div className="flex flex-col items-center justify-center h-full space-y-4">
       <div className="relative">
@@ -13,13 +23,16 @@ export default function ChartLoading( {subtitle} ) {
         {/* Animated border */}
         <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-600 animate-spin"></div>
       </div>
-      {/* Loading text with typing animation */}
-      <div className="text-center">
+      {/* Loading text with typing animation and progress bars below */}
+      <div className="flex flex-col items-center w-full">
         <motion.p
-          className="text-blue-600 font-medium text-sm"
+          ref={subtitleRef}
+          className="text-blue-600 font-medium text-sm px-2"
+          style={{ width: "fit-content", maxWidth: "90vw" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.3 }}
+          id="chart-loading-subtitle"
         >
           {subtitle}
           <motion.span
@@ -29,10 +42,10 @@ export default function ChartLoading( {subtitle} ) {
             ...
           </motion.span>
         </motion.p>
-        {/* Animated progress bars */}
-        <div className="mt-3 space-y-2 w-32">
+        {/* Animated progress bars - match subtitle width exactly */}
+        <div className="mt-3 space-y-2 flex flex-col items-center" style={{ width: subtitleWidth ? subtitleWidth + "px" : "auto", minWidth: "80px", maxWidth: "90vw" }}>
           <motion.div
-            className="h-1 bg-blue-100 rounded-full overflow-hidden"
+            className="h-1 bg-blue-100 rounded-full overflow-hidden w-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
@@ -51,7 +64,7 @@ export default function ChartLoading( {subtitle} ) {
             />
           </motion.div>
           <motion.div
-            className="h-1 bg-blue-50 rounded-full overflow-hidden"
+            className="h-1 bg-blue-50 rounded-full overflow-hidden w-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0 }}

@@ -17,6 +17,9 @@ router.use(csrfProtection);
 // Booking management routes
 router.get('/', bookingController.getBookings);
 
+// Get booking by ID
+router.get('/:bookingId', bookingController.getBookingById);
+
 // Booking revenue routes
 router.get('/current-month-revenue', bookingController.getCurrentMonthRevenue);
 

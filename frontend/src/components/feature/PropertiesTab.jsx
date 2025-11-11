@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
 import { useParams, useNavigate, Routes, Route } from "react-router-dom";
-import { TabWrapper, StateHandler, ActionButton, PropertyCard } from "../common/index.js";
+import { TabWrapper, StateHandler, ActionButton } from "../common/index.js";
 import { propertyStatusMap } from "../../constants/status.js";
 import { useListingsQuery } from "../../utils/queries.js";
 import ViewProperty from "./properties/ViewProperty.jsx";
@@ -9,6 +9,7 @@ import EditProperty from "./properties/EditProperty.jsx";
 import DeleteProperty from "./properties/DeleteProperty.jsx";
 import AddProperty from "./properties/AddProperty.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
+import PropertyCard from "./properties/PropertyCard.jsx";
 
 export default function PropertiesTab() {
   return (

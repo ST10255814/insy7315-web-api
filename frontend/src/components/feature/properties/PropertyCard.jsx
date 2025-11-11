@@ -8,8 +8,8 @@ import {
   FaMapMarkerAlt,
   FaImage,
 } from "react-icons/fa";
-import HoverActionButton from "./HoverActionButton.jsx";
-import { formatAmount } from "../../utils/formatters";
+import HoverActionButton from "../../common/HoverActionButton.jsx";
+import { formatAmount } from "../../../utils/formatters.js";
 
 export default function PropertyCard({ property, getStatusClasses, onAction }) {
   // Get the first image from the imagesURL array, or use a placeholder
@@ -109,7 +109,7 @@ export default function PropertyCard({ property, getStatusClasses, onAction }) {
           icon={<FaEye size={17} />}
           label="View"
           onClick={() => onAction && onAction("view", property)}
-          className="text-yellow-600 hover:bg-gray-50 hover:shadow-lg"
+          className="text-yellow-600 hover:bg-yellow-50 hover:shadow-lg"
         />
 
         <HoverActionButton

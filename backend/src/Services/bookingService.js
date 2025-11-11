@@ -65,6 +65,21 @@ function calculateNights(checkInDate, checkOutDate) {
     }
 }
 
+// Get a booking via its ID
+async function getBookingById(bookingId) {
+    try{
+        const db = client.db('RentWise');
+        const bookingsCollection = db.collection('Bookings');
+
+        const booking = await bookingsCollection.findOne({ "newBooking.bookingId": bookingId });
+        return booking;
+    }
+    catch (error) {
+        console.error("Error fetching booking by ID:", error);
+        throw new Error("Failed to fetch booking");
+    }
+}
+
 //Get bookings for admin (landlord)
 async function getBookings(adminId){
     try{
@@ -240,6 +255,7 @@ async function getCurrentMonthRevenue(adminId) {
 
 const bookingService = {
     getBookings,
+    getBookingById,
     getCurrentMonthRevenue
 };
 export default bookingService;

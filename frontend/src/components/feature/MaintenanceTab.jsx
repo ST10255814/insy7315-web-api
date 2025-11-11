@@ -51,17 +51,18 @@ function MaintenanceListView() {
         loadingCount={9}
       >
         {/* Content State - Mobile: scrollable page, Desktop: scrollable columns */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-auto md:h-full md:min-h-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 h-auto md:h-full md:min-h-0 w-full">
           {statuses.map((status) => (
-            <MaintenanceColumn
-              key={status}
-              status={status}
-              requests={maintenanceData.filter(
-                (request) => request.status === status
-                
-              )}
-              onAction={handleMaintenanceAction}
-            />
+            <div className="flex flex-col h-full min-h-[320px] md:min-h-0">
+              <MaintenanceColumn
+                key={status}
+                status={status}
+                requests={maintenanceData.filter(
+                  (request) => request.status === status
+                )}
+                onAction={handleMaintenanceAction}
+              />
+            </div>
           ))}
         </div>
       </StateHandler>

@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import {
   FaEdit,
   FaTrash,
-  FaEye,
   FaEnvelope,
   FaHome,
   FaCalendarAlt,
@@ -13,10 +12,10 @@ import {
   FaDownload,
   FaMoon
 } from "react-icons/fa";
-import { formatDateUS, formatAmount } from "../../utils/formatters";
-import { statusClasses } from "../../constants/constants.js";
-import HoverActionButton from "./HoverActionButton.jsx";
-import { downloadFiles } from "../../utils/fileDownload.js";
+import { formatDateUS, formatAmount } from "../../../utils/formatters.js";
+import { statusClasses } from "../../../constants/constants.js";
+import HoverActionButton from "../../common/HoverActionButton.jsx";
+import { downloadFiles } from "../../../utils/fileDownload.js";
 
 export default function BookingCard({ booking, onAction }) {
   // Use the utility function to format amount
@@ -154,37 +153,30 @@ export default function BookingCard({ booking, onAction }) {
       >
         {/* Common Buttons */}
         <HoverActionButton
-          icon={<FaEdit size={16} />}
+          icon={<FaEdit size={17} />}
           label="Edit"
           onClick={() => onAction("Edit", booking)}
           className="text-blue-600 hover:bg-blue-50"
         />
 
         <HoverActionButton
-          icon={<FaEye size={16} />}
-          label="View"
-          onClick={() => onAction("View", booking)}
-          className="text-yellow-600 hover:bg-gray-50"
-        />
-
-        <HoverActionButton
-          icon={<FaTrash size={16} />}
+          icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => onAction("Delete", booking)}
           className="text-red-600 hover:bg-red-50"
         />
 
         {/* Status-specific Buttons */}
-        {booking.status === "pending" && (
+        {booking.status === "Pending" && (
           <>
             <HoverActionButton
-              icon={<FaCheck size={16} />}
+              icon={<FaCheck size={17} />}
               label="Confirm"
               onClick={() => onAction("Confirm", booking)}
               className="text-green-600 hover:bg-green-50"
             />
             <HoverActionButton
-              icon={<FaTimes size={16} />}
+              icon={<FaTimes size={17} />}
               label="Cancel"
               onClick={() => onAction("Cancel", booking)}
               className="text-red-600 hover:bg-red-50"

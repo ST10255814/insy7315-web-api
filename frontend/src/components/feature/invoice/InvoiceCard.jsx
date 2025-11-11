@@ -8,9 +8,9 @@ import {
   FaMoneyBillWave,
   FaHandHoldingUsd,
 } from "react-icons/fa";
-import { formatDateUS, formatAmount } from "../../utils/formatters";
-import { statusClasses } from "../../constants/constants.js";
-import HoverActionButton from "./HoverActionButton.jsx";
+import { formatDateUS, formatAmount } from "../../../utils/formatters.js";
+import { statusClasses } from "../../../constants/constants.js";
+import HoverActionButton from "../../common/HoverActionButton.jsx";
 
 export default function InvoiceCard({ invoice, onAction }) {
   // Use the utility function to format amount
@@ -108,21 +108,21 @@ export default function InvoiceCard({ invoice, onAction }) {
         className="absolute inset-0 z-20 bg-gray-400/10 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
         <HoverActionButton
-          icon={<FaEye size={16} />}
+          icon={<FaEye size={17} />}
           label="View"
           onClick={() => onAction("View", invoice)}
           className="text-yellow-600 hover:bg-yellow-50"
         />
 
         <HoverActionButton
-          icon={<FaTrash size={16} />}
+          icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => onAction("Delete", invoice)}
           className="text-red-600 hover:bg-red-50"
         />
 
         <HoverActionButton
-          icon={<FaHandHoldingUsd size={16} />}
+          icon={<FaHandHoldingUsd size={17} />}
           label="Mark as Paid"
           onClick={() => onAction("Paid", invoice)}
           className="text-green-600 hover:bg-green-50"

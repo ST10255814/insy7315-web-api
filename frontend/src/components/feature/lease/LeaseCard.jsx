@@ -8,9 +8,9 @@ import {
   FaMoneyBillWave,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { formatDate, formatAmount } from "../../utils/formatters";
-import { statusClasses } from "../../constants/constants.js";
-import HoverActionButton from "./HoverActionButton.jsx";
+import { formatDate, formatAmount } from "../../../utils/formatters.js";
+import { statusClasses } from "../../../constants/constants.js";
+import HoverActionButton from "../../common/HoverActionButton.jsx";
 
 export default function LeaseCard({ lease, onAction }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -117,14 +117,14 @@ export default function LeaseCard({ lease, onAction }) {
       >
         {/* Common Buttons */}
         <HoverActionButton
-          icon={<FaEye size={16} />}
+          icon={<FaEye size={17} />}
           label="View"
           onClick={() => handleActionClick("View", lease)}
           className="text-yellow-600 hover:bg-yellow-50"
         />
 
         <HoverActionButton
-          icon={<FaTrash size={16} />}
+          icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => handleActionClick("Delete", lease)}
           className="text-red-600 hover:bg-red-50"

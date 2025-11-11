@@ -35,7 +35,7 @@ export default function DeleteBooking() {
     <DeleteEntityComponent
       entityType="booking"
       entityDisplayName="Booking"
-      entityIdParam="bookingId"
+      entityIdParam="bookingID"
       useEntityByIdQuery={useBookingByIdQuery}
       useDeleteEntityMutation={useDeleteBookingMutation}
       renderEntityDetails={renderBookingDetails}
