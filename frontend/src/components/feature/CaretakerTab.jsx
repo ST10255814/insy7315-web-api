@@ -3,13 +3,13 @@ import {
   TabWrapper,
   StateHandler,
   ActionButton,
-  CaretakerCard,
 } from "../common/index.js";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import AddCaretaker from "./caretaker/AddCaretaker.jsx";
 import { FaPlusCircle } from "react-icons/fa";
 import { useCaretakersQuery } from "../../utils/queries.js";
+import CaretakerCard from "./caretaker/CaretakerCard.jsx";
 
 export default function CaretakerTab() {
   return (

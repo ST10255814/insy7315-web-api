@@ -12,7 +12,7 @@ export async function getBookingsByAdminId() {
 
 export async function getBookingById(bookingId) {
     try {
-        const response = await api.get(`/api/bookings/${bookingId}/view`, { withCredentials: true });
+        const response = await api.get(`/api/bookings/${bookingId}`, { withCredentials: true });
         return response.data.data;
     } catch (error) {
         throw error;
@@ -21,7 +21,7 @@ export async function getBookingById(bookingId) {
 
 export async function deleteBookingById(bookingId) {
     try {
-        const response = await api.delete(`/api/bookings/${bookingId}`, { withCredentials: true });
+        const response = await api.delete(`/api/bookings/delete/${bookingId}`, { withCredentials: true });
         return response.data.data;
     } catch (error) {
         throw error;

@@ -4,19 +4,17 @@ import {
   TabWrapper,
   StateHandler,
   SectionHeading,
-  BookingCard,
 } from "../common/index.js";
 import { useBookingsQuery } from "../../utils/queries.js";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import DeleteBooking from "./booking/DeleteBooking.jsx";
-import ViewBooking from "./booking/ViewBooking.jsx";
+import BookingCard from "./booking/BookingCard.jsx";
 
 export default function BookingsTab() {
   return (
     <Routes>
       <Route path="delete/:bookingID" element={<DeleteBooking />} />
-      <Route path="view/:bookingID" element={<ViewBooking />} />
       <Route index element={<BookingsListView />} />
       <Route path="*" element={<DashboardNotFound />} />
     </Routes>
@@ -37,9 +35,6 @@ function BookingsListView() {
         break;
       case "Delete":
         navigate(`delete/${booking.bookingID}`);
-        break;
-      case "View":
-        navigate(`view/${booking.bookingID}`);
         break;
       case "Confirm":
         //TODO: Implement confirm functionality

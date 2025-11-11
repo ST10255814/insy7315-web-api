@@ -2,11 +2,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { useLeasesQuery } from "../../utils/queries";
 import { FaPlusCircle } from "react-icons/fa";
-import { TabWrapper, StateHandler, ActionButton, LeaseCard } from "../common/index.js";
+import { TabWrapper, StateHandler, ActionButton } from "../common/index.js";
 import AddLease from "./lease/AddLease.jsx";
 import DeleteLease from "./lease/DeleteLease.jsx";
 import ViewLease from "./lease/ViewLease.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
+import LeaseCard from "./lease/LeaseCard.jsx";
 
 export default function LeaseTab() {
   return (

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlusCircle } from "react-icons/fa";
-import { TabWrapper, StateHandler, ActionButton, InvoiceCard } from "../common/index.js";
+import { TabWrapper, StateHandler, ActionButton } from "../common/index.js";
 import {
   useInvoicesQuery,
 } from "../../utils/queries.js";
@@ -9,6 +9,7 @@ import AddInvoice from "../feature/invoice/AddInvoice.jsx";
 import DeleteInvoice from "../feature/invoice/DeleteInvoice.jsx";
 import ViewInvoice from "../feature/invoice/ViewInvoice.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
+import InvoiceCard from "../feature/invoice/InvoiceCard.jsx";
 
 export default function InvoicesTab() {
   return (

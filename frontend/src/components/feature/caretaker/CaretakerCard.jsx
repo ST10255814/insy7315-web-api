@@ -8,8 +8,8 @@ import {
   FaBriefcase,
   FaUser,
 } from "react-icons/fa";
-import HoverActionButton from "./HoverActionButton.jsx";
-import { professionClasses } from "../../constants/constants.js";
+import HoverActionButton from "../../common/HoverActionButton.jsx";
+import { professionClasses } from "../../../constants/constants.js";
 
 export default function CaretakerCard({ caretaker, onAction }) {
   return (

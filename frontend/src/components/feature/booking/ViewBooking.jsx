@@ -7,7 +7,7 @@ import { useBookingByIdQuery } from "../../../utils/queries.js";
 
 export default function ViewBooking() {
   const { bookingID, userId: adminId } = useParams();
-  const { isLoading, isError, data: booking } = useBookingByIdQuery(bookingID, adminId);
+  const { isLoading, isError, data: booking } = useBookingByIdQuery(adminId, bookingID);
 
   const navigate = useNavigate();
 
