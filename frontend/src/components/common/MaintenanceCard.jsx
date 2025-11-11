@@ -21,7 +21,7 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-export default function MaintenanceCard({ request , onAction }) {
+export default function MaintenanceCard({ request, onAction }) {
   return (
     <motion.div
       variants={cardVariants}
@@ -41,7 +41,9 @@ export default function MaintenanceCard({ request , onAction }) {
       <div className="mb-3 sm:mb-4">
         <div className="flex items-start gap-2 mb-2 pr-16 sm:pr-20">
           <FaExclamationCircle className="text-red-500 text-sm flex-shrink-0 mt-2" />
-          <h3 className="font-bold text-blue-700 text-base sm:text-lg leading-tight">{request.issue}</h3>
+          <h3 className="font-bold text-blue-700 text-base sm:text-lg leading-tight">
+            {request.issue}
+          </h3>
         </div>
 
         {/* Maintenance ID */}
@@ -57,9 +59,25 @@ export default function MaintenanceCard({ request , onAction }) {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <FaFileAlt className="text-gray-500 text-sm flex-shrink-0" />
-            <h4 className="font-semibold text-gray-800 text-sm">Description:</h4>
+            <h4 className="font-semibold text-gray-800 text-sm">
+              Description:
+            </h4>
           </div>
-          <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg">
+          <p
+            className="
+              text-gray-700
+              text-xs sm:text-sm md:text-base
+              leading-relaxed
+              bg-gray-50
+              p-2 sm:p-3 md:p-4
+              rounded-lg
+              break-words
+              "
+            style={{
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
             {request.description}
           </p>
         </div>
@@ -70,7 +88,9 @@ export default function MaintenanceCard({ request , onAction }) {
         <div className="flex items-center gap-3 text-gray-700 text-sm">
           <FaUser className="text-blue-500 text-sm flex-shrink-0" />
           <span className="font-medium min-w-0">Tenant:</span>
-          <span className="text-gray-900 font-medium truncate">{request.tenantName}</span>
+          <span className="text-gray-900 font-medium truncate">
+            {request.tenantName}
+          </span>
         </div>
 
         <div className="w-full">
@@ -83,11 +103,11 @@ export default function MaintenanceCard({ request , onAction }) {
               className="text-gray-900 font-medium text-sm leading-relaxed block"
               title={request.property}
               style={{
-                display: '-webkit-box',
+                display: "-webkit-box",
                 WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                wordBreak: 'break-word'
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                wordBreak: "break-word",
               }}
             >
               {request.property}
@@ -100,12 +120,12 @@ export default function MaintenanceCard({ request , onAction }) {
           <span className="font-medium text-gray-700 min-w-0">Caretaker:</span>
           <span
             className={
-              request.caretaker
+              request.careTaker
                 ? "text-green-700 font-semibold"
                 : "text-red-500 italic font-medium"
             }
           >
-            {request.caretaker || "Unassigned"}
+            {request.careTaker || "Unassigned"}
           </span>
         </div>
       </div>
@@ -115,7 +135,9 @@ export default function MaintenanceCard({ request , onAction }) {
         <div className="flex items-center gap-2 text-sm text-blue-700">
           <FaCommentDots className="text-sm flex-shrink-0" />
           <span className="font-medium">Follow-ups:</span>
-          <span className="font-bold text-blue-800">{request.followUps || 0}</span>
+          <span className="font-bold text-blue-800">
+            {request.followUps || 0}
+          </span>
         </div>
       </div>
 
@@ -163,21 +185,25 @@ export default function MaintenanceCard({ request , onAction }) {
         )}
 
         {/* Download Button - Only show for Pending requests */}
-        {request.status === "Pending" && request.documentURL && request.documentURL.length > 0 && (
-          <motion.button
-            whileHover={{
-              scale: 1.02,
-              boxShadow: "0 4px 12px rgba(99,102,241,0.3)",
-              transition: { duration: 0.15, ease: "easeOut" },
-            }}
-            whileTap={{ scale: 0.975 }}
-            onClick={() => downloadFiles(request.documentURL)}
-            className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg sm:rounded-xl border border-indigo-200 transition-colors duration-200 flex items-center justify-center gap-2"
-          >
-            <FaDownload size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
-            <span className="truncate">Download Attached Docs ({request.documentURL.length})</span>
-          </motion.button>
-        )}
+        {request.status === "Pending" &&
+          request.documentURL &&
+          request.documentURL.length > 0 && (
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 4px 12px rgba(99,102,241,0.3)",
+                transition: { duration: 0.15, ease: "easeOut" },
+              }}
+              whileTap={{ scale: 0.975 }}
+              onClick={() => downloadFiles(request.documentURL)}
+              className="w-full px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg sm:rounded-xl border border-indigo-200 transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <FaDownload size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
+              <span className="truncate">
+                Download Attached Docs ({request.documentURL.length})
+              </span>
+            </motion.button>
+          )}
         {request.status === "In Progress" && (
           <>
             <motion.button
