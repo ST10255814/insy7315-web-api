@@ -372,7 +372,7 @@ export const useMaintenanceRequestsQuery = (adminId) => {
       return getMaintenanceRequestsByAdminId();
     },
     enabled: !!adminId,
-    ...CACHE_CONFIGS.MEDIUM,
+    ...CACHE_CONFIGS.REALTIME,
   });
 };
 
@@ -580,6 +580,7 @@ export const useAssignCaretakerMutation = () => {
       Toast.success(`Caretaker assigned to request successfully`);
       // Invalidate maintenance requests to reflect assignment
       invalidateEntityQueries(queryClient, "maintenanceRequests");
+      invalidateOverviewQueries(queryClient);
     },
     onError: (error) => {
       // Don't show toast if error was already handled by 401 interceptor

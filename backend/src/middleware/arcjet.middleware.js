@@ -6,7 +6,26 @@ import { isSpoofedBot } from "@arcjet/inspect";
  */
 export const arcjetMiddleware = async (req, res, next) => {
   try {
-    const decision = await aj.protect(req, { email: req.body.prefLogin ? req.body.prefLogin : req.body.email });
+    // Determine identifier: email or username
+    const identifier = req.body.prefLogin ? req.body.prefLogin : req.body.email;
+
+    // If no identifier provided, skip Arcjet checks
+    if (!identifier) {
+      return res.status(400).json({ error: "No identifier provided for Arcjet." });
+    }
+
+    // Ensure identifier is a string
+    if(typeof identifier !== "string") {
+      return res.status(400).json({ error: "Invalid identifier format for Arcjet." });
+    }
+
+    // Skip Arcjet checks for usernames
+    if(!identifier.includes("@")) {
+      next();
+      return;
+    }
+
+    const decision = await aj.protect(req, { email: identifier });
     console.log("Arcjet decision:", decision);
 
     if (decision.isDenied()) {
