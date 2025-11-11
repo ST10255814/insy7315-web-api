@@ -10,7 +10,6 @@ import {
   PropertyLoadingSkeleton,
   FormLayout,
   FormSection,
-  FormValidationPreview,
   FormButtonGroup
 } from "../../common/index.js";
 import { useListingByIdQuery } from "../../../utils/queries.js";
@@ -115,8 +114,6 @@ export default function EditProperty() {
     }
   };
 
-  // Reset form to original property data
-
   // Handle amenities change
   const handleAmenitiesChange = (selectedAmenities, error) => {
     handleInputChange("amenities", selectedAmenities);
@@ -179,22 +176,6 @@ export default function EditProperty() {
       setIsPending(false);
       navigate(`/dashboard/${userId}/properties`);
     }, 1500);
-  };
-
-  // Validation items for preview
-  const validationItems = [
-    { label: "Title", isValid: !!formData.title.trim() },
-    { label: "Address", isValid: !!formData.address.trim() },
-    { label: "Price", isValid: !!formData.price && formData.price > 0 },
-    { label: "Description", isValid: !!formData.description.trim() },
-    { label: "Amenities", isValid: formData.amenities.length > 0 },
-    { label: "Images", isValid: formData.imageURL.length > 0 || formData.imageFiles.length > 0 },
-    { label: "Status", isValid: !!formData.status },
-  ];
-
-  const overallStatus = {
-    isComplete: formData.title.trim() && formData.address.trim() && formData.price && formData.price > 0 && formData.description.trim() && formData.amenities.length > 0 && (formData.imageURL.length > 0 || formData.imageFiles.length > 0) && formData.status,
-    text: (formData.title.trim() && formData.address.trim() && formData.price && formData.price > 0 && formData.description.trim() && formData.amenities.length > 0 && (formData.imageURL.length > 0 || formData.imageFiles.length > 0) && formData.status) ? "Ready" : "Incomplete"
   };
 
   return (
@@ -379,14 +360,6 @@ export default function EditProperty() {
                   disabled={!isDirty}
                 />
               </FormSection>
-
-              {/* Form Validation */}
-              <FormValidationPreview
-                title="Form Validation"
-                stepNumber={6}
-                validationItems={validationItems}
-                overallStatus={overallStatus}
-              />
             </div>
           </div>
         </FormLayout>
