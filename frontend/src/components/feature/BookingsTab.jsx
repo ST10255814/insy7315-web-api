@@ -39,7 +39,6 @@ function BookingsListView() {
         navigate(`delete/${booking.bookingID}`);
         break;
       case "View":
-        //TODO: Implement view functionality
         navigate(`view/${booking.bookingID}`);
         break;
       case "Confirm":

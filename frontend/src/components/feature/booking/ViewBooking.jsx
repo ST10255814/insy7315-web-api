@@ -1,25 +1,13 @@
 import { FaArrowLeft } from "react-icons/fa";
 import { DataStateHandler, DataLoading } from "../../common/index.js";
 import { TabWrapper } from "../../common";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BookingPreview from "./BookingPreview.jsx";
+import { useBookingByIdQuery } from "../../../utils/queries.js";
 
 export default function ViewBooking() {
-  //TODO: Fetch booking and lease data here
-  const isLoading = false;
-  const isError = false;
-  const mockBooking = {
-    bookingId: "B-2025-001",
-    tenantName: "Gerhard Lemmer",
-    propertyName: "Sunset Villas, Unit 12",
-    startDate: "2025-11-15T14:00:00Z",
-    endDate: "2026-11-14T10:00:00Z",
-    amount: 12500,
-    status: "Confirmed", // Try "Cancelled" or "Pending" for other badge colors
-    notes: "Tenant requested early check-in. Please confirm with caretaker.",
-    createdAt: "2025-11-01T09:30:00Z",
-    updatedAt: "2025-11-10T16:45:00Z",
-  };
+  const { bookingID, userId: adminId } = useParams();
+  const { isLoading, isError, data: booking } = useBookingByIdQuery(bookingID, adminId);
 
   const navigate = useNavigate();
 
@@ -43,13 +31,13 @@ export default function ViewBooking() {
         <DataStateHandler
           isLoading={isLoading}
           isError={isError}
-          data={mockBooking}
+          data={booking}
           errorMessage="Failed to load booking details. Please try again."
           emptyMessage="Booking not found."
           loadingComponent={DataLoading}
         >
-          {mockBooking && (
-            <BookingPreview booking={mockBooking} />
+          {booking && (
+            <BookingPreview booking={booking} />
           )}
         </DataStateHandler>
       </div>

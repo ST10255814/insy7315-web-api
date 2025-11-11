@@ -20,6 +20,26 @@ const getBookings = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get booking by booking ID
+ */
+
+const getBookingById = asyncHandler(async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+
+    const booking = await bookingService.getBookingById(bookingId);
+
+    if (!booking) {
+      return sendBadRequest(res, "Booking not found");
+    }
+
+    sendSuccess(res, booking, "Booking retrieved successfully");
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+/**
  * Get current month revenue for the authenticated admin
  */
 const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
@@ -47,5 +67,6 @@ export { getBookings, getCurrentMonthRevenue };
 // Export default object for backward compatibility
 export default {
     getBookings,
+    getBookingById,
     getCurrentMonthRevenue,
 };
