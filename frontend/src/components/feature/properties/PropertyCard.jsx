@@ -109,7 +109,7 @@ export default function PropertyCard({ property, getStatusClasses, onAction }) {
           icon={<FaEye size={17} />}
           label="View"
           onClick={() => onAction && onAction("view", property)}
-          className="text-yellow-600 hover:bg-gray-50 hover:shadow-lg"
+          className="text-yellow-600 hover:bg-yellow-50 hover:shadow-lg"
         />
 
         <HoverActionButton

@@ -95,14 +95,14 @@ export default function CaretakerCard({ caretaker, onAction }) {
       >
         {/* Action Buttons */}
         <HoverActionButton
-          icon={<FaEdit size={16} />}
+          icon={<FaEdit size={17} />}
           label="Edit"
           onClick={() => onAction("Edit", caretaker)}
           className="text-blue-600 hover:bg-blue-50"
         />
 
         <HoverActionButton
-          icon={<FaTrash size={16} />}
+          icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => onAction("Delete", caretaker)}
           className="text-red-600 hover:bg-red-50"

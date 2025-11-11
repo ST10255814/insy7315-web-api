@@ -153,14 +153,14 @@ export default function BookingCard({ booking, onAction }) {
       >
         {/* Common Buttons */}
         <HoverActionButton
-          icon={<FaEdit size={16} />}
+          icon={<FaEdit size={17} />}
           label="Edit"
           onClick={() => onAction("Edit", booking)}
           className="text-blue-600 hover:bg-blue-50"
         />
 
         <HoverActionButton
-          icon={<FaTrash size={16} />}
+          icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => onAction("Delete", booking)}
           className="text-red-600 hover:bg-red-50"
@@ -170,13 +170,13 @@ export default function BookingCard({ booking, onAction }) {
         {booking.status === "Pending" && (
           <>
             <HoverActionButton
-              icon={<FaCheck size={16} />}
+              icon={<FaCheck size={17} />}
               label="Confirm"
               onClick={() => onAction("Confirm", booking)}
               className="text-green-600 hover:bg-green-50"
             />
             <HoverActionButton
-              icon={<FaTimes size={16} />}
+              icon={<FaTimes size={17} />}
               label="Cancel"
               onClick={() => onAction("Cancel", booking)}
               className="text-red-600 hover:bg-red-50"
