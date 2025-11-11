@@ -175,7 +175,7 @@ export default function BookingCard({ booking, onAction }) {
         />
 
         {/* Status-specific Buttons */}
-        {booking.status === "pending" && (
+        {booking.status === "Pending" && (
           <>
             <HoverActionButton
               icon={<FaCheck size={16} />}

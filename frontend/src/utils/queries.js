@@ -576,7 +576,7 @@ export const useAssignCaretakerMutation = () => {
       await new Promise((r) => setTimeout(r, 2000));
       return assignCaretakerToRequest(caretakerId, requestId);
     },
-    onSuccess: (response) => {
+    onSuccess: () => {
       Toast.success(`Caretaker assigned to request successfully`);
       // Invalidate maintenance requests to reflect assignment
       invalidateEntityQueries(queryClient, "maintenanceRequests");
