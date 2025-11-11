@@ -10,11 +10,13 @@ import { useBookingsQuery } from "../../utils/queries.js";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import DeleteBooking from "./booking/DeleteBooking.jsx";
+import ViewBooking from "./booking/ViewBooking.jsx";
 
 export default function BookingsTab() {
   return (
     <Routes>
-      <Route path="delete/:bookingId" element={<DeleteBooking />} />
+      <Route path="delete/:bookingID" element={<DeleteBooking />} />
+      <Route path="view/:bookingID" element={<ViewBooking />} />
       <Route index element={<BookingsListView />} />
       <Route path="*" element={<DashboardNotFound />} />
     </Routes>
@@ -31,18 +33,18 @@ function BookingsListView() {
     switch (action) {
       case "Edit":
         //TODO: Implement edit functionality
-        Toast.info(`Editing booking ${booking.bookingId}`);
+        Toast.info(`Editing booking ${booking.bookingID}`);
         break;
       case "Delete":
-        navigate(`delete/${booking.bookingId}`);
+        navigate(`delete/${booking.bookingID}`);
         break;
       case "View":
         //TODO: Implement view functionality
-        Toast.info(`Viewing details for ${booking.bookingId}`);
+        navigate(`view/${booking.bookingID}`);
         break;
       case "Confirm":
         //TODO: Implement confirm functionality
-        Toast.success(`Confirmed booking ${booking.bookingId}`);
+        Toast.success(`Confirmed booking ${booking.bookingID}`);
         break;
       case "Cancel":
         // TODO: Implement cancel functionality
