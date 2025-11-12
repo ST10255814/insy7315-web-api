@@ -67,9 +67,14 @@ app.use(cors({
       allowed.replace(/\/$/, '') === normalizedOrigin
     );
     
+    // Debug logging for CORS issues
+    console.log(`CORS Check - Origin: ${origin}, Normalized: ${normalizedOrigin}, Allowed: ${isAllowed}`);
+    console.log(`Allowed origins: ${JSON.stringify(allowedOrigins)}`);
+    
     if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -85,6 +90,8 @@ app.use(cors({
     'X-XSRF-Token',
     'x-xsrf-token'
   ],
+  exposedHeaders: ['Set-Cookie'], // Ensure cookies can be set cross-origin
+  optionsSuccessStatus: 200 // For legacy browser support
 }));
 
 // Connect to MongoDB

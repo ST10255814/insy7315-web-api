@@ -104,7 +104,14 @@ api.interceptors.request.use(
       }
     }
     
-    console.log('Axios request: ', config);
+    // Enhanced debugging for authentication issues
+    console.log('Axios request: ', {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      withCredentials: config.withCredentials,
+      origin: window.location.origin
+    });
     return config;
   },
   (error) => {
@@ -119,6 +126,18 @@ api.interceptors.response.use(
   },
   async (error) => {
     console.log('Axios error: ', error)
+    
+    // Enhanced debugging for authentication issues
+    if (error.response?.status === 401) {
+      console.error('Authentication failed:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers,
+        credentials: error.config?.withCredentials,
+        origin: window.location.origin,
+        cookies: document.cookie
+      });
+    }
     
     // Handle CSRF token errors
     if (error.response?.status === 403 && 
