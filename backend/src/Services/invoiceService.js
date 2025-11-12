@@ -399,6 +399,7 @@ export default {
     updateInvoiceStatusesByAdmin,
     updateAllInvoiceStatuses,
     markInvoiceAsPaid,
+    returnInvoiceData,
     getInvoiceStats,
     regenerateAllInvoiceDescriptions,
 };
