@@ -1,14 +1,11 @@
 import { motion } from "framer-motion";
 import {
-  FaEdit,
   FaTrash,
   FaEnvelope,
   FaHome,
   FaCalendarAlt,
   FaMoneyBillWave,
   FaUsers,
-  FaCheck,
-  FaTimes,
   FaDownload,
   FaMoon
 } from "react-icons/fa";
@@ -151,38 +148,12 @@ export default function BookingCard({ booking, onAction }) {
         transition={{ duration: 0.2 }}
         className="absolute inset-0 z-20 bg-gray-400/50 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
-        {/* Common Buttons */}
-        <HoverActionButton
-          icon={<FaEdit size={17} />}
-          label="Edit"
-          onClick={() => onAction("Edit", booking)}
-          className="text-blue-600 hover:bg-blue-50"
-        />
-
         <HoverActionButton
           icon={<FaTrash size={17} />}
           label="Delete"
           onClick={() => onAction("Delete", booking)}
           className="text-red-600 hover:bg-red-50"
         />
-
-        {/* Status-specific Buttons */}
-        {booking.status === "Pending" && (
-          <>
-            <HoverActionButton
-              icon={<FaCheck size={17} />}
-              label="Confirm"
-              onClick={() => onAction("Confirm", booking)}
-              className="text-green-600 hover:bg-green-50"
-            />
-            <HoverActionButton
-              icon={<FaTimes size={17} />}
-              label="Cancel"
-              onClick={() => onAction("Cancel", booking)}
-              className="text-red-600 hover:bg-red-50"
-            />
-          </>
-        )}
       </motion.div>
     </motion.div>
   );

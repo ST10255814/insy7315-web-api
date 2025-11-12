@@ -112,7 +112,9 @@ export default function MaintenanceCard({ request, onAction }) {
         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm">
           <div className="flex items-center gap-2">
             <FaTools className="text-orange-500 text-sm flex-shrink-0" />
-            <span className="font-medium text-gray-700 min-w-0">Caretaker:</span>
+            <span className="font-medium text-gray-700 min-w-0">
+              Caretaker:
+            </span>
           </div>
           <span
             className={
@@ -161,7 +163,7 @@ export default function MaintenanceCard({ request, onAction }) {
         </i>
       </div>
       {/* Action Buttons */}
-  <div className="space-y-2 mt-2 sm:mt-3">
+      <div className="space-y-2 mt-2 sm:mt-3">
         {/* Primary Action Button */}
         {request.status === "Pending" && (
           <motion.button
