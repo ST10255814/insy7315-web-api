@@ -178,7 +178,19 @@ async function getInvoiceById(invoiceId, adminId) {
     if (!invoice) {
       throw new Error("Invoice not found");
     }
-    return invoice;
+
+    const invoiceData = {
+      invoiceId: invoice.invoiceId,
+      dueDate: invoice.date,
+      tenantName: invoice.lease.tenant,
+      tenantEmail: invoice.lease.email,
+      leaseId: invoice.lease.leaseId,
+      status: invoice.status,
+      propertyAddress: invoice.lease.propertyAddress,
+      amount: invoice.amount,
+      createdAt: invoice.createdAt,
+    };
+    return invoiceData;
   } catch (err) {
     throw new Error("Error fetching invoice: " + err.message);
   }
@@ -354,27 +366,6 @@ async function regenerateAllInvoiceDescriptions(adminId = null) {
   }
 }
 
-async function returnInvoiceData(invoiceId, adminId){
-  try{
-    const invoice = await getInvoiceById(invoiceId, adminId);
-
-    const invoiceData = {
-      invoiceId: invoice.invoiceId,
-      dueDate: invoice.date,
-      tenantName: invoice.lease.tenant,
-      tenantEmail: invoice.lease.email,
-      leaseId: invoice.lease.leaseId,
-      status: invoice.status,
-      propertyAddress: invoice.lease.propertyAddress,
-      amount: invoice.amount
-    }
-
-    return invoiceData;
-  } catch (error) {
-    throw new Error(`Error returning invoice data: ${error.message}`);
-  }
-}
-
 export default {
     createInvoice,
     getInvoicesByAdminId,
@@ -388,5 +379,4 @@ export default {
     markInvoiceAsPaid,
     getInvoiceStats,
     regenerateAllInvoiceDescriptions,
-    returnInvoiceData,
 };

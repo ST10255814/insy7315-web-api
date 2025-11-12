@@ -3,7 +3,6 @@ import { FaArrowLeft } from "react-icons/fa";
 import { DataStateHandler, DataLoading } from "../../common/index.js";
 import {
   useInvoiceByIdQuery,
-  useLeaseByIdQuery,
 } from "../../../utils/queries.js";
 import { TabWrapper } from "../../common";
 import InvoicePreview from "./InvoicePreview.jsx";
@@ -18,21 +17,12 @@ export default function ViewInvoice() {
     isError: invoiceError,
   } = useInvoiceByIdQuery(adminId, invoiceId);
 
-  // Fetch the lease data if invoice has a leaseId
-  const {
-    data: lease,
-    isLoading: leaseLoading,
-    isError: leaseError,
-  } = useLeaseByIdQuery(adminId, invoice?.leaseId, {
-    enabled: !!invoice?.lease?.leaseId, // Only fetch if invoice has leaseId
-  });
-
   const handleBack = () => {
     navigate(-1);
   };
 
-  const isLoading = invoiceLoading || leaseLoading;
-  const isError = invoiceError || leaseError;
+  const isLoading = invoiceLoading ;
+  const isError = invoiceError;
   
   return (
     <TabWrapper decorativeElements="default">
@@ -57,11 +47,8 @@ export default function ViewInvoice() {
         >
           {invoice && (
             <InvoicePreview
-              selectedLease={lease}
-              formData={{
-                amount: invoice.amount,
-                date: invoice.dueDate || invoice.date,
-              }}
+              selectedLease={invoice.invoice}
+              formData={invoice.invoice}
             />
           )}
         </DataStateHandler>

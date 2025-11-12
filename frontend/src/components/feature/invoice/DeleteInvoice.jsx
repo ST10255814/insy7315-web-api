@@ -12,9 +12,9 @@ export default function DeleteInvoice() {
       heading="Invoice Details"
       fields={[
         { label: "Invoice ID", value: invoice.invoice.invoiceId },
-        { label: "Tenant", value: invoice.invoice.lease.tenant },
+        { label: "Tenant", value: invoice.invoice.tenantName },
         { label: "Amount", value: `R${formatAmount(invoice.invoice.amount)}` },
-        { label: "Due Date", value: formatDate(invoice.invoice.date) },
+        { label: "Due Date", value: formatDate(invoice.invoice.dueDate) },
       ]}
     />
   );

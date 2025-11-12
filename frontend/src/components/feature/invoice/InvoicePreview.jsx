@@ -1,4 +1,5 @@
 import { statusClasses } from "../../../constants/constants.js";
+import { formatDateUS } from "../../../utils/formatters.js";
 
 /**
  * Professional Invoice Preview Component
@@ -23,7 +24,7 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div className="text-right">
               <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <p className="text-xs text-blue-100 mb-1">Invoice #</p>
-                <p className="text-lg font-bold">{formData.invoiceId || `INV-${new Date().getFullYear()}-XXXX`}</p>
+                <p className="text-lg font-bold">{formData.invoiceId}</p>
               </div>
             </div>
           </div>
@@ -36,23 +37,13 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Issue Date</p>
               <p className="text-sm font-medium text-gray-900">
-                {new Date().toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {formatDateUS(formData.createdAt) || new Date().toLocaleDateString('en-US')}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Due Date</p>
               <p className={`text-sm font-medium ${formData.date ? 'text-blue-700' : 'text-gray-400'}`}>
-                {formData.date
-                  ? new Date(formData.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })
-                  : 'Not specified'}
+                {formatDateUS(formData.dueDate) || new Date().toLocaleDateString('en-US') || 'Select a due date'}
               </p>
             </div>
           </div>
@@ -64,11 +55,11 @@ export default function InvoicePreview({ selectedLease, formData }) {
               <div className="space-y-1">
                 <p className={`font-semibold ${selectedLease ? 'text-gray-900' : 'text-gray-400'}`}>
                   {selectedLease
-                    ? `${selectedLease.tenant?.firstName || ''} ${selectedLease.tenant?.surname || ''}`.trim() || 'Tenant Name'
+                    ? `${selectedLease.tenant?.firstName || ''} ${selectedLease.tenant?.surname || ''}`.trim() || formData.tenantName || 'Tenant Name'
                     : 'Select a lease to view tenant'}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {selectedLease?.tenant?.email || 'tenant@email.com'}
+                  {selectedLease?.tenant?.email || formData.tenantEmail || 'tenant@email.com'}
                 </p>
               </div>
             </div>
