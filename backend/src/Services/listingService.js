@@ -304,9 +304,7 @@ async function updateListingInfo(listingId, adminId, updateData){
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
-    console.log(`Updating listing ${listingId} for admin ${adminId} with data:`, updateData);
-
-    const {title, address, description, amenities, imagesURL, price, status} = updateData;
+    const {title, address, description, amenities, imagesURL = [], price, status} = updateData;
 
     const updateFields = {};
 
@@ -314,7 +312,8 @@ async function updateListingInfo(listingId, adminId, updateData){
     if(address) updateFields.address = address;
     if(description) updateFields.description = description;
     if(amenities) updateFields.amenities = amenities;
-    if(imagesURL) updateFields.imagesURL = imagesURL;
+    // Only update imagesURL if it's provided and not empty
+    if(imagesURL && imagesURL.length > 0) updateFields.imagesURL = imagesURL;
     if(price) updateFields.price = price;
     if(status) updateFields.status = status;
 
@@ -327,6 +326,7 @@ async function updateListingInfo(listingId, adminId, updateData){
         $set: updateFields
       }
     );
+    return {message: "Listing updated successfully", listingId: listingId};
   } catch (error) {
     console.error(`Error updating listing info: ${error.message}`);
     throw new Error(`Error updating listing info: ${error.message}`);

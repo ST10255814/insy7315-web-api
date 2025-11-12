@@ -165,6 +165,7 @@ export default function EditProperty() {
     }
     try {
       console.log("Submitting form data:", formData);
+      console.log("Property ID:", propertyId);
       await updateListingMutation.mutateAsync({
         listingId: propertyId,
         formData: formData,
