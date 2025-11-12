@@ -24,7 +24,12 @@ router.get('/caretakers', maintenanceController.getAllAdminsCareTakers);
 
 //assign caretaker to maintenance request
 router.post('/assign', csrfProtection, maintenanceController.assignCareTakerToRequest);
-router.delete('/caretaker/:caretakerId', csrfProtection, maintenanceController.deleteCareTaker);
+
+//delete caretaker
+router.delete('/caretaker/:caretakerId/delete', csrfProtection, maintenanceController.deleteCareTaker);
+
+//get caretaker by id
+router.get('/caretaker/:caretakerId', maintenanceController.getCareTakerById);
 
 //update maintenance request
 router.patch('/update', csrfProtection, maintenanceController.updateMaintenanceRequest);

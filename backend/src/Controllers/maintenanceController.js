@@ -121,6 +121,17 @@ export const deleteCareTaker = asyncHandler(async (req, res) => {
   }
 });
 
+export const getCareTakerById = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { caretakerId } = req.params;
+    const caretaker = await maintenanceService.getCareTakerById(caretakerId, adminId);
+    sendSuccess(res, caretaker, 'Caretaker details retrieved successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 const maintenanceController = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
@@ -130,7 +141,8 @@ const maintenanceController = {
   createCareTaker,
   updateMaintenanceRequest,
   updateMaintenanceStatusToCompleted,
-  deleteCareTaker
+  deleteCareTaker,
+  getCareTakerById
 };
 
 export default maintenanceController;

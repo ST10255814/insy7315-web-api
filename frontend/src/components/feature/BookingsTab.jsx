@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import Toast from "../../lib/toast.js";
 import {
   TabWrapper,
   StateHandler,

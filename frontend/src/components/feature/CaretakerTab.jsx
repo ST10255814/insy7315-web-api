@@ -1,21 +1,19 @@
 import { useParams, useNavigate, Route, Routes } from "react-router-dom";
-import {
-  TabWrapper,
-  StateHandler,
-  ActionButton,
-} from "../common/index.js";
+import { TabWrapper, StateHandler, ActionButton } from "../common/index.js";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import AddCaretaker from "./caretaker/AddCaretaker.jsx";
 import { FaPlusCircle } from "react-icons/fa";
 import { useCaretakersQuery } from "../../utils/queries.js";
 import CaretakerCard from "./caretaker/CaretakerCard.jsx";
+import DeleteCaretaker from "./caretaker/DeleteCaretaker.jsx";
 
 export default function CaretakerTab() {
   return (
     <Routes>
       <Route index element={<CaretakerListView />} />
       <Route path="add" element={<AddCaretaker />} />
+      <Route path="delete/:caretakerId" element={<DeleteCaretaker />} />
       <Route path="*" element={<DashboardNotFound />} />
     </Routes>
   );
@@ -25,14 +23,24 @@ function CaretakerListView() {
   const navigate = useNavigate();
   const { userId: adminId } = useParams();
 
-  const { data: caretakers = [], isLoading, isError } = useCaretakersQuery(adminId);
+  const {
+    data: caretakers = [],
+    isLoading,
+    isError,
+  } = useCaretakersQuery(adminId);
 
   const handleAddCaretaker = () => {
     navigate("add");
   };
 
-    const handleCaretakerAction = (caretakerId) => {
-    console.log("Caretaker action triggered for ID:", caretakerId);
+  const handleCaretakerAction = (action, caretaker) => {
+    switch (action) {
+      case "Delete":
+        navigate(`delete/${caretaker.caretakerId}`);
+        break;
+      default:
+        break;
+    }
   };
 
   return (
