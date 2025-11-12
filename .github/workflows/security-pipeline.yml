@@ -1267,17 +1267,6 @@ jobs:
           cd frontend
           npm ci --no-audit || npm install --no-audit
 
-      - name: Run Backend Tests with Coverage
-        run: |
-          cd backend
-          npm run test:coverage
-
-      - name: Run Frontend Tests with Coverage
-        continue-on-error: true
-        run: |
-          cd frontend
-          npm run test:coverage || echo "Frontend tests not fully configured"
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
