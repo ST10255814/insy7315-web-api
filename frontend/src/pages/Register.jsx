@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Form, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Toast from "../lib/toast.js";
 import { useFormValidation, validators } from "../hooks/useFormValidation.js";
@@ -29,6 +29,11 @@ export default function Register() {
       validator: validators.email,
       validatorMessage: "Please enter a valid email address",
     },
+    phone: {
+      required: false,
+      validator: validators.phone,
+      validatorMessage: "Please enter a valid phone number",
+    },
     password: {
       required: true,
       requiredMessage: "Password is required",
@@ -48,6 +53,7 @@ export default function Register() {
       username: "",
       fullName: "",
       email: "",
+      phone: "",
       password: "",
     },
     validationRules
@@ -65,6 +71,7 @@ export default function Register() {
       username: formData.username,
       fullname: formData.fullName,
       email: formData.email,
+      phone: formData.phone,
       password: formData.password,
     });
 
@@ -116,7 +123,7 @@ export default function Register() {
           </FormField>
         </div>
 
-        {/* Email - Full Width */}
+        {/* Email */}
         <FormField
           label="Email"
           error={errors.email}
@@ -128,6 +135,23 @@ export default function Register() {
             onChange={handleChange}
             placeholder="Enter your email..."
             hasError={!!errors.email}
+            disabled={isLoading}
+            className="p-2.5"
+          />
+        </FormField>
+
+        {/* Phone Number */}
+        <FormField
+          label="Phone Number"
+          error={errors.phone}
+        >
+          <FormInput
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Enter your phone number..."
+            hasError={!!errors.phone}
             disabled={isLoading}
             className="p-2.5"
           />
