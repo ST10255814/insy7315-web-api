@@ -33,6 +33,12 @@ export const register = asyncHandler(async (req, res) => {
     // Send success response
     sendCreated(res, result, "User registered successfully");
   } catch (error) {
+    // Enhanced error logging for registration issues
+    console.error('Registration error:', {
+      message: error.message,
+      body: req.body,
+      timestamp: new Date().toISOString()
+    });
     sendBadRequest(res, error.message, error.details);
   }
 });

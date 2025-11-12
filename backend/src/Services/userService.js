@@ -84,8 +84,8 @@ const register = async (data) => {
     try {
         const { email, password, username, fullname, phone } = data;
 
-        // Check if all fields are provided (preserve original validation)
-        if (!email || !password || !username || !fullname || !phone) {
+        // Check if required fields are provided
+        if (!email || !password || !username || !fullname) {
             throw new Error("Please provide all required fields");
         }
         
@@ -112,7 +112,7 @@ const register = async (data) => {
         firstName: firstName,
         surname: surname,
         role: 'landlord', // Default role for website registration
-        phone: phone,
+        ...(phone && { phone: phone }), // Only include phone if provided
         createdAt: new Date(),
         updatedAt: new Date()
     };

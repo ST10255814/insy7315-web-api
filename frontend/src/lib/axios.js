@@ -265,4 +265,24 @@ window.debugInvoice = async (invoiceId) => {
   }
 };
 
+// Helper function for testing registration
+window.testRegister = async (userData = {
+  username: 'testuser' + Date.now(),
+  fullname: 'Test User',
+  email: 'test' + Date.now() + '@example.com',
+  password: 'password123',
+  phone: '1234567890'
+}) => {
+  try {
+    console.log('🔍 Testing registration with data:', userData);
+    const response = await api.post('/api/user/register', userData);
+    console.log('✅ Registration successful:', response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('❌ Registration failed:', error);
+    console.error('Error details:', error.response?.data);
+    return { success: false, error: error.message, details: error.response?.data };
+  }
+};
+
 export default api;
