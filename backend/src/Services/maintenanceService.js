@@ -350,6 +350,23 @@ async function createCareTaker(adminId, careTakerData){
     }
   }
 
+  async function deleteCareTaker(caretakerId, adminId){
+    try{
+      const db = client.db("RentWise");
+      const userCollection = db.collection("Care-Takers");
+
+      const result = await userCollection.deleteOne({ 
+        caretakerId: caretakerId, 
+        adminId: toObjectId(adminId) 
+      });
+      if(result.deletedCount === 0){
+        throw new Error("Caretaker not found or access denied");
+      }
+    }catch (error) {
+      throw new Error(`Error deleting caretaker: ${error.message}`);
+    }
+  }
+
 const maintenanceService = {
   getAllMaintenanceRequests,
   countMaintenanceRequestsByAdminId,
@@ -359,5 +376,6 @@ const maintenanceService = {
   assignCareTakerToRequest,
   updateMaintenanceRequest,
   updateMaintenanceStatusToCompleted,
+  deleteCareTaker
 };
 export default maintenanceService;
