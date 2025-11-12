@@ -54,3 +54,14 @@ export async function markInvoiceAsPaid(invoiceId) {
         throw error;
     }
 };
+
+// Debug function to check if invoice exists
+export async function debugInvoice(invoiceId) {
+    try {
+        const response = await api.get(`/api/invoices/debug/${invoiceId}`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error('Debug invoice failed:', error);
+        throw error;
+    }
+};

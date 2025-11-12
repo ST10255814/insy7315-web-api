@@ -233,4 +233,36 @@ window.debugAuth = async () => {
   }
 };
 
+// Helper function for debugging specific invoice
+window.debugInvoice = async (invoiceId) => {
+  try {
+    console.log(`🔍 Debug Invoice ${invoiceId} Starting...`);
+    
+    // Test if invoice exists
+    const debugResponse = await api.get(`/api/invoices/debug/${invoiceId}`);
+    console.log('✅ Invoice debug response:', debugResponse.data);
+    
+    if (debugResponse.data.found) {
+      // Try the actual data endpoint
+      console.log('Testing invoice data endpoint...');
+      const dataResponse = await api.get(`/api/invoices/data/${invoiceId}`);
+      console.log('✅ Invoice data response:', dataResponse.data);
+      
+      return {
+        debug: debugResponse.data,
+        data: dataResponse.data
+      };
+    } else {
+      console.log('❌ Invoice not found in database');
+      return {
+        debug: debugResponse.data,
+        data: null
+      };
+    }
+  } catch (error) {
+    console.error('❌ Debug invoice failed:', error);
+    return { error: error.message, response: error.response?.data };
+  }
+};
+
 export default api;
