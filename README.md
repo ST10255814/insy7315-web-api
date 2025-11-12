@@ -678,26 +678,59 @@ This section is reserved for academic sources and references that were consulted
 
 ### 🔗 Technical Documentation References
 
-- [React Toastify](https://fkhadra.github.io/react-toastify/introduction/) 
-- [Resend](https://resend.com/docs/dashboard/api-keys/introduction)
-- [Arcjet](https://docs.arcjet.com/)
-- [Cron Jobs](https://youtu.be/6gmdFPlkuhQ?si=BgBLupsrlxMhu2S1)
-- [Axios Interceptors](https://axios-http.com/docs/interceptors)
-- [HSTS](https://www.npmjs.com/package/hsts)
-- [CSRF](https://snyk.io/blog/how-to-protect-node-js-apps-from-csrf-attacks/)
-- [Motion Dev](https://motion.dev/docs/quick-start)
-- [TanStack Queries](https://tanstack.com/query/v5/docs/framework/react/overview)
-- [TailwindCSS](https://v3.tailwindcss.com/docs/guides/create-react-app)
-- [Cosden Solution](https://youtube.com/@cosdensolutions?si=2pjEWhA-Jknf3cB3) (All react frontend videos were mainly followed through this channel)
-- [File Downloads](https://youtu.be/IPEqb_AJbAQ?si=DqmAUNa9CiJrLoV-)
-- [ChartJS](https://react-chartjs-2.js.org/)
-- [Drag and Drop File Uploads](https://youtu.be/8VHVWPkWR8Q?si=o2QDJFpwDKUFhh4J)
-- [Icons](https://docs.fontawesome.com/web/use-with/react)
-- [CORS](https://www.npmjs.com/package/cors)
-- [Cloudinary](https://cloudinary.com/documentation/node_integration#landingpage) (For all image/file uploads)
-- [Lazy Loading](https://react.dev/reference/react/lazy) (optimises web performance)
-- [Sonarcloud Integration with CI/CD](https://sonarcloud.io/project/configuration/GitHubActions?id=ST10255814_insy7315-web-api)
-- [Synk Vulnerability Scanning](https://docs.snyk.io/discover-snyk/getting-started)
+**Frontend Libraries and Frameworks:**
+
+Arcjet. 2024. *Arcjet Documentation - Security as Code*. Arcjet. [online] Available at: <https://docs.arcjet.com/> [Accessed: 14 October 2025].
+
+Chart.js. 2024. *React Chart.js 2 Documentation*. Chart.js. [online] Available at: <https://react-chartjs-2.js.org/> [Accessed: 23 Ocotber 2025].
+
+Cloudinary. 2024. *Node.js Integration Guide*. Cloudinary. [online] Available at: <https://cloudinary.com/documentation/node_integration#landingpage> [Accessed: 20 October 2025].
+
+React Dev. 2024. *React Documentation - Lazy Loading*. React Dev. [online] Available at: <https://react.dev/reference/react/lazy> [Accessed: 12 November 2025].
+
+Fkhadra. 2024. *React Toastify Documentation*. GitHub. [online] Available at: <https://fkhadra.github.io/react-toastify/introduction/> [Accessed: 15 October 2025].
+
+FontAwesome. 2024. *Using Font Awesome with React*. FontAwesome. [online] Available at: <https://docs.fontawesome.com/web/use-with/react> [Accessed: 14 October 2025].
+
+Motion Dev. 2024. *Motion Documentation - Quick Start Guide*. Motion. [online] Available at: <https://motion.dev/docs/quick-start> [Accessed: 14 Ocotber 2025].
+
+TailwindLabs. 2024. *Tailwind CSS - Create React App Guide*. TailwindCSS. [online] Available at: <https://v3.tailwindcss.com/docs/guides/create-react-app> [Accessed: 13 October 2025].
+
+TanStack. 2024. *TanStack Query Documentation - React Overview*. TanStack. [online] Available at: <https://tanstack.com/query/v5/docs/framework/react/overview> [Accessed: 16 October 2025].
+
+**Backend and Security:**
+
+Axios. 2024. *Axios HTTP Client - Interceptors Documentation*. Axios. [online] Available at: <https://axios-http.com/docs/interceptors> [Accessed: 14 October 2025].
+
+NPM. 2024. *CORS Middleware for Express*. NPM. [online] Available at: <https://www.npmjs.com/package/cors> [Accessed: 14 October 2025].
+
+NPM. 2024. *HTTP Strict Transport Security (HSTS)*. NPM. [online] Available at: <https://www.npmjs.com/package/hsts> [Accessed: 10 November 2025].
+
+Resend. 2024. *API Keys Documentation*. Resend. [online] Available at: <https://resend.com/docs/dashboard/api-keys/introduction> [Accessed: 14 October 2025].
+
+GeeksForGeeks. 2019. HTTP Cookies in Node.js. GeeksForGeeks. [online] Available at: <https://www.geeksforgeeks.org/node-js/http-cookies-in-node-js/> [Accessed: 14 October 2025].
+
+Snyk. 2024. *How to Protect Node.js Apps from CSRF Attacks*. Snyk. [online] Available at: <https://snyk.io/blog/how-to-protect-node-js-apps-from-csrf-attacks/> [Accessed: 10 November 2025].
+
+Gupta. C. 2025. Implement Cron-job (React, Node). Medium. [blog] 16 March. Available at: <https://medium.com/@mynameischandangupta1/implement-cron-job-react-node-e246536f1267> [Accessed: 17 October 2025].
+
+**Development Tools and CI/CD:**
+
+GitHub. 2024. *GitHub Copilot Documentation*. GitHub. [online] Available at: <https://docs.github.com/en/copilot> [Accessed: 12 November 2025].
+
+SonarCloud. 2024. *GitHub Actions Integration Configuration*. SonarCloud. [online] Available at: <https://sonarcloud.io/project/configuration/GitHubActions?id=ST10255814_insy7315-web-api> [Accessed: 12 November 2025].
+
+Snyk Ltd. 2024. *Getting Started with Snyk Vulnerability Scanning*. Snyk. [online] Available at: <https://docs.snyk.io/discover-snyk/getting-started> [Accessed: 12 November 2025].
+
+**Video Tutorials:**
+
+Cosden Solutions. 2024. *React Frontend Development Tutorials*. Cosden Solutions. [video online] Available at: <https://youtube.com/@cosdensolutions?si=2pjEWhA-Jknf3cB3> [Accessed: 15 October 2025]. (This is a link to the channel I followed for all reacts best practices). 
+
+Dipesh Malvia. 2024. *Node.js Cron Jobs Tutorial*. Dipesh Malvia. [video online] Available at: <https://youtu.be/6gmdFPlkuhQ?si=BgBLupsrlxMhu2S1> [Accessed: 17 October 2025].
+
+CodeWithAamir. 2023. *File Downloads in React Tutorial*. CodeWithAamir. [video online] Available at: <https://youtu.be/IPEqb_AJbAQ?si=DqmAUNa9CiJrLoV-> [Accessed: 22 October 2025].
+
+Cloudinary. 2024. *Drag and Drop File Uploads Tutorial*. Cloudinary. [video online] Available at: <https://youtu.be/8VHVWPkWR8Q?si=o2QDJFpwDKUFhh4J> [Accessed: 12 November 2025].
 
 ---
 
