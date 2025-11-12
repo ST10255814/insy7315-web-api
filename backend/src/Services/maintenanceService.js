@@ -260,7 +260,7 @@ async function createCareTaker(adminId, careTakerData){
       if(caretakerNotes){
         updateFields["newMaintenanceRequest.caretakerNotes"] = caretakerNotes;
       }
-      if(Object.keys(updateFields).length > 0){
+      if(globalThis.Object.keys(updateFields).length > 0){
         updateFields["newMaintenanceRequest.updatedAt"] = new Date();
         await maintenanceCollection.updateOne(
           { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
