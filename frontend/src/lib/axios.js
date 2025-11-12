@@ -20,7 +20,6 @@ const fetchCSRFToken = async () => {
       await Promise.race([fetchingPromise, timeoutPromise]);
       return csrfToken;
     } catch (error) {
-      console.warn('CSRF token fetch timeout or error, retrying...');
       fetchingPromise = null;
     }
   }
@@ -33,10 +32,8 @@ const fetchCSRFToken = async () => {
         withCredentials: true
       });
       csrfToken = response.data.csrfToken;
-      console.log('CSRF token fetched successfully');
       return csrfToken;
     } catch (error) {
-      console.warn('Failed to fetch CSRF token:', error);
       csrfToken = null;
       return null;
     } finally {
@@ -103,8 +100,6 @@ api.interceptors.request.use(
         console.warn('Failed to add CSRF token to request:', error);
       }
     }
-    
-    console.log('Axios request: ', config);
     return config;
   },
   (error) => {
@@ -114,12 +109,9 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    console.log('Axios response: ', response)
     return response;
   },
   async (error) => {
-    console.log('Axios error: ', error)
-    
     // Handle CSRF token errors
     if (error.response?.status === 403 && 
         error.response?.data?.code === 'EBADCSRFTOKEN') {
@@ -137,7 +129,6 @@ api.interceptors.response.use(
           return api.request(error.config);
         }
       } catch (csrfError) {
-        console.error('Failed to refresh CSRF token:', csrfError);
         Toast.error('Security token expired. Please refresh the page.');
       }
     }
@@ -158,7 +149,7 @@ api.interceptors.response.use(
         try {
           await api.post("/api/user/logout", {}, { withCredentials: true });
         } catch (logoutError) {
-          console.warn("Logout API call failed (this is expected during 401):", logoutError);
+          console.warn("Error during logout request:", logoutError);
         }
         
         // Force redirect to login page
