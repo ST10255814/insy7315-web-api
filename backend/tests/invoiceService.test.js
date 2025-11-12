@@ -132,16 +132,20 @@ describe('InvoiceService', () => {
         expect.objectContaining({
           invoiceId: 'I-0001',
           adminId: { _id: 'admin123' },
-          lease: {
+          lease: expect.objectContaining({
             tenant: 'Jane Smith',
             email: 'jane@example.com',
-            propertyAddress: '123 Test St'
-          },
+            propertyAddress: '123 Test St',
+            leaseId: 'L-0001',
+            leaseStatus: undefined
+          }),
           description: 'Monthly rent payment',
           originalDescription: 'Monthly rent payment',
           amount: 1500,
           date: '2024-12-01',
-          status: 'Pending'
+          status: 'Pending',
+          createdAt: expect.any(Date),
+          lastStatusUpdate: expect.any(Date)
         })
       );
 

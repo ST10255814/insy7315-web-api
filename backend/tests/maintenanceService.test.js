@@ -128,7 +128,9 @@ describe('MaintenanceService', () => {
         status: 'pending',
         documentURL: 'http://example.com/doc.pdf',
         notes: '',
+        followUps: 0,
         createdAt: expect.any(Date),
+        updatedAt: undefined,
         property: '123 Test St',
         tenantName: 'Jane Smith',
         careTaker: null

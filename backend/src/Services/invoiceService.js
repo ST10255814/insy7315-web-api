@@ -307,7 +307,7 @@ async function markInvoiceAsPaid(invoiceId, adminId) {
       throw new Error("Invoice not found or unauthorized");
     }
     
-    return {modified: result.modified, invoiceId: invoiceId};
+    return result.modified;
   } catch (err) {
     throw new Error("Error marking invoice as paid: " + err.message);
   }

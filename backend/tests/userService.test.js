@@ -7,7 +7,8 @@ jest.mock('../src/utils/db.js', () => ({
     db: jest.fn(() => ({
       collection: jest.fn(() => ({
         findOne: jest.fn(),
-        insertOne: jest.fn()
+        insertOne: jest.fn(),
+        updateOne: jest.fn()
       }))
     }))
   }
@@ -84,7 +85,8 @@ describe('UserService', () => {
         email: 'test@example.com',
         password: 'testPassword123',
         username: 'testuser',
-        fullname: 'John Doe Smith'
+        fullname: 'John Doe Smith',
+        phone: '1234567890'
       };
 
       const result = await userService.register(testData);
@@ -173,6 +175,25 @@ describe('UserService', () => {
     test('should call email handler for valid request', async () => {
       const { sendResetPasswordEmail } = await import('../src/emails/emailHandler.js');
       
+      const mockUser = {
+        _id: 'user123',
+        firstName: 'John',
+        surname: 'Doe',
+        email: 'test@example.com'
+      };
+
+      const mockCollection = {
+        findOne: jest.fn().mockResolvedValue(mockUser),
+        updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 })
+      };
+
+      const mockDb = {
+        collection: jest.fn().mockReturnValue(mockCollection)
+      };
+
+      const { client } = await import('../src/utils/db.js');
+      client.db.mockReturnValue(mockDb);
+      
       const testData = {
         email: 'test@example.com',
         name: 'John Doe'
@@ -183,7 +204,8 @@ describe('UserService', () => {
       expect(sendResetPasswordEmail).toHaveBeenCalledWith(
         'test@example.com',
         'John Doe',
-        process.env.RESET_PASSWORD_URL
+        process.env.RESET_PASSWORD_URL,
+        expect.any(String)
       );
     });
   });

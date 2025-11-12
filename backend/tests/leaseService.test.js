@@ -233,7 +233,8 @@ describe('LeaseService', () => {
       };
 
       const mockBookingsCollection = {
-        findOne: jest.fn().mockResolvedValue(mockBooking)
+        findOne: jest.fn().mockResolvedValue(mockBooking),
+        updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 })
       };
 
       const mockUserCollection = {
@@ -241,7 +242,8 @@ describe('LeaseService', () => {
       };
 
       const mockListingCollection = {
-        findOne: jest.fn().mockResolvedValue(mockListing)
+        findOne: jest.fn().mockResolvedValue(mockListing),
+        updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 })
       };
 
       const mockLeasesCollection = {
