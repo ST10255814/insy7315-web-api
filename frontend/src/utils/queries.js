@@ -31,6 +31,8 @@ import {
   getMaintenanceRequestsByAdminId,
   countMaintenanceRequestsByAdminId,
   countHighPriorityMaintenanceRequestsByAdminId,
+  updateMaintenanceRequest,
+  markRequestAsCompleted,
 } from "../services/maintenance.api.js";
 import {
   getBookingsByAdminId,
@@ -54,6 +56,8 @@ import {
 import { getRevenueTrend } from "../services/revenue.api.js";
 
 // https://youtu.be/r8Dg0KVnfMA?si=Ibl3mRWKy_tofYyf
+
+// Leases Queries and Mutations
 export const useLeasesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("leases", { adminId }),
@@ -66,6 +70,7 @@ export const useLeasesQuery = (adminId) => {
   });
 };
 
+// Lease By ID Query
 export const useLeaseByIdQuery = (adminId, leaseId) => {
   return useQuery({
     queryKey: createQueryKey("lease", { adminId, leaseId }),
@@ -78,6 +83,7 @@ export const useLeaseByIdQuery = (adminId, leaseId) => {
   });
 };
 
+// Delete Booking Mutation
 export const useCreateLeaseMutation = () => {
   const queryClient = useQueryClient();
 
@@ -150,6 +156,7 @@ export const useInvoicesQuery = (adminId) => {
   });
 };
 
+// Delete Booking Mutation
 export const useCreateInvoiceMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -269,6 +276,7 @@ export const useListingsQuery = (adminId) => {
   });
 };
 
+// Listing By ID Query
 export const useListingByIdQuery = (adminId, listingId) => {
   return useQuery({
     queryKey: createQueryKey("listing", { adminId, listingId }),
@@ -281,6 +289,7 @@ export const useListingByIdQuery = (adminId, listingId) => {
   });
 };
 
+// Delete Listing Mutation
 export const useDeleteListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -313,6 +322,7 @@ export const useDeleteListingMutation = () => {
   });
 };
 
+// Update Listing Mutation
 export const useUpdateListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -348,6 +358,7 @@ export const useUpdateListingMutation = () => {
   });
 };
 
+// Create Listing Mutation
 export const useCreateListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -394,6 +405,7 @@ export const useBookingsQuery = (adminId) => {
   });
 };
 
+// Booking By ID Query
 export const useBookingByIdQuery = (adminId, bookingId) => {
   return useQuery({
     queryKey: createQueryKey("booking", { adminId, bookingId }),
@@ -406,6 +418,7 @@ export const useBookingByIdQuery = (adminId, bookingId) => {
   });
 };
 
+// Delete Booking Mutation
 export const useDeleteBookingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -450,6 +463,53 @@ export const useMaintenanceRequestsQuery = (adminId) => {
   });
 };
 
+// Update Maintenance Request Mutation
+export const useUpdateMaintenanceRequestMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ maintenanceRequestId, updateData }) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return updateMaintenanceRequest(maintenanceRequestId, updateData);
+    },
+    onSuccess: () => {
+      Toast.success(`Maintenance request updated successfully`);
+      invalidateEntityQueries(queryClient, "maintenanceRequests");
+      // Invalidate overview queries since maintenance counts have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.error ||
+        error?.message ||
+        "Failed to update maintenance request";
+      Toast.error(msg);
+    },
+  });
+};
+
+// Mark Maintenance Request as Completed Mutation
+export const useMarkMaintenanceAsCompletedMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (maintenanceRequestId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return markRequestAsCompleted(maintenanceRequestId);
+    },
+    onSuccess: () => {
+      invalidateEntityQueries(queryClient, "maintenanceRequests");
+      // Invalidate overview queries since maintenance counts have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;;
+    },
+  });
+};
+
 // Overview-specific queries for dashboard statistics
 export const useMonthlyRevenueQuery = (adminId) => {
   return useQuery({
@@ -462,6 +522,7 @@ export const useMonthlyRevenueQuery = (adminId) => {
   });
 };
 
+// Monthly Properties Count Query
 export const useTotalPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("totalPropertiesCount", { adminId }),
@@ -483,6 +544,7 @@ export const useTotalPropertiesCountQuery = (adminId) => {
   });
 };
 
+// Monthly Properties Count Query
 export const useMonthlyPropertiesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("monthlyPropertiesCount", { adminId }),
@@ -504,6 +566,7 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
   });
 };
 
+// Active Leases Count Query
 export const useActiveLeasesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("activeLeasesCount", { adminId }),
@@ -515,6 +578,7 @@ export const useActiveLeasesCountQuery = (adminId) => {
   });
 };
 
+// Leased Property Percentage Query
 export const useLeasedPercentageQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("leasedPercentage", { adminId }),
@@ -526,6 +590,7 @@ export const useLeasedPercentageQuery = (adminId) => {
   });
 };
 
+// Maintenance Count Query
 export const useMaintenanceCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("maintenanceCount", { adminId }),
@@ -537,6 +602,7 @@ export const useMaintenanceCountQuery = (adminId) => {
   });
 };
 
+// High Priority Maintenance Count Query
 export const useHighPriorityMaintenanceCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("highPriorityMaintenanceCount", { adminId }),
@@ -548,6 +614,7 @@ export const useHighPriorityMaintenanceCountQuery = (adminId) => {
   });
 };
 
+// Recent Activities Query
 export const useRecentActivitiesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("recentActivities", { adminId }),
@@ -618,6 +685,7 @@ export const useCaretakersQuery = (adminId) => {
   });
 };
 
+// Create Caretaker Mutation
 export const useCreateCaretakerMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -645,6 +713,7 @@ export const useCreateCaretakerMutation = () => {
   });
 };
 
+// Assign Caretaker Mutation
 export const useAssignCaretakerMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
