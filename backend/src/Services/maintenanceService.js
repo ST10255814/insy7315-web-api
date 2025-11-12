@@ -362,6 +362,17 @@ async function createCareTaker(adminId, careTakerData){
       if(result.deletedCount === 0){
         throw new Error("Caretaker not found or access denied");
       }
+
+      // Clean up global ID tracker
+      if (result.deletedCount > 0) {
+        try {
+          const { unregisterExistingId } = await import('../utils/globalIdTracker.js');
+          await unregisterExistingId(caretakerId);
+        } catch (trackerError) {
+          // Log error but don't fail the deletion
+          console.error(`Warning: Failed to unregister caretaker ID ${caretakerId}:`, trackerError.message);
+        }
+      }
     }catch (error) {
       throw new Error(`Error deleting caretaker: ${error.message}`);
     }

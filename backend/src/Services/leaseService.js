@@ -221,6 +221,17 @@ async function deleteLease(leaseId, adminId) {
       throw new Error("Lease not found or could not be deleted");
     }
 
+    // Clean up global ID tracker
+    if (result.deletedCount > 0) {
+      try {
+        const { unregisterExistingId } = await import('../utils/globalIdTracker.js');
+        await unregisterExistingId(safeLeaseId);
+      } catch (trackerError) {
+        // Log error but don't fail the deletion
+        console.error(`Warning: Failed to unregister lease ID ${safeLeaseId}:`, trackerError.message);
+      }
+    }
+
     const activityLog = {
       action: 'Delete Lease',
       adminId: toObjectId(adminId),

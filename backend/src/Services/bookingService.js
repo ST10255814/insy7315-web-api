@@ -278,6 +278,18 @@ async function deleteBooking(bookingId, adminId){
 
         //If all checks pass, delete the booking
         const result = await bookingsCollection.deleteOne({ "newBooking.bookingId": bookingId });
+        
+        // Clean up global ID tracker
+        if (result.deletedCount > 0) {
+          try {
+            const { unregisterExistingId } = await import('../utils/globalIdTracker.js');
+            await unregisterExistingId(bookingId);
+          } catch (trackerError) {
+            // Log error but don't fail the deletion
+            console.error(`Warning: Failed to unregister booking ID ${bookingId}:`, trackerError.message);
+          }
+        }
+        
         return result.deletedCount > 0;
     }catch(error){
         console.error("Error deleting booking:", error);

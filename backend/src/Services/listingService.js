@@ -146,6 +146,17 @@ async function deleteListingById(listingId, adminId) {
       "landlordInfo.userId": safeAdminId,
     });
 
+    // Clean up global ID tracker
+    if (result.deletedCount > 0) {
+      try {
+        const { unregisterExistingId } = await import('../utils/globalIdTracker.js');
+        await unregisterExistingId(safeListingId);
+      } catch (trackerError) {
+        // Log error but don't fail the deletion
+        console.error(`Warning: Failed to unregister listing ID ${safeListingId}:`, trackerError.message);
+      }
+    }
+
     const activityLog = {
       action: "Delete Listing",
       adminId: toObjectId(adminId),

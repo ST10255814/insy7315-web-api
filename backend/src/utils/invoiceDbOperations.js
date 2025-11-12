@@ -92,6 +92,17 @@ export async function deleteInvoiceFromDB(invoiceId, adminId) {
       adminId: toObjectId(adminId)
     });
 
+    // If deletion was successful, clean up the global ID tracker
+    if (result.deletedCount > 0) {
+      try {
+        const { unregisterExistingId } = await import('./globalIdTracker.js');
+        await unregisterExistingId(sanitizedInvoiceId);
+      } catch (trackerError) {
+        // Log the error but don't fail the deletion
+        console.error(`Warning: Failed to unregister ID ${sanitizedInvoiceId} from tracker:`, trackerError.message);
+      }
+    }
+
     return result.deletedCount > 0;
   } catch (err) {
     throw new Error("Error deleting invoice from database: " + err.message);
