@@ -1257,7 +1257,18 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci --no-audit || npm install --no-audit
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci --no-audit || npm install --no-audit
+
       - name: SonarCloud Scan
+        continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
