@@ -674,7 +674,7 @@ insy7315-web-api/
 
 ### 📖 Research Sources
 
-*This section is reserved for academic sources and references that were consulted during the development of this project. 
+This section is reserved for academic sources and references that were consulted during the development of this project. 
 
 ### 🔗 Technical Documentation References
 
