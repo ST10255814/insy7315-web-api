@@ -396,6 +396,7 @@ export const useTotalPropertiesCountQuery = (adminId) => {
         throw new Error('Admin ID is required');
       }
       try {
+        await new Promise((r) => setTimeout(r, 2000));
         const count = await countNumberOfListingsByAdminId();
         return count;
       } catch (error) {
@@ -416,6 +417,7 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
         throw new Error('Admin ID is required');
       }
       try {
+        await new Promise((r) => setTimeout(r, 2000));
         const count = await countListingsAddedThisMonth();
         return count;
       } catch (error) {

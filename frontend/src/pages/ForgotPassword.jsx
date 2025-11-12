@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   AuthLayout,
@@ -10,12 +10,13 @@ import {
 import { useAuth } from "../hooks/useAuth.js";
 import { useFormValidation } from "../hooks/useFormValidation.js";
 import Toast from "../lib/toast.js";
-import { HiOutlineMail } from "react-icons/hi";
+import { FaMailBulk, FaArrowLeft } from "react-icons/fa";
 
 
 export default function ForgotPassword() {
   const [submitted, setSubmitted] = useState(false);
   const { isLoading, forgotPassword } = useAuth();
+  const navigate = useNavigate();
 
   const validationRules = {
     email: {
@@ -90,6 +91,20 @@ export default function ForgotPassword() {
           >
             Send Reset Link
           </LoadingButton>
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full"
+          >
+            <button
+              type="button"
+              className="w-full py-2 px-4 bg-blue-50 text-blue-700 font-semibold rounded-xl shadow-md border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition-all duration-150 focus:outline-none flex items-center justify-center gap-2"
+              onClick={() => navigate(-1)}
+            >
+              <FaArrowLeft size={20} />
+              Go Back
+            </button>
+          </motion.div>
         </form>
       </AuthLayout>
     );
@@ -99,7 +114,7 @@ export default function ForgotPassword() {
   return (
     <div className="flex flex-col items-center mb-6 relative z-10 p-8 w-full max-w-sm mx-auto">
       <span className="bg-green-100 text-green-700 rounded-full p-3 mb-2 shadow">
-        <HiOutlineMail size={32} />
+        <FaMailBulk size={32} />
       </span>
       <div className="text-gray-700 mb-2">
         We've sent a secure password reset link to:
