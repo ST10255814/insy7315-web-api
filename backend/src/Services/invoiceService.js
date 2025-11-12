@@ -178,19 +178,7 @@ async function getInvoiceById(invoiceId, adminId) {
     if (!invoice) {
       throw new Error("Invoice not found");
     }
-
-    const invoiceData = {
-      invoiceId: invoice.invoiceId,
-      dueDate: invoice.date,
-      tenantName: invoice.lease.tenant,
-      tenantEmail: invoice.lease.email,
-      leaseId: invoice.lease.leaseId,
-      status: invoice.status,
-      propertyAddress: invoice.lease.propertyAddress,
-      amount: invoice.amount,
-      createdAt: invoice.createdAt,
-    };
-    return invoiceData;
+    return invoice;
   } catch (err) {
     throw new Error("Error fetching invoice: " + err.message);
   }
