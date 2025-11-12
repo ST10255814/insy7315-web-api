@@ -12,39 +12,68 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-// Trust proxy first
+app.use(express.json()); // Parse JSON bodies
+
 app.set('trust proxy', true);
 
-// CORS configuration - MUST be at the top, before other middleware
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://localhost:3000', 
-  'http://127.0.0.1:3000',
-  'https://rentwiseproperties.onrender.com',
-  'https://insy7315-web-api.onrender.com',
-  process.env.CLIENT_URL
-].filter(Boolean);
+app.use(cookieParser());
 
-console.log('Allowed CORS origins:', allowedOrigins);
+//helmet for security headers including HSTS
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "http://127.0.0.1:5000",
+          "http://localhost:5000",
+          "http://localhost:3000",
+          "https://rentwiseproperties.onrender.com",
+        ],
+      },
+    },
+    hsts: {
+      maxAge: 31536000, // 1 year in seconds
+      includeSubDomains: true,
+      preload: true,
+    },
+    // Additional security headers
+    noSniff: true,
+    xssFilter: true,
+    referrerPolicy: { policy: "same-origin" },
+  })
+);
 
-// Simple CORS configuration
+// CORS configuration - MUST be before routes
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://rentwiseproperties.onrender.com',
+      process.env.CLIENT_URL
+    ].filter(Boolean);
+    
+    // Remove any trailing slashes and check
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    const isAllowed = allowedOrigins.some(allowed => 
+      allowed.replace(/\/$/, '') === normalizedOrigin
+    );
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
-      console.log('CORS blocked origin:', origin);
-      // For development, you might want to allow all temporarily
-      // callback(null, true);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  credentials: true, // Allow cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Content-Type', 
     'Authorization', 
@@ -53,24 +82,8 @@ app.use(cors({
     'CSRF-Token', 
     'csrf-token',
     'X-XSRF-Token',
-    'x-xsrf-token',
-    'X-Requested-With',
-    'Accept'
+    'x-xsrf-token'
   ],
-  exposedHeaders: ['set-cookie', 'csrf-token']
-}));
-
-// Handle preflight requests globally
-app.options('*', cors());
-
-// Other middleware
-app.use(express.json());
-app.use(cookieParser());
-
-// Helmet configuration (simplified for now)
-app.use(helmet({
-  contentSecurityPolicy: false, // Disable CSP temporarily to isolate issues
-  crossOriginEmbedderPolicy: false
 }));
 
 // Connect to MongoDB
@@ -79,39 +92,18 @@ mongoConnection();
 // Import organized routes
 import apiRoutes from './routes/index.js';
 
-// Test route with CORS headers
+// Test route
 app.get('/', (_, res) => {
   res.json({ message: 'API is running!' });
-});
-
-// Health check endpoint (no auth required)
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    origin: req.headers.origin 
-  });
 });
 
 // Mount all API routes
 app.use('/api', apiRoutes);
 
-// Global error handler for CORS
-app.use((err, req, res, next) => {
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({
-      error: 'CORS policy blocked the request',
-      requestedOrigin: req.headers.origin,
-      allowedOrigins: allowedOrigins
-    });
-  }
-  next(err);
-});
 
 // Start server
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
   
   // Initialize revenue collection
   try {
