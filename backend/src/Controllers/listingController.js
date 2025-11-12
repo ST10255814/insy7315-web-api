@@ -159,9 +159,20 @@ const updateListingInfo = asyncHandler(async (req, res) => {
   try {
     const adminId = getAdminId(req);
     const listingId = req.params.id;
-    const updateData = req.body;
     logControllerAction('Update Listing Info', adminId);
-    const updatedListing = await listingService.updateListingInfo(listingId, adminId, updateData);
+
+    // Handle uploaded files
+    const files = req.files || [];
+    
+    if (!files.length) {
+        console.log(`[createListing] No files uploaded for admin ${adminId}`);
+    }
+    
+    // Map file paths to image URLs
+    const imageUrls = files.map(file => file.path);
+    const data = { ...req.body, imagesURL: imageUrls };
+
+    const updatedListing = await listingService.updateListingInfo(listingId, adminId, data);
 
     if (!updatedListing) {
       return sendError(res, 'Listing not found or no changes made', 404);
