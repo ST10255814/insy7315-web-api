@@ -36,3 +36,12 @@ export async function getInvoiceById(invoiceId) {
         throw error;
     }
 };
+
+export async function getInvoiceByIdForPreview(invoiceId) {
+    try {
+        const response = await api.get(`/api/invoices/data/${invoiceId}`, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
