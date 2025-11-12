@@ -23,6 +23,7 @@ import {
   countNumberOfListingsByAdminId,
   countListingsAddedThisMonth,
   returnPropertiesByStatus,
+  updateListingInfo,
 } from "../services/listings.api.js";
 import {
   getMaintenanceRequestsByAdminId,
@@ -269,6 +270,39 @@ export const useDeleteListingMutation = () => {
         error?.error ||
         error?.message ||
         "Failed to delete property";
+      Toast.error(msg);
+    },
+  });
+};
+
+export const useUpdateListingMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ listingId, formData }) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return updateListingInfo(listingId, formData);
+    },
+    onSuccess: (response) => {
+      const listingID = response?.listingId || response;
+      Toast.success(
+        `Property updated successfully!${
+          listingID ? ` Listing ID: ${listingID}` : ""
+        }`
+      );
+      invalidateEntityQueries(queryClient, "listings");
+      // Invalidate overview queries since property counts have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      console.error("Update listing mutation error:", error);
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+
+      const msg =
+        error?.response?.data?.error ||
+        error?.error ||
+        error?.message ||
+        "Failed to update property";
       Toast.error(msg);
     },
   });

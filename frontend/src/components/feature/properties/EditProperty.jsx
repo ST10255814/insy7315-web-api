@@ -12,7 +12,7 @@ import {
   FormSection,
   FormButtonGroup
 } from "../../common/index.js";
-import { useListingByIdQuery } from "../../../utils/queries.js";
+import { useListingByIdQuery, useUpdateListingMutation } from "../../../utils/queries.js";
 // import { useEditListingMutation } from "../../../utils/queries.js";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -24,8 +24,9 @@ export default function EditProperty() {
     isLoading,
     isError,
   } = useListingByIdQuery(userId, propertyId);
-  // TODO: Replace with your mutation hook
-  // const editListingMutation = useEditListingMutation();
+
+  const updateListingMutation = useUpdateListingMutation();
+  
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -38,7 +39,6 @@ export default function EditProperty() {
     price: "",
     status: "Available",
   });
-  const [isPending, setIsPending] = useState(false); // Replace with mutation.isPending
   const [isDirty, setIsDirty] = useState(false);
   const statusOptions = ["Vacant", "Occupied", "Under Maintenance", "Reserved"];
 
@@ -158,24 +158,21 @@ export default function EditProperty() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
       return;
     }
-    setErrors({});
-    setIsPending(true); // Replace with mutation
-    // TODO: Insert your mutation logic here
-    // editListingMutation.mutate({ ...formData, propertyId }, {
-    //   onSuccess: () => {
-    //     resetForm();
-    //     navigate(`/dashboard/${userId}/properties`);
-    //   },
-    // });
-    setTimeout(() => {
-      setIsPending(false);
-      navigate(`/dashboard/${userId}/properties`);
-    }, 1500);
+    try {
+      console.log("Submitting form data:", formData);
+      await updateListingMutation.mutateAsync({
+        listingId: propertyId,
+        ...formData,
+      });
+      navigate(-1);
+    } catch (error) {
+      // Error handling is managed in the mutation's onError callback
+    }
   };
 
   return (
@@ -214,7 +211,7 @@ export default function EditProperty() {
                       }
                       placeholder="e.g., Modern 2BR Apartment"
                       hasError={!!errors.title}
-                      disabled={isPending}
+                      disabled={updateListingMutation.isPending}
                     />
                   </FormField>
                   <FormField label="Monthly Rent" error={errors.price}>
@@ -232,7 +229,7 @@ export default function EditProperty() {
                         className="pl-8 pr-4"
                         placeholder="0.00"
                         hasError={!!errors.price}
-                        disabled={isPending}
+                        disabled={updateListingMutation.isPending}
                       />
                     </div>
                   </FormField>
@@ -248,7 +245,7 @@ export default function EditProperty() {
                       }
                       placeholder="e.g., 123 Main Street, Johannesburg"
                       hasError={!!errors.address}
-                      disabled={isPending}
+                      disabled={updateListingMutation.isPending}
                     />
                   </FormField>
                 </div>
@@ -263,7 +260,7 @@ export default function EditProperty() {
                       }
                       placeholder="Describe the property features and highlights..."
                       hasError={!!errors.description}
-                      disabled={isPending}
+                      disabled={updateListingMutation.isPending}
                       rows={4}
                     />
                   </FormField>
@@ -324,7 +321,7 @@ export default function EditProperty() {
                           checked={formData.status === status}
                           onChange={() => handleInputChange("status", status)}
                           className="mr-3"
-                          disabled={isPending}
+                          disabled={updateListingMutation.isPending}
                         />
                         <span
                           className={`text-sm font-medium ${
@@ -349,12 +346,12 @@ export default function EditProperty() {
                 <FormButtonGroup
                   submitText="Save Changes"
                   submitLoadingText="Saving..."
-                  isSubmitting={isPending}
+                  isSubmitting={updateListingMutation.isPending}
                   submitIcon={<FaSave className="text-lg" />}
                   showReset={true}
                   onReset={resetForm}
                   showCancel={true}
-                  onCancel={() => navigate(`/dashboard/${userId}/properties`)}
+                  onCancel={() => navigate(-1)}
                   cancelText="Cancel"
                   errors={errors}
                   disabled={!isDirty}

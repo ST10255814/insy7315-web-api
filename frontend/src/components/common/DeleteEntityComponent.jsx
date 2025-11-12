@@ -57,10 +57,9 @@ export default function DeleteEntityComponent({
     
     try {
       await deleteMutation.mutateAsync(entityId);
-      Toast.success(`${entityDisplayName} deleted successfully.`);
-      navigate(`/dashboard/${adminId}${basePath}`);
+      navigate(-1);
     } catch (error) {
-      Toast.error(error?.message || `Failed to delete ${entityType}. Please try again.`);
+      // Error handling is managed in the mutation's onError callback
     } finally {
       setIsConfirming(false);
     }

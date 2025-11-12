@@ -304,6 +304,8 @@ async function updateListingInfo(listingId, adminId, updateData){
     const db = client.db("RentWise");
     const listingsCollection = db.collection("Listings");
 
+    console.log(`Updating listing ${listingId} for admin ${adminId} with data:`, updateData);
+
     const {title, address, description, amenities, imagesURL, price, status} = updateData;
 
     const updateFields = {};
