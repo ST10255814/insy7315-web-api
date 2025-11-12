@@ -20,7 +20,6 @@ const fetchCSRFToken = async () => {
       await Promise.race([fetchingPromise, timeoutPromise]);
       return csrfToken;
     } catch (error) {
-      console.warn('CSRF token fetch timeout or error, retrying...');
       fetchingPromise = null;
     }
   }
@@ -33,10 +32,8 @@ const fetchCSRFToken = async () => {
         withCredentials: true
       });
       csrfToken = response.data.csrfToken;
-      console.log('CSRF token fetched successfully');
       return csrfToken;
     } catch (error) {
-      console.warn('Failed to fetch CSRF token:', error);
       csrfToken = null;
       return null;
     } finally {
@@ -156,7 +153,6 @@ api.interceptors.response.use(
           return api.request(error.config);
         }
       } catch (csrfError) {
-        console.error('Failed to refresh CSRF token:', csrfError);
         Toast.error('Security token expired. Please refresh the page.');
       }
     }
@@ -177,7 +173,7 @@ api.interceptors.response.use(
         try {
           await api.post("/api/user/logout", {}, { withCredentials: true });
         } catch (logoutError) {
-          console.warn("Logout API call failed (this is expected during 401):", logoutError);
+          console.warn("Error during logout request:", logoutError);
         }
         
         // Force redirect to login page
@@ -198,5 +194,43 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Helper function for debugging authentication (available in window for console testing)
+window.debugAuth = async () => {
+  try {
+    console.log('🔍 Debug Auth Check Starting...');
+    console.log('Current cookies:', document.cookie);
+    console.log('Current origin:', window.location.origin);
+    console.log('Session storage:', {
+      user: sessionStorage.getItem('user'),
+      userId: sessionStorage.getItem('userId'),
+      userEmail: sessionStorage.getItem('userEmail')
+    });
+    
+    // Test basic connection
+    console.log('Testing basic connection...');
+    const basicTest = await api.get('/');
+    console.log('✅ Basic connection successful:', basicTest.data);
+    
+    // Test auth debug endpoint
+    console.log('Testing auth debug endpoint...');
+    const authDebug = await api.get('/api/user/auth-debug');
+    console.log('✅ Auth debug response:', authDebug.data);
+    
+    // Test CSRF token
+    console.log('Testing CSRF token...');
+    const csrfTest = await api.get('/api/security/csrf-token');
+    console.log('✅ CSRF token response:', csrfTest.data);
+    
+    return {
+      basicTest: basicTest.data,
+      authDebug: authDebug.data,
+      csrfTest: csrfTest.data
+    };
+  } catch (error) {
+    console.error('❌ Debug auth failed:', error);
+    return { error: error.message, response: error.response?.data };
+  }
+};
 
 export default api;
