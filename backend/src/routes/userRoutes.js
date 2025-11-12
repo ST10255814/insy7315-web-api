@@ -21,21 +21,54 @@ router.patch('/update-password/:resetToken', checkShortLivedAuth, userController
 router.post('/logout', csrfProtection, userController.logout);
 
 // Debug endpoint to check authentication status (no CSRF protection for debugging)
-router.get('/auth-debug', (req, res) => {
+router.get('/auth-debug', async (req, res) => {
   const cookies = req.cookies;
   const headers = req.headers;
   const authToken = cookies?.authToken;
+  
+  // Try to verify the token if it exists
+  let tokenInfo = null;
+  if (authToken) {
+    try {
+      const { verifyToken } = await import('../utils/jwtUtils.js');
+      const decoded = await verifyToken(authToken);
+      tokenInfo = {
+        valid: true,
+        userId: decoded.userId,
+        email: decoded.email,
+        role: decoded.role,
+        exp: new Date(decoded.exp * 1000).toISOString(),
+        iat: new Date(decoded.iat * 1000).toISOString()
+      };
+    } catch (error) {
+      tokenInfo = {
+        valid: false,
+        error: error.message
+      };
+    }
+  }
   
   res.json({
     hasCookies: !!cookies,
     hasAuthToken: !!authToken,
     tokenLength: authToken ? authToken.length : 0,
-    cookies: Object.keys(cookies || {}),
+    tokenPreview: authToken ? `${authToken.substring(0, 20)}...` : null,
+    tokenInfo,
+    allCookies: cookies,
+    cookieNames: Object.keys(cookies || {}),
     relevantHeaders: {
       authorization: headers.authorization,
       origin: headers.origin,
       referer: headers.referer,
-      userAgent: headers['user-agent']
+      host: headers.host,
+      'user-agent': headers['user-agent'],
+      'x-forwarded-for': headers['x-forwarded-for'],
+      'x-real-ip': headers['x-real-ip']
+    },
+    environment: {
+      nodeEnv: process.env.NODE_ENV,
+      cookieDomain: process.env.COOKIE_DOMAIN,
+      clientUrl: process.env.CLIENT_URL
     },
     timestamp: new Date().toISOString()
   });
