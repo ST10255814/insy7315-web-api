@@ -268,20 +268,32 @@ jobs:
         npm install -g snyk
         
         echo "Authenticating with Snyk..."
-        # Note: In production, add SNYK_TOKEN to repository secrets
-        # Then uncomment the line below to authenticate
-        # snyk auth $SNYK_TOKEN
+        # Production Snyk authentication
+        snyk auth ${{ secrets.SNYK_TOKEN }}
         
         cd backend
+        echo "Installing backend dependencies..."
+        npm ci --no-audit || npm install --no-audit
+        
         echo "Running Snyk test for backend..."
-        snyk test --json > ../${{ env.REPORT_DIR }}/vulnerability/snyk-backend.json || echo "Snyk found vulnerabilities"
-        snyk test --severity-threshold=high || echo "High severity vulnerabilities detected"
+        snyk test --json > ../${{ env.REPORT_DIR }}/vulnerability/snyk-backend.json || echo "Snyk found vulnerabilities in backend"
+        snyk test --severity-threshold=high || echo "High severity vulnerabilities detected in backend"
+        
+        echo "Running Snyk monitor for backend (production tracking)..."
+        snyk monitor --project-name="RentWise-Backend" || echo "Snyk monitor completed with issues"
         
         cd ../frontend
-        echo "Running Snyk test for frontend..."
-        snyk test --json > ../${{ env.REPORT_DIR }}/vulnerability/snyk-frontend.json || echo "Snyk found vulnerabilities"
+        echo "Installing frontend dependencies..."
+        npm ci --no-audit || npm install --no-audit
         
-        echo "Snyk vulnerability scanning completed"
+        echo "Running Snyk test for frontend..."
+        snyk test --json > ../${{ env.REPORT_DIR }}/vulnerability/snyk-frontend.json || echo "Snyk found vulnerabilities in frontend"
+        snyk test --severity-threshold=high || echo "High severity vulnerabilities detected in frontend"
+        
+        echo "Running Snyk monitor for frontend (production tracking)..."
+        snyk monitor --project-name="RentWise-Frontend" || echo "Snyk monitor completed with issues"
+        
+        echo "Snyk vulnerability scanning and monitoring completed"
 
     - name: 🛡️ Trivy Filesystem Scan
       uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
@@ -1230,10 +1242,52 @@ jobs:
           echo "WARNING: Security headers middleware not detected in codebase"
         fi
 
+  sonarcloud:
+    name: SonarCloud Code Quality
+    runs-on: ubuntu-latest
+    needs: [dependency-security, runtime-security]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci --no-audit || npm install --no-audit
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci --no-audit || npm install --no-audit
+
+      - name: Run Backend Tests with Coverage
+        run: |
+          cd backend
+          npm run test:coverage
+
+      - name: Run Frontend Tests with Coverage
+        continue-on-error: true
+        run: |
+          cd frontend
+          npm run test:coverage || echo "Frontend tests not fully configured"
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   security-compliance:
     name: Security Compliance & Reporting
     runs-on: ubuntu-latest
-    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security]
+    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security, sonarcloud]
     if: always()
     
     steps:
@@ -1735,7 +1789,7 @@ jobs:
   pipeline-success:
     name: Pipeline Success
     runs-on: ubuntu-latest
-    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security, security-compliance]
+    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security, sonarcloud, security-compliance]
     if: success()
     
     steps:
@@ -1772,7 +1826,7 @@ jobs:
   pipeline-failure:
     name: Pipeline Failed
     runs-on: ubuntu-latest
-    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security, security-compliance]
+    needs: [security-foundation, dependency-security, vulnerability-scanning, penetration-testing, code-security, infrastructure-security, runtime-security, sonarcloud, security-compliance]
     if: failure()
     
     steps:
