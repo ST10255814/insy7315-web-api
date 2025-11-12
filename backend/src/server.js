@@ -31,6 +31,7 @@ app.use(
           "http://localhost:5000",
           "http://localhost:3000",
           "https://rentwiseproperties.onrender.com",
+          "https://insy7315-web-api.onrender.com"
         ],
       },
     },
