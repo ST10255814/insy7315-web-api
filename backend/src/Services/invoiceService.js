@@ -366,6 +366,28 @@ async function regenerateAllInvoiceDescriptions(adminId = null) {
   }
 }
 
+async function returnInvoiceData(invoiceId, adminId){
+  try{
+    const invoice = await getInvoiceById(invoiceId, adminId);
+
+    const invoiceData = {
+      invoiceId: invoice.invoiceId,
+      dueDate: invoice.date,
+      tenantName: invoice.lease.tenant,
+      tenantEmail: invoice.lease.email,
+      leaseId: invoice.lease.leaseId,
+      leaseStatus: invoice.lease.status,
+      status: invoice.status,
+      propertyAddress: invoice.lease.propertyAddress,
+      amount: invoice.amount
+    }
+
+    return invoiceData;
+  } catch (error) {
+    throw new Error(`Error returning invoice data: ${error.message}`);
+  }
+}
+
 export default {
     createInvoice,
     getInvoicesByAdminId,
