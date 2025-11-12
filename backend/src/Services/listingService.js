@@ -46,6 +46,7 @@ async function createListing(data, adminId) {
       firstName: landlord.firstName,
       surname: landlord.surname,
       email: landlord.email,
+      phone: landlord.phone,
     };
 
     const listingId = await generateListingId();
