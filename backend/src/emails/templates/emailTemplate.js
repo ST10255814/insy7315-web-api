@@ -39,7 +39,7 @@ function sanitizeName(name) {
   });
 }
 
-export function createPasswordResetEmailTemplate(name, clientURL) {
+export function createPasswordResetEmailTemplate(name, clientURL, resetToken) {
   const safeName = sanitizeName(name);
   const safeURL = sanitizeUrl(clientURL);
   
@@ -62,7 +62,7 @@ export function createPasswordResetEmailTemplate(name, clientURL) {
       <p style="font-size: 18px; color: #2563EB; font-weight: 600; margin-bottom: 15px;">Hello ${safeName},</p>
       <p style="margin-bottom: 25px;">We received a request to reset your password for your RentWise account. If you made this request, click the button below to choose a new password.</p>
       <div style="text-align: center; margin: 35px 0;">
-        <a href="${safeURL}" style="
+        <a href="${safeURL}/${resetToken}" style="
           background-color: #2563EB;
           color: #ffffff;
           text-decoration: none;
@@ -79,10 +79,10 @@ export function createPasswordResetEmailTemplate(name, clientURL) {
       </div>
       <p>If you didn’t request a password reset, you can safely ignore this email — your password will remain unchanged.</p>
       <div style="margin-top: 30px; font-size: 14px; color: #555;">
-        <p style="margin-bottom: 5px;">This link will expire in <strong>1 hour</strong> for security reasons.</p>
+        <p style="margin-bottom: 5px;">This link will expire in <strong>10 minutes</strong> for security reasons.</p>
         <p style="margin-bottom: 5px;">If you’re having trouble, copy and paste this link into your browser:</p>
         <div style="background: #EFF6FF; padding: 12px; border-radius: 8px; color: #1D4ED8; word-wrap: break-word; font-size: 13px;">
-          ${safeURL}
+          ${safeURL}/${resetToken}
         </div>
       </div>
       <p style="margin-top: 35px; margin-bottom: 0; font-size: 15px;">Best regards,<br><strong>RentWise Support</strong></p>

@@ -92,13 +92,13 @@ export const logout = asyncHandler(async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   try {
     // Validate required fields
-    validateRequiredFields(req.body, ["email", "name"]);
+    validateRequiredFields(req.body, ["email"]);
 
     // Send reset email
     const result = await userService.resetPassword(req.body);
 
     // Log activity
-    logControllerAction("Password Reset Request", null, {
+    logControllerAction("Password Reset Request", req.body.email, {
       email: req.body.email,
     });
 
@@ -109,11 +109,31 @@ export const resetPassword = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to update password
+export const updatePassword = asyncHandler(async (req, res) => {
+  try {
+    // Validate required fields
+    validateRequiredFields(req.body, ["newPassword"]);
+    validateRequiredFields(req.user, ["userId"]);
+    // Update password
+    const result = await userService.updatePassword(req.body, req.user.userId);
+    // Log activity
+    logControllerAction("Password Update", req.user.userId, {
+      email: req.body.email,
+    });
+    // Send success response
+    sendSuccess(res, result, "Password updated successfully");
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 const userController = {
   register,
   login,
   logout,
   resetPassword,
+  updatePassword,
 };
 
 export default userController;

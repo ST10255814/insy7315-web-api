@@ -7,6 +7,7 @@ import { Router } from 'express';
 import userController from '../Controllers/userController.js';
 import { arcjetMiddleware } from '../middleware/arcjet.middleware.js';
 import { csrfProtection } from '../middleware/csrfProtection.js';
+import { checkShortLivedAuth } from '../middleware/checkAuth.js';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ const router = Router();
 router.post('/login', arcjetMiddleware, userController.login);
 router.post('/register', arcjetMiddleware, userController.register);
 router.post('/forgot-password', arcjetMiddleware, userController.resetPassword);
+router.patch('/update-password/:resetToken', checkShortLivedAuth, userController.updatePassword);
 
 // User management routes (logout requires CSRF protection since user has active session)
 router.post('/logout', csrfProtection, userController.logout);

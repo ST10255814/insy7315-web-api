@@ -1,17 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Toast from "../lib/toast.js";
 import { useFormValidation } from "../hooks/useFormValidation.js";
 import { useAuth } from "../hooks/useAuth.js";
-import AuthLayout from "../components/common/AuthLayout.jsx";
-import FormField from "../components/common/FormField.jsx";
-import FormInput from "../components/common/FormInput.jsx";
-import PasswordInput from "../components/common/PasswordInput.jsx";
-import LoadingButton from "../components/common/LoadingButton.jsx";
+import { AuthLayout, FormField, FormInput, PasswordInput, LoadingButton } from "../components/common/index.js";
 
 export default function Login() {
-  const { isLoading, isShaking, login, handleForgotPasswordFromStorage } = useAuth();
-  
+  const { isLoading, isShaking, login } = useAuth();
+  const navigate = useNavigate();
+
   const validationRules = {
     prefLogin: {
       required: true,
@@ -59,7 +56,7 @@ export default function Login() {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    await handleForgotPasswordFromStorage();
+    navigate("/forgot-password");
   };
 
   return (

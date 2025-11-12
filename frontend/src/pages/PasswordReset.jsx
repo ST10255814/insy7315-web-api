@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import api from "../lib/axios.js";
+import { useParams } from "react-router-dom";
 
 export default function PasswordReset() {
+  const { resetToken } = useParams();
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -35,7 +38,7 @@ export default function PasswordReset() {
       showConfirmPassword: !prev.showConfirmPassword,
     }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const errors = {};
@@ -58,7 +61,9 @@ export default function PasswordReset() {
       errors: {},
     }));
 
-    setTimeout(() => {
+    // Make API call to update password
+    try {
+      await api.patch(`/api/user/update-password/${resetToken}`, { newPassword: formData.password });
       setFormData((prev) => ({
         ...prev,
         isLoading: false,
@@ -67,7 +72,14 @@ export default function PasswordReset() {
         confirmPassword: "",
         submitText: "Reset Password",
       }));
-    }, 2000);
+    } catch (error) {
+      setFormData((prev) => ({
+        ...prev,
+        isLoading: false,
+        submitText: "Reset Password",
+        errors: { apiError: "Failed to reset password. Please try again." },
+      }));
+    }
   };
 
   return (

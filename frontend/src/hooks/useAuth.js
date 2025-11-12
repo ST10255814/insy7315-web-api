@@ -117,16 +117,13 @@ export function useAuth() {
 
   /**
    * Handle forgot password
-   * @param {String} email - User email
-   * @param {String} name - User full name
+   * @param {Object} params - { email: string }
    */
-  const forgotPassword = useCallback(async (email, name) => {
+  const forgotPassword = useCallback(async (params) => {
     try {
       await api.post("/api/user/forgot-password", {
-        email: email.toLowerCase(),
-        name: name,
+        email: params.email,
       });
-      navigate("/forgot-password", { state: { email } });
       return { success: true };
     } catch (error) {
       // Don't show toast if error was already handled by 401 interceptor
@@ -140,22 +137,7 @@ export function useAuth() {
       
       return { success: false, error: errorMsg };
     }
-  }, [navigate]);
-
-  /**
-   * Handle forgot password using stored credentials
-   */
-  const handleForgotPasswordFromStorage = useCallback(async () => {
-    const userEmail = JSON.parse(sessionStorage.getItem("userEmail"));
-    const userFullname = JSON.parse(sessionStorage.getItem("userFullname"));
-
-    if (userEmail && userFullname) {
-      return await forgotPassword(userEmail, userFullname);
-    } else {
-      Toast.error("No account registered with us. Please register first.");
-      return { success: false, error: "No stored credentials found" };
-    }
-  }, [forgotPassword]);
+  }, []);
 
   return {
     isLoading,
@@ -163,6 +145,5 @@ export function useAuth() {
     login,
     register,
     forgotPassword,
-    handleForgotPasswordFromStorage,
   };
 }

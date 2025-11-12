@@ -23,6 +23,14 @@ export default function LoadingButton({
 }) {
   const isDisabled = disabled || isLoading;
 
+  // Calculate the longest text for width
+  const textLength = Math.max(
+    typeof children === "string" ? children.length : 0,
+    typeof loadingText === "string" ? loadingText.length : 0
+  );
+  // Add extra space for loading dots and padding
+  const minWidth = `${textLength + 5}ch`;
+
   return (
     <motion.button
       whileHover={
@@ -40,27 +48,30 @@ export default function LoadingButton({
           ? "bg-blue-800/70 cursor-not-allowed"
           : "bg-blue-700"
       } ${className}`}
+      style={{ minWidth }}
       {...rest}
     >
-      {isLoading ? loadingText : children}
-      {isLoading && (
-        <span className="inline-flex ml-1">
-          {[".", ".", "."].map((dot, index) => (
-            <motion.span
-              key={index}
-              className="mx-[2px]"
-              animate={{ y: [0, -6, 0] }}
-              transition={{
-                duration: 0.6,
-                repeat: Infinity,
-                delay: index * 0.15,
-              }}
-            >
-              {dot}
-            </motion.span>
-          ))}
-        </span>
-      )}
+      <span className="inline-flex items-center justify-center w-full">
+        {isLoading ? loadingText : children}
+        {isLoading && (
+          <span className="inline-flex ml-1">
+            {[".", ".", "."].map((dot, index) => (
+              <motion.span
+                key={index}
+                className="mx-[2px]"
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  delay: index * 0.15,
+                }}
+              >
+                {dot}
+              </motion.span>
+            ))}
+          </span>
+        )}
+      </span>
     </motion.button>
   );
 }

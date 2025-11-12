@@ -54,3 +54,23 @@ export const checkAuth = async (req, res, next) => {
     res.status(401).json({ error: "Your session is expired. Please login again." });
   }
 };
+
+export const checkShortLivedAuth = async (req, res, next) => {
+  try {
+    const token = req.params?.resetToken;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    // Sanitize token input
+    const sanitizedToken = sanitizeForDatabase(token);
+
+    // Use secure JWT verification with revocation checking
+    const decoded = await verifyToken(sanitizedToken);
+    // Sanitize decoded user data before attaching to request
+    req.user = sanitizeForDatabase(decoded);
+    next();
+  } catch {
+    // Log error internally without exposing details
+    res.status(401).json({ error: "Your reset token has expired. Please request a new password reset." });
+  }
+};

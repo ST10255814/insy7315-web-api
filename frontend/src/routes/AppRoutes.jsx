@@ -48,7 +48,7 @@ export default function AppRoutes() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<PasswordReset />} />
+          <Route path="/reset-password/:resetToken" element={<PasswordReset />} />
           <Route path="/dashboard/:userId/*" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

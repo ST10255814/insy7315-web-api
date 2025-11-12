@@ -36,6 +36,25 @@ export function generateToken(payload) {
     }
 }
 
+export function generateShortLivedToken(payload, expiresIn) {
+    try {
+        // Add security claims
+        const tokenPayload = {
+            ...payload,
+            iat: Math.floor(Date.now() / 1000),
+            jti: crypto.randomUUID(), // Unique token ID for revocation
+        };
+        return jwt.sign(tokenPayload, jwtConfig.secret, {
+            expiresIn: expiresIn,
+            algorithm: jwtConfig.algorithm,
+            issuer: jwtConfig.issuer,
+            audience: jwtConfig.audience
+        });
+    } catch (error) {
+        throw new Error('Error generating short-lived JWT token: ' + error.message);
+    }
+}
+
 /**
  * Verify and decode JWT token
  * @param {string} token - JWT token to verify
