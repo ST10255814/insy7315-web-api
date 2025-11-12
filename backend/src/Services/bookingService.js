@@ -253,9 +253,42 @@ async function getCurrentMonthRevenue(adminId) {
     }
 }
 
+async function deleteBooking(bookingId, adminId){
+    try{
+        const db = client.db('RentWise');
+        const bookingsCollection = db.collection('Bookings');
+        const listingCollection = db.collection("Listings");
+
+        //Find the booking first
+        const booking = await bookingsCollection.findOne({ "newBooking.bookingId": bookingId });
+        if(!booking){
+            throw new Error("Booking not found");
+        }
+
+        //Check if the listing belongs to the admin
+        const listing = await listingCollection.findOne({ _id: toObjectId(booking.listingDetail.listingID) });
+        if(!listing){
+            throw new Error("Listing not found");
+        }
+
+        //Verify that the admin owns this listing
+        if(listing.landlordInfo.userId.toString() !== adminId){
+            throw new Error("Unauthorized: You can only delete bookings for your own listings");
+        }
+
+        //If all checks pass, delete the booking
+        const result = await bookingsCollection.deleteOne({ "newBooking.bookingId": bookingId });
+        return result.deletedCount > 0;
+    }catch(error){
+        console.error("Error deleting booking:", error);
+        throw new Error("Failed to delete booking");
+    }
+}
+
 const bookingService = {
     getBookings,
     getBookingById,
-    getCurrentMonthRevenue
+    getCurrentMonthRevenue,
+    deleteBooking
 };
 export default bookingService;

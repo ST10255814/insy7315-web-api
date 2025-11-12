@@ -152,6 +152,12 @@ async function createLease(bookingID, adminId) {
       { $set: { status: 'Occupied' } }
     );
 
+    //update booking status to Approved
+    await bookingsCollection.updateOne(
+      { "newBooking.bookingId": bookingID },
+      { $set: { "newBooking.status": "Approved" } }
+    );
+
     await leasesCollection.insertOne(lease);
     return leaseId;
   } catch (err) {

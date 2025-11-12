@@ -20,6 +20,9 @@ router.get('/', bookingController.getBookings);
 // Get booking by ID
 router.get('/:bookingId', bookingController.getBookingById);
 
+// Delete booking by ID (admin must own the listing)
+router.delete('/delete/:bookingId', bookingController.deleteBooking);
+
 // Booking revenue routes
 router.get('/current-month-revenue', bookingController.getCurrentMonthRevenue);
 

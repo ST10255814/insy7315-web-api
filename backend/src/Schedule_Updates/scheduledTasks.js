@@ -130,7 +130,7 @@ async function updateAllBookingStatuses() {
     const bookings = await bookingsCollection
       .find({ 
         "newBooking.status": { 
-          $in: ["Pending", "pending", "Confirmed", "confirmed", "Active", "active", "Expired", "expired"] 
+          $in: ["Pending", "pending", "Confirmed", "confirmed", "Active", "active", "Expired", "expired", "Approved", "approved"] 
         } 
       })
       .toArray();

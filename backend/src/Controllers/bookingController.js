@@ -61,12 +61,35 @@ const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Delete a booking (only if admin owns the listing)
+ */
+const deleteBooking = asyncHandler(async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const adminId = getAdminId(req);
+    
+    logControllerAction('Delete Booking', adminId, { bookingId });
+    
+    const success = await bookingService.deleteBooking(bookingId, adminId);
+    
+    if (success) {
+      sendSuccess(res, { deleted: true }, 'Booking deleted successfully');
+    } else {
+      sendBadRequest(res, 'Failed to delete booking');
+    }
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 // Export individual functions for named imports
-export { getBookings, getBookingById, getCurrentMonthRevenue };
+export { getBookings, getBookingById, getCurrentMonthRevenue, deleteBooking };
 
 // Export default object for backward compatibility
 export default {
     getBookings,
     getBookingById,
     getCurrentMonthRevenue,
+    deleteBooking,
 };
