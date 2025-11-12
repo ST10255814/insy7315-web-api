@@ -14,7 +14,9 @@ export const setAuthCookie = (res, token, options = {}) => {
   const defaultOptions = {
     httpOnly: true,
     secure: isProduction, // Use secure cookies in production only
-    sameSite: 'strict', // Set to strict for better security
+    // For cross-origin frontend/backend deployments we must use 'none' and Secure
+    // otherwise the browser will block the cookie. Use 'lax' in development.
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
     path: '/',
     // Add domain setting for production cross-origin setup
@@ -43,7 +45,7 @@ export const clearAuthCookie = (res) => {
   const clearOptions = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'strict', // Set to strict for better security
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
     // Add domain setting for production cross-origin setup
     ...(isProduction && { 

@@ -33,8 +33,22 @@ export function useAuth() {
       });
       
       const userData = response.data.data.user;
+      // Clear any leftover session data to avoid cross-account leakage
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("userEmail");
+      sessionStorage.removeItem("userFullname");
+      sessionStorage.removeItem("userId");
+
       sessionStorage.setItem("user", JSON.stringify(userData.fullname));
       sessionStorage.setItem("userId", JSON.stringify(userData._id));
+
+      // Clear React Query cache to avoid showing stale data from previous user
+      try {
+        const qc = await import("../lib/queryClient.js");
+        qc.default.clear();
+      } catch (e) {
+        console.warn("Could not clear query cache on login:", e);
+      }
       Toast.success(response.data.message);
       
       // Navigate to dashboard after a short delay
