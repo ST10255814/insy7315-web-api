@@ -15,6 +15,7 @@ import {
   getInvoiceById,
   deleteInvoice,
   getInvoiceByIdForPreview,
+  markInvoiceAsPaid,
 } from "../services/invoice.api.js";
 import {
   getListingsByAdminId,
@@ -228,6 +229,29 @@ export const useDeleteInvoiceMutation = () => {
         error?.message ||
         "Failed to delete invoice";
       Toast.error(msg);
+    },
+  });
+};
+
+// Mark Invoice as Paid Mutation
+export const useMarkInvoiceAsPaidMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (invoiceId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return markInvoiceAsPaid(invoiceId);
+    },
+    onSuccess: (response) => {
+      const invoiceID = response?.invoiceId || response;
+      // Use efficient invalidation utility
+      invalidateEntityQueries(queryClient, "invoices");
+      invalidateEntityQueries(queryClient, "invoice", invoiceID);
+      // Invalidate overview queries since revenue data may have changed
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
     },
   });
 };
