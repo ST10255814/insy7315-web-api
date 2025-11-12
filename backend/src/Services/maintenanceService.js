@@ -250,6 +250,27 @@ async function createCareTaker(adminId, careTakerData){
       const db = client.db("RentWise");
       const maintenanceCollection = db.collection("Maintenance-Requests");
       
+      // Validate inputs
+      if (!maintenanceRequestId) {
+        throw new Error("Maintenance request ID is required");
+      }
+      if (!adminId) {
+        throw new Error("Admin ID is required");
+      }
+      if (!updateData) {
+        throw new Error("Update data is required");
+      }
+
+      // First verify the maintenance request exists and belongs to the admin
+      const existingRequest = await maintenanceCollection.findOne({
+        "newMaintenanceRequest.maintenanceId": maintenanceRequestId,
+        "listingDetail.landlordID": toObjectId(adminId)
+      });
+
+      if (!existingRequest) {
+        throw new Error("Maintenance request not found for this admin");
+      }
+      
       //update 2 specific fields: followUps and caretakerNotes
       const { followUps, caretakerNotes } = updateData;
       const updateFields = {};
@@ -260,12 +281,33 @@ async function createCareTaker(adminId, careTakerData){
       if(caretakerNotes){
         updateFields["newMaintenanceRequest.caretakerNotes"] = caretakerNotes;
       }
+      
       if(globalThis.Object.keys(updateFields).length > 0){
         updateFields["newMaintenanceRequest.updatedAt"] = new Date();
-        await maintenanceCollection.updateOne(
-          { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
+        
+        const result = await maintenanceCollection.updateOne(
+          { 
+            "newMaintenanceRequest.maintenanceId": maintenanceRequestId,
+            "listingDetail.landlordID": toObjectId(adminId)
+          },
           { $set: updateFields }
         );
+
+        if (result.matchedCount === 0) {
+          throw new Error("Maintenance request not found or access denied");
+        }
+
+        if (result.modifiedCount === 0) {
+          throw new Error("No changes were made to the maintenance request");
+        }
+
+        return {
+          success: true,
+          message: "Maintenance request updated successfully",
+          modifiedCount: result.modifiedCount
+        };
+      } else {
+        throw new Error("No valid fields provided for update");
       }
     }catch (error) {
       throw new Error(`Error updating maintenance request: ${error.message}`);
