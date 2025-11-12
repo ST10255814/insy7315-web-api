@@ -91,7 +91,7 @@ export const updateMaintenanceRequest = asyncHandler(async (req, res) => {
   try {
     const adminId = getAdminId(req);
     const { maintenanceRequestId, updateData } = req.body;
-    await maintenanceService.updateMaintenanceRequest(maintenanceRequestId, updateData, adminId);
+    await maintenanceService.updateMaintenanceRequest(maintenanceRequestId, adminId, updateData);
     sendSuccess(res, null, 'Maintenance request updated successfully');
   } catch (error) {
     sendBadRequest(res, error.message, error.details);
