@@ -64,51 +64,49 @@ export default function ForgotPassword() {
 
   if (!submitted) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen w-full">
-        <AuthLayout
-          title="Forgot Password"
-          subtitle="Enter your email to receive a password reset link."
-          containerClassName="w-[90%] sm:w-[380px] mx-auto"
-        >
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left items-center w-full">
-            <FormField label="Email Address" error={errors.email}>
-              <FormInput
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="e.g. user@example.com"
-                hasError={!!errors.email}
-                disabled={isLoading}
-                autoFocus
-                className="text-base"
-              />
-            </FormField>
-            <LoadingButton
-              type="submit"
-              isLoading={isLoading}
-              loadingText="Sending reset link"
-              className="w-full"
+      <AuthLayout
+        title="Forgot Password"
+        subtitle="Enter your email to receive a password reset link."
+        containerClassName="w-[90%] sm:w-[380px]"
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left">
+          <FormField label="Email Address" error={errors.email}>
+            <FormInput
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="e.g. user@example.com"
+              hasError={!!errors.email}
               disabled={isLoading}
+              autoFocus
+              className="text-base"
+            />
+          </FormField>
+          <LoadingButton
+            type="submit"
+            isLoading={isLoading}
+            loadingText="Sending reset link"
+            className="w-full"
+            disabled={isLoading}
+          >
+            Send Reset Link
+          </LoadingButton>
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full"
+          >
+            <button
+              type="button"
+              className="w-full py-2 px-4 bg-blue-50 text-blue-700 font-semibold rounded-xl shadow-md border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition-all duration-150 focus:outline-none flex items-center justify-center gap-2"
+              onClick={() => navigate(-1)}
             >
-              Send Reset Link
-            </LoadingButton>
-            <motion.div
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="w-full"
-            >
-              <button
-                type="button"
-                className="w-full py-2 px-4 bg-blue-50 text-blue-700 font-semibold rounded-xl shadow-md border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition-all duration-150 focus:outline-none flex items-center justify-center gap-2"
-                onClick={() => navigate(-1)}
-              >
-                <FaArrowLeft size={20} />
-                Go Back
-              </button>
-            </motion.div>
-          </form>
-        </AuthLayout>
-      </div>
+              <FaArrowLeft size={20} />
+              Go Back
+            </button>
+          </motion.div>
+        </form>
+      </AuthLayout>
     );
   }
 
