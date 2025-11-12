@@ -64,7 +64,6 @@ export const useLeasesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("leases", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getLeasesByAdminId();
     },
     enabled: !!adminId,
@@ -77,7 +76,6 @@ export const useLeaseByIdQuery = (adminId, leaseId) => {
   return useQuery({
     queryKey: createQueryKey("lease", { adminId, leaseId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getLeaseById(leaseId);
     },
     enabled: !!leaseId,
@@ -91,7 +89,6 @@ export const useCreateLeaseMutation = () => {
 
   return useMutation({
     mutationFn: async (bookingID) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return createLeaseForBookingID(bookingID);
     },
     onSuccess: (response) => {
@@ -121,7 +118,6 @@ export const useDeleteLeaseMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (leaseId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return deleteLeaseById(leaseId);
     },
     onSuccess: (response) => {
@@ -150,7 +146,6 @@ export const useInvoicesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("invoices", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getInvoicesByAdminId();
     },
     enabled: !!adminId,
@@ -163,7 +158,6 @@ export const useCreateInvoiceMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (invoiceData) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return createInvoice(invoiceData);
     },
     onSuccess: (response) => {
@@ -192,7 +186,6 @@ export const useInvoiceByIdQuery = (adminId, invoiceId) => {
   return useQuery({
     queryKey: createQueryKey("invoice", { adminId, invoiceId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getInvoiceById(invoiceId);
     },
     enabled: !!invoiceId,
@@ -205,7 +198,6 @@ export const useInvoiceDataByIdQuery = (adminId, invoiceId) => {
   return useQuery({
     queryKey: createQueryKey("invoiceData", { adminId, invoiceId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getInvoiceByIdForPreview(invoiceId);
     },
     enabled: !!invoiceId,
@@ -218,7 +210,6 @@ export const useDeleteInvoiceMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (invoiceId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return deleteInvoice(invoiceId);
     },
     onSuccess: (response) => {
@@ -247,7 +238,6 @@ export const useMarkInvoiceAsPaidMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (invoiceId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return markInvoiceAsPaid(invoiceId);
     },
     onSuccess: (response) => {
@@ -270,7 +260,6 @@ export const useListingsQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("listings", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getListingsByAdminId();
     },
     enabled: !!adminId,
@@ -283,7 +272,6 @@ export const useListingByIdQuery = (adminId, listingId) => {
   return useQuery({
     queryKey: createQueryKey("listing", { adminId, listingId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getListingById(listingId);
     },
     enabled: !!listingId,
@@ -296,7 +284,6 @@ export const useDeleteListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (listingId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return deleteListingById(listingId);
     },
     onSuccess: (response) => {
@@ -329,7 +316,6 @@ export const useUpdateListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ listingId, formData }) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return updateListingInfo(listingId, formData);
     },
     onSuccess: (response) => {
@@ -365,7 +351,6 @@ export const useCreateListingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (listingData) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return createListing(listingData);
     },
     onSuccess: (response) => {
@@ -399,7 +384,6 @@ export const useBookingsQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("bookings", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getBookingsByAdminId();
     },
     enabled: !!adminId,
@@ -412,7 +396,6 @@ export const useBookingByIdQuery = (adminId, bookingId) => {
   return useQuery({
     queryKey: createQueryKey("booking", { adminId, bookingId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getBookingById(bookingId);
     },
     enabled: !!bookingId,
@@ -425,7 +408,6 @@ export const useDeleteBookingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (bookingId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return deleteBookingById(bookingId);
     },
     onSuccess: (response) => {
@@ -457,10 +439,10 @@ export const useMaintenanceRequestsQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("maintenanceRequests", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getMaintenanceRequestsByAdminId();
     },
     enabled: !!adminId,
+    keepPreviousData: true,
     ...CACHE_CONFIGS.REALTIME,
   });
 };
@@ -470,7 +452,6 @@ export const useUpdateMaintenanceRequestMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ maintenanceRequestId, updateData }) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return updateMaintenanceRequest(maintenanceRequestId, updateData);
     },
     onSuccess: () => {
@@ -478,6 +459,10 @@ export const useUpdateMaintenanceRequestMutation = () => {
       invalidateEntityQueries(queryClient, "maintenanceRequests");
       // Invalidate overview queries since maintenance counts have changed
       invalidateOverviewQueries(queryClient);
+      // Wait for toast to show before reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     },
     onError: (error) => {
       // Don't show toast if error was already handled by 401 interceptor
@@ -497,13 +482,16 @@ export const useMarkMaintenanceAsCompletedMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (maintenanceRequestId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return markRequestAsCompleted(maintenanceRequestId);
     },
     onSuccess: () => {
       invalidateEntityQueries(queryClient, "maintenanceRequests");
       // Invalidate overview queries since maintenance counts have changed
       invalidateOverviewQueries(queryClient);
+      // Wait for toast to show before reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     },
     onError: (error) => {
       // Don't show toast if error was already handled by 401 interceptor
@@ -517,7 +505,6 @@ export const useMonthlyRevenueQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("monthlyRevenue", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getCurrentMonthRevenue();
     },
     ...CACHE_CONFIGS.DYNAMIC,
@@ -533,9 +520,8 @@ export const useTotalPropertiesCountQuery = (adminId) => {
         throw new Error('Admin ID is required');
       }
       try {
-        await new Promise((r) => setTimeout(r, 2000));
-        const count = await countNumberOfListingsByAdminId();
-        return count;
+          const count = await countNumberOfListingsByAdminId();
+          return count;
       } catch (error) {
         throw error;
       }
@@ -555,9 +541,8 @@ export const useMonthlyPropertiesCountQuery = (adminId) => {
         throw new Error('Admin ID is required');
       }
       try {
-        await new Promise((r) => setTimeout(r, 2000));
-        const count = await countListingsAddedThisMonth();
-        return count;
+          const count = await countListingsAddedThisMonth();
+          return count;
       } catch (error) {
         throw error;
       }
@@ -573,7 +558,6 @@ export const useActiveLeasesCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("activeLeasesCount", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return countActiveLeasesByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
@@ -585,7 +569,6 @@ export const useLeasedPercentageQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("leasedPercentage", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getLeasedPropertyPercentage();
     },
     ...CACHE_CONFIGS.MEDIUM,
@@ -597,7 +580,6 @@ export const useMaintenanceCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("maintenanceCount", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return countMaintenanceRequestsByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
@@ -609,7 +591,6 @@ export const useHighPriorityMaintenanceCountQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("highPriorityMaintenanceCount", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return countHighPriorityMaintenanceRequestsByAdminId();
     },
     ...CACHE_CONFIGS.MEDIUM,
@@ -621,7 +602,6 @@ export const useRecentActivitiesQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("recentActivities", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getRecentActivities(adminId);
     },
     ...CACHE_CONFIGS.DYNAMIC,
@@ -643,7 +623,6 @@ export const useRevenueTrendQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("revenueTrend", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getRevenueTrend();
     },
     ...CACHE_CONFIGS.DYNAMIC,
@@ -655,7 +634,6 @@ export const useAdminPropertiesStatusQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("statusOverview", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return returnPropertiesByStatus();
     },
     ...CACHE_CONFIGS.DYNAMIC,
@@ -667,7 +645,6 @@ export const useAdminPropertiesReviewsQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("reviews", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getAdminPropertiesReviews();
     },
     ...CACHE_CONFIGS.DYNAMIC,
@@ -679,7 +656,6 @@ export const useCaretakersQuery = (adminId) => {
   return useQuery({
     queryKey: createQueryKey("caretakers", { adminId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getCaretakersByAdminId();
     },
     enabled: !!adminId,
@@ -692,7 +668,6 @@ export const useCreateCaretakerMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (caretakerData) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return createCaretaker(caretakerData);
     },
     onSuccess: (response) => {
@@ -720,7 +695,6 @@ export const useAssignCaretakerMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ caretakerId, requestId }) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return assignCaretakerToRequest(caretakerId, requestId);
     },
     onSuccess: () => {
@@ -746,7 +720,6 @@ export const useDeleteCaretakerMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (caretakerId) => {
-      await new Promise((r) => setTimeout(r, 2000));
       return deleteCaretaker(caretakerId);
     },
     onSuccess: () => {
@@ -772,7 +745,6 @@ export const useCaretakerByIdQuery = (adminId, caretakerId) => {
   return useQuery({
     queryKey: createQueryKey("caretaker", { adminId, caretakerId }),
     queryFn: async () => {
-      await new Promise((r) => setTimeout(r, 2000));
       return getCaretakerById(caretakerId);
     },
     enabled: !!caretakerId,
