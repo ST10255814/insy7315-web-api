@@ -7,7 +7,7 @@
 
 **_Streamline Your Property Management Journey with RentWise!_**
 
-[![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/) [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/) [![MongoDB](https://img.shields.io/badge/MongoDB-6.19.0-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com/) [![Express.js](https://img.shields.io/badge/Express.js-5.1.0-000000?style=for-the-badge&logo=express)](https://expressjs.com/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/) [![Jest](https://img.shields.io/badge/Jest-29.6.1-C21325?style=for-the-badge&logo=jest)](https://jestjs.io/) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ST10255814_insy7315-web-api)](https://sonarcloud.io/summary/new_code?id=ST10255814_insy7315-web-api)
+[![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/) [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/) [![MongoDB](https://img.shields.io/badge/MongoDB-6.19.0-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com/) [![Express.js](https://img.shields.io/badge/Express.js-5.1.0-000000?style=for-the-badge&logo=express)](https://expressjs.com/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/) [![Jest](https://img.shields.io/badge/Jest-29.6.1-C21325?style=for-the-badge&logo=jest)](https://jestjs.io/) 
 
 </div>
 
@@ -534,6 +534,7 @@ npm run test:coverage      # Run with coverage report
 ### 🔗 SonarCloud Dashboard
 
 **Project URL**: [https://sonarcloud.io/dashboard?id=insy7315-web-api](https://sonarcloud.io/dashboard?id=insy7315-web-api)
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ST10255814_insy7315-web-api)](https://sonarcloud.io/summary/new_code?id=ST10255814_insy7315-web-api)
 
 ### 🛠️ Code Quality Tools
 
