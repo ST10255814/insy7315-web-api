@@ -2,10 +2,7 @@ import cron from 'node-cron';
 import { client } from '../utils/db.js';
 import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
-import occupansyService from '../Services/occupansyService.js';
 import { determineLeaseStatus, determineBookingStatus } from '../utils/statusManager.js';
-import ObjectIDConvert from '../utils/ObjectIDConvert.js';
-const { toObjectId } = ObjectIDConvert;
 
 // Function to update all lease statuses
 async function updateAllLeaseStatuses() {
@@ -158,43 +155,6 @@ async function updateAllBookingStatuses() {
             statusUpdates.toActive++;
           } else if (newStatus === 'Expired') {
             statusUpdates.toExpired++;
-            // If a booking was set to Expired, ensure the associated listing is set to Vacant
-            try {
-              const db = client.db("RentWise");
-              const listingsCollection = db.collection("Listings");
-              const maintenanceCollection = db.collection("Maintenance-Requests");
-
-              const listingRef = booking.listingDetail?.listingID;
-              if (listingRef) {
-                const listingIdObj = toObjectId(listingRef);
-
-                // Check if there are any other active/confirmed bookings for this listing
-                const otherActiveBookings = await bookingsCollection.findOne({
-                  "listingDetail.listingID": listingIdObj,
-                  "newBooking.status": { $in: ["Active", "active", "confirmed", "Confirmed"] }
-                });
-
-                // Check if there are active maintenance requests for this listing
-                const activeMaintenance = await maintenanceCollection.findOne({
-                  "listingDetail.listingID": listingIdObj,
-                  "newMaintenanceRequest.status": { $nin: ["Completed", "completed", "Resolved", "resolved", "Closed", "closed"] }
-                });
-
-                // If no other active bookings and no active maintenance, set listing to Vacant
-                if (!otherActiveBookings && !activeMaintenance) {
-                  const existingListing = await listingsCollection.findOne({ _id: listingIdObj });
-                  if (existingListing && existingListing.status !== 'Vacant') {
-                    await listingsCollection.updateOne(
-                      { _id: listingIdObj },
-                      { $set: { status: 'Vacant', lastStatusUpdate: new Date() } }
-                    );
-                    console.log(`Set listing ${existingListing.listingId || listingRef} to Vacant because booking ${booking.newBooking.bookingId} expired and there are no active bookings/maintenance`);
-                  }
-                }
-              }
-            } catch (listingUpdateError) {
-              console.error(`Error updating listing status after booking expired for booking ${booking.newBooking?.bookingId}:`, listingUpdateError);
-            }
           } else {
             statusUpdates.other++;
           }
@@ -365,7 +325,6 @@ function startStatusScheduler() {
       await updateAllLeaseStatuses();
       await updateAllInvoiceStatuses();
       await updateAllBookingStatuses();
-      await occupansyService.updateAllListingStatuses();
       console.log('Daily status updates completed successfully');
     } catch (error) {
       console.error('Error during daily status updates:', error);
@@ -383,7 +342,7 @@ function startStatusScheduler() {
     }
   });
   
-  console.log('Status scheduler started - Daily updates at midnight (leases, invoices, bookings, listing statuses), Monthly revenue calculation on 1st at 2 AM');
+  console.log('Status scheduler started - Daily updates at midnight (leases, invoices, bookings), Monthly revenue calculation on 1st at 2 AM');
 }
 
 // Function to manually trigger status updates (useful for testing)
@@ -393,9 +352,8 @@ async function manualStatusUpdate() {
     const leaseUpdates = await updateAllLeaseStatuses();
     const invoiceUpdates = await updateAllInvoiceStatuses();
     const bookingUpdates = await updateAllBookingStatuses();
-    const listingUpdates = await occupansyService.updateAllListingStatuses();
-    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}, Bookings: ${bookingUpdates}, Listings: ${listingUpdates.totalUpdated}/${listingUpdates.totalListingsProcessed}`);
-    return { leaseUpdates, invoiceUpdates, bookingUpdates, listingUpdates };
+    console.log(`Manual update completed - Leases: ${leaseUpdates}, Invoices: ${invoiceUpdates}, Bookings: ${bookingUpdates}`);
+    return { leaseUpdates, invoiceUpdates, bookingUpdates };
   } catch (error) {
     console.error('Error during manual status update:', error);
     throw error;
@@ -423,33 +381,12 @@ async function manualRevenueCalculation(month = null, year = null) {
   }
 }
 
-// Function to manually trigger listing status update for a specific admin (useful for testing)
-async function manualListingStatusUpdate(adminId = null) {
-  try {
-    console.log('Starting manual listing status update...');
-    
-    if (adminId) {
-      console.log(`Updating listings for admin: ${adminId}`);
-      const result = await occupansyService.updateListingStatuses(adminId);
-      console.log(`Manual listing update completed for admin ${adminId} - Updated: ${result.updated}/${result.processedListings}`);
-      return result;
-    } else {
-      console.log('Updating listings for all admins...');
-      const result = await occupansyService.updateAllListingStatuses();
-      console.log(`Manual listing update completed for all admins - Updated: ${result.totalUpdated}/${result.totalListingsProcessed}`);
-      return result;
-    }
-  } catch (error) {
-    console.error('Error during manual listing status update:', error);
-    throw error;
-  }
-}
+
 
 export { 
   startStatusScheduler, 
   manualStatusUpdate, 
   manualRevenueCalculation,
-  manualListingStatusUpdate,
   updateAllLeaseStatuses, 
   updateAllInvoiceStatuses,
   updateAllBookingStatuses,

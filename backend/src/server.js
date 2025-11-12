@@ -30,7 +30,7 @@ app.use(
           "http://127.0.0.1:5000",
           "http://localhost:5000",
           "http://localhost:3000",
-          "https://rentwiseproperty.onrender.com",
+          "https://rentwiseproperties.onrender.com",
         ],
       },
     },
@@ -56,7 +56,8 @@ app.use(cors({
       'http://localhost:3000',
       'https://localhost:3000',
       'http://127.0.0.1:3000',
-      'https://rentwiseproperty.onrender.com',
+      'https://rentwiseproperties.onrender.com',
+      'https://insy7315-web-api.onrender.com',
       process.env.CLIENT_URL
     ].filter(Boolean);
     

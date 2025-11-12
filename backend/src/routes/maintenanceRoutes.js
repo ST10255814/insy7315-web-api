@@ -25,6 +25,11 @@ router.get('/caretakers', maintenanceController.getAllAdminsCareTakers);
 //assign caretaker to maintenance request
 router.post('/assign', csrfProtection, maintenanceController.assignCareTakerToRequest);
 
+//update maintenance request
+router.put('/update', csrfProtection, maintenanceController.updateMaintenanceRequest);
+//update maintenance status to completed
+router.put('/complete', csrfProtection, maintenanceController.updateMaintenanceStatusToCompleted);
+
 // Maintenance statistics routes
 router.get('/count', maintenanceController.countMaintenanceRequestsByAdminId);
 router.get('/count-high-priority', maintenanceController.countHighPriorityMaintenanceRequestsByAdminId);

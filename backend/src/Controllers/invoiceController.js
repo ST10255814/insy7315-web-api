@@ -145,13 +145,32 @@ const regenerateInvoiceDescriptions = asyncHandler(async (req, res) => {
   }
 });
 
+const returnInvoiceData = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const { invoiceId } = req.params;
+    logControllerAction('Return Invoice Data', adminId, { invoiceId });
+
+    const invoiceData = await invoiceService.returnInvoiceData(invoiceId, adminId);
+    if (!invoiceData) {
+      return sendNotFound(res, "Invoice not found");
+    }
+    sendSuccess(res, { invoiceData }, "Invoice data retrieved successfully");
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
 // Export individual functions for named imports
 export { 
   createInvoice,
   getInvoicesByAdminId,
   markInvoiceAsPaid,
   getInvoiceStats,
-  regenerateInvoiceDescriptions
+  regenerateInvoiceDescriptions,
+  getInvoiceById,
+  deleteInvoice,
+  returnInvoiceData
 };
 
 // Export default object for backward compatibility
@@ -162,5 +181,6 @@ export default {
   deleteInvoice,
   markInvoiceAsPaid,
   getInvoiceStats,
-  regenerateInvoiceDescriptions
+  regenerateInvoiceDescriptions,
+  returnInvoiceData
 };

@@ -298,6 +298,39 @@ async function returnPropertiesByStatus(adminId) {
   }
 }
 
+//update listing info
+async function updateListingInfo(listingId, adminId, updateData){
+  try{
+    const db = client.db("RentWise");
+    const listingsCollection = db.collection("Listings");
+
+    const {title, address, description, amenities, imagesURL, price, status} = updateData;
+
+    const updateFields = {};
+
+    if(title) updateFields.title = title;
+    if(address) updateFields.address = address;
+    if(description) updateFields.description = description;
+    if(amenities) updateFields.amenities = amenities;
+    if(imagesURL) updateFields.imagesURL = imagesURL;
+    if(price) updateFields.price = price;
+    if(status) updateFields.status = status;
+
+    await listingsCollection.updateOne(
+      {
+        listingId: listingId,
+        "landlordInfo.userId": toObjectId(adminId)
+      },
+      {
+        $set: updateFields
+      }
+    );
+  } catch (error) {
+    console.error(`Error updating listing info: ${error.message}`);
+    throw new Error(`Error updating listing info: ${error.message}`);
+  }
+}
+
 const listingService = {
   createListing,
   getListingById,
@@ -306,6 +339,7 @@ const listingService = {
   returnPropertiesByStatus,
   countListingsAddedThisMonth,
   deleteListingById,
+  updateListingInfo,
 };
 
 export default listingService;

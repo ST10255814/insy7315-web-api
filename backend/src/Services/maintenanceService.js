@@ -245,6 +245,67 @@ async function createCareTaker(adminId, careTakerData){
     }
   }
 
+  async function updateMaintenanceRequest(maintenanceRequestId, adminId, updateData){
+    try{
+      const db = client.db("RentWise");
+      const maintenanceCollection = db.collection("Maintenance-Requests");
+      
+      //update 2 specific fields: followUps and caretakerNotes
+      const { followUps, caretakerNotes } = updateData;
+      const updateFields = {};
+
+      if(followUps){
+        updateFields["newMaintenanceRequest.followUps"] = followUps;
+      }
+      if(caretakerNotes){
+        updateFields["newMaintenanceRequest.caretakerNotes"] = caretakerNotes;
+      }
+      if(Object.keys(updateFields).length > 0){
+        updateFields["newMaintenanceRequest.updatedAt"] = new Date();
+        await maintenanceCollection.updateOne(
+          { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
+          { $set: updateFields }
+        );
+      }
+    }catch (error) {
+      throw new Error(`Error updating maintenance request: ${error.message}`);
+    }
+  }
+
+  async function updateMaintenanceStatusToCompleted(maintenanceRequestId, adminId){
+    try{
+      const db = client.db("RentWise");
+      const maintenanceCollection = db.collection("Maintenance-Requests");
+      const listingCollection = db.collection("Listings");
+      //make sure maintenance request exists
+      const maintenanceRequest = await maintenanceCollection.findOne({ 
+        "newMaintenanceRequest.maintenanceId": maintenanceRequestId, 
+        "listingDetail.landlordID": toObjectId(adminId) 
+      });
+      if(!maintenanceRequest){
+        throw new Error("Maintenance request not found for this admin");
+      }
+      //update maintenance request status to completed
+      await maintenanceCollection.updateOne(
+        { "newMaintenanceRequest.maintenanceId": maintenanceRequestId },
+        { $set: { "newMaintenanceRequest.status": "Completed", "newMaintenanceRequest.updatedAt": new Date() } }
+      );
+      //update listing status to vacant if no active leases, else to occupied
+      const listingId = maintenanceRequest.listingDetail.listingID;
+      const activeLeases = await db.collection("Leases").countDocuments({
+        listingId: listingId,
+        status: "active"
+      });
+      
+      const newStatus = activeLeases > 0 ? "Occupied" : "Vacant";
+      await listingCollection.updateOne(
+        { listingId: listingId },
+        { $set: { status: newStatus } }
+      );
+    }catch (error) {
+      throw new Error(`Error updating maintenance request status: ${error.message}`);
+    }
+  }
 
 const maintenanceService = {
   getAllMaintenanceRequests,
@@ -253,5 +314,7 @@ const maintenanceService = {
   createCareTaker,
   getAllAdminsCareTakers,
   assignCareTakerToRequest,
+  updateMaintenanceRequest,
+  updateMaintenanceStatusToCompleted,
 };
 export default maintenanceService;
