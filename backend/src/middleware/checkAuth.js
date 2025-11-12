@@ -55,8 +55,10 @@ export const checkAuth = async (req, res, next) => {
   }
 };
 
+// Middleware to authenticate short-lived tokens (e.g., password reset tokens)
 export const checkShortLivedAuth = async (req, res, next) => {
   try {
+    // Extract token from request parameters
     const token = req.params?.resetToken;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });

@@ -7,6 +7,8 @@ import { migrateExistingIds, getIdStatistics } from '../utils/globalIdTracker.js
  * This ensures no collisions with previously generated IDs.
  * 
  * Usage: node migrate-ids.js
+ * 
+ * Had help from GitHub Copilot which is an integrated AI tool to assist with coding.
  */
 async function runMigration() {
   try {

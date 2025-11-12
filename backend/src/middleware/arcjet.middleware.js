@@ -19,12 +19,13 @@ export const arcjetMiddleware = async (req, res, next) => {
       return res.status(400).json({ error: "Invalid identifier format for Arcjet." });
     }
 
-    // Skip Arcjet checks for usernames
+    // Skip Arcjet checks for usernames since we focus on email-based protections here
     if(!identifier.includes("@")) {
       next();
       return;
     }
 
+    // Perform Arcjet protection check based on email
     const decision = await aj.protect(req, { email: identifier });
     console.log("Arcjet decision:", decision);
 

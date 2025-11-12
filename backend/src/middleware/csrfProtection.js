@@ -6,7 +6,7 @@ dotenv.config();
 // Initialize CSRF tokens
 const tokens = new csrf();
 
-// Store CSRF secrets per session (in production, use Redis or database)
+// Store CSRF secrets per session
 const sessionSecrets = new Map();
 
 /**

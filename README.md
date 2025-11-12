@@ -678,7 +678,26 @@ This section is reserved for academic sources and references that were consulted
 
 ### 🔗 Technical Documentation References
 
-// TODO
+- [React Toastify](https://fkhadra.github.io/react-toastify/introduction/) 
+- [Resend](https://resend.com/docs/dashboard/api-keys/introduction)
+- [Arcjet](https://docs.arcjet.com/)
+- [Cron Jobs](https://youtu.be/6gmdFPlkuhQ?si=BgBLupsrlxMhu2S1)
+- [Axios Interceptors](https://axios-http.com/docs/interceptors)
+- [HSTS](https://www.npmjs.com/package/hsts)
+- [CSRF](https://snyk.io/blog/how-to-protect-node-js-apps-from-csrf-attacks/)
+- [Motion Dev](https://motion.dev/docs/quick-start)
+- [TanStack Queries](https://tanstack.com/query/v5/docs/framework/react/overview)
+- [TailwindCSS](https://v3.tailwindcss.com/docs/guides/create-react-app)
+- [Cosden Solution](https://youtube.com/@cosdensolutions?si=2pjEWhA-Jknf3cB3) (All react frontend videos were mainly followed through this channel)
+- [File Downloads](https://youtu.be/IPEqb_AJbAQ?si=DqmAUNa9CiJrLoV-)
+- [ChartJS](https://react-chartjs-2.js.org/)
+- [Drag and Drop File Uploads](https://youtu.be/8VHVWPkWR8Q?si=o2QDJFpwDKUFhh4J)
+- [Icons](https://docs.fontawesome.com/web/use-with/react)
+- [CORS](https://www.npmjs.com/package/cors)
+- [Cloudinary](https://cloudinary.com/documentation/node_integration#landingpage) (For all image/file uploads)
+- [Lazy Loading](https://react.dev/reference/react/lazy) (optimises web performance)
+- [Sonarcloud Integration with CI/CD](https://sonarcloud.io/project/configuration/GitHubActions?id=ST10255814_insy7315-web-api)
+- [Synk Vulnerability Scanning](https://docs.snyk.io/discover-snyk/getting-started)
 
 ---
 
