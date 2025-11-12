@@ -76,10 +76,10 @@ const checkUserExists = async (systemUsers, email, username) => {
  */
 const register = async (data) => {
     try {
-        const { email, password, username, fullname } = data;
+        const { email, password, username, fullname, phone } = data;
 
         // Check if all fields are provided (preserve original validation)
-        if (!email || !password || !username || !fullname) {
+        if (!email || !password || !username || !fullname || !phone) {
             throw new Error("Please provide all required fields");
         }
         
@@ -106,6 +106,7 @@ const register = async (data) => {
         firstName: firstName,
         surname: surname,
         role: 'landlord', // Default role for website registration
+        phone: phone,
         createdAt: new Date(),
         updatedAt: new Date()
     };
