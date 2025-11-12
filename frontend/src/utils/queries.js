@@ -284,12 +284,14 @@ export const useUpdateListingMutation = () => {
     },
     onSuccess: (response) => {
       const listingID = response?.listingId || response;
+      console.log("Update listing response:", response);
       Toast.success(
         `Property updated successfully!${
           listingID ? ` Listing ID: ${listingID}` : ""
         }`
       );
       invalidateEntityQueries(queryClient, "listings");
+      invalidateEntityQueries(queryClient, "listing", listingID);
       // Invalidate overview queries since property counts have changed
       invalidateOverviewQueries(queryClient);
     },
