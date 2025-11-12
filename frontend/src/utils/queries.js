@@ -45,6 +45,8 @@ import {
   getCaretakersByAdminId,
   createCaretaker,
   assignCaretakerToRequest,
+  deleteCaretaker,
+  getCaretakerById,
 } from "../services/caretakers.api.js";
 import { getRecentActivities } from "../services/activity.api.js";
 import {
@@ -738,3 +740,42 @@ export const useAssignCaretakerMutation = () => {
     },
   });
 };
+
+// Delete Caretaker Mutation
+export const useDeleteCaretakerMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (caretakerId) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return deleteCaretaker(caretakerId);
+    },
+    onSuccess: () => {
+      Toast.success(`Caretaker deleted successfully`);
+      // Invalidate caretakers to reflect deletion
+      invalidateEntityQueries(queryClient, "caretakers");
+      invalidateOverviewQueries(queryClient);
+    },
+    onError: (error) => {
+      // Don't show toast if error was already handled by 401 interceptor
+      if (error.isHandledBy401Interceptor) return;
+      const msg =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to delete caretaker";
+      Toast.error(`Error deleting caretaker: ${msg}`);
+    },
+  });
+};
+
+// Caretaker By ID Query
+export const useCaretakerByIdQuery = (adminId, caretakerId) => {
+  return useQuery({
+    queryKey: createQueryKey("caretaker", { adminId, caretakerId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getCaretakerById(caretakerId);
+    },
+    enabled: !!caretakerId,
+    ...CACHE_CONFIGS.MEDIUM,
+  });
+}

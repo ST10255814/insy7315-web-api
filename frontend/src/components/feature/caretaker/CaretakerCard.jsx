@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import {
-  FaEdit,
   FaTrash,
   FaIdBadge,
   FaEnvelope,
@@ -93,14 +92,6 @@ export default function CaretakerCard({ caretaker, onAction }) {
         transition={{ duration: 0.2 }}
         className="absolute inset-0 z-20 bg-gray-400/10 backdrop-blur-sm rounded-xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-4 pointer-events-none group-hover:pointer-events-auto"
       >
-        {/* Action Buttons */}
-        <HoverActionButton
-          icon={<FaEdit size={17} />}
-          label="Edit"
-          onClick={() => onAction("Edit", caretaker)}
-          className="text-blue-600 hover:bg-blue-50"
-        />
-
         <HoverActionButton
           icon={<FaTrash size={17} />}
           label="Delete"

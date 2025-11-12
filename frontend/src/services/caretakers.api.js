@@ -26,3 +26,21 @@ export async function assignCaretakerToRequest(caretakerId, maintenanceRequestId
         throw error;
     }
 }
+
+export async function deleteCaretaker(caretakerId) {
+    try {
+        const response = await api.delete(`/api/maintenance/caretaker/${caretakerId}/delete`, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getCaretakerById(caretakerId) {
+    try {
+        const response = await api.get(`/api/maintenance/caretaker/${caretakerId}`, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+}
