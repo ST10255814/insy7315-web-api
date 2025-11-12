@@ -2,22 +2,29 @@ import { useState } from "react";
 import { TabWrapper, FormField, FormInput } from "../../common";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { useUpdateMaintenanceRequestMutation } from "../../../utils/queries.js";
 
-export default function UpdateMaintenanceRequest({ onUpdate }) {
-  const [followUps, setFollowUps] = useState(0);
-  const [caretakerNotes, setCaretakerNotes] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+export default function UpdateMaintenanceRequest() {
+  const [updateData, setUpdateData] = useState({
+    followUps: 0,
+    caretakerNotes: "",
+  });
+  const updateMutation = useUpdateMaintenanceRequestMutation();
 
   const navigate = useNavigate();
   const { maintenanceId } = useParams();
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    setSubmitting(true);
-    // Call parent handler or API
-    if (onUpdate) onUpdate({ followUps, caretakerNotes });
-    // Simulate API delay
-    setTimeout(() => setSubmitting(false), 1000);
+    console.log("Submitting update:", { maintenanceRequestId: maintenanceId, updateData });
+    updateMutation.mutate(
+      { maintenanceRequestId: maintenanceId, updateData: updateData },
+      {
+        onSuccess: () => {
+          navigate(-1);
+        },
+      }
+    );
   };
 
   return (
@@ -49,8 +56,8 @@ export default function UpdateMaintenanceRequest({ onUpdate }) {
                 type="number"
                 name="followUps"
                 min={0}
-                value={followUps}
-                onChange={(e) => setFollowUps(e.target.value)}
+                value={updateData.followUps}
+                onChange={(e) => setUpdateData({ ...updateData, followUps: e.target.value })}
                 placeholder="Number of follow-ups..."
                 hasError={false}
               />
@@ -59,8 +66,8 @@ export default function UpdateMaintenanceRequest({ onUpdate }) {
               <FormInput
                 type="textarea"
                 name="caretakerNotes"
-                value={caretakerNotes}
-                onChange={(e) => setCaretakerNotes(e.target.value)}
+                value={updateData.caretakerNotes}
+                onChange={(e) => setUpdateData({ ...updateData, caretakerNotes: e.target.value })}
                 placeholder="Add any notes from the caretaker..."
                 hasError={false}
                 rows={4}
@@ -70,16 +77,16 @@ export default function UpdateMaintenanceRequest({ onUpdate }) {
             <button
               type="submit"
               className={`w-full px-4 py-2 rounded-lg text-white font-semibold text-base shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center justify-center gap-2 ${
-                submitting
+                updateMutation.isPending
                   ? "bg-blue-300 cursor-not-allowed"
                   : "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 hover:brightness-110 hover:shadow-lg"
               }`}
-              disabled={submitting}
+              disabled={updateMutation.isPending}
             >
-              {submitting ? (
+              {updateMutation.isPending ? (
                 <span className="inline-block w-5 h-5 mr-2 border-2 border-white border-t-blue-500 rounded-full animate-spin"></span>
               ) : null}
-              {submitting ? "Updating..." : "Update Request"}
+              {updateMutation.isPending ? "Updating..." : "Update Request"}
             </button>
           </form>
         </div>

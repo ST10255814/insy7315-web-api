@@ -6,6 +6,8 @@ import AssignCaretaker from "./maintenance/AssignCaretaker.jsx";
 import UpdateMaintenanceRequest from "./maintenance/UpdateMaintenanceRequest.jsx";
 import { useNavigate } from "react-router-dom";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
+import Toast from "../../lib/toast.js";
+import { useMarkMaintenanceAsCompletedMutation } from "../../utils/queries.js";
 
 export default function MaintenanceTab() {
   return (
@@ -27,6 +29,8 @@ function MaintenanceListView() {
     isError,
   } = useMaintenanceRequestsQuery(adminId);
 
+  const markCompletedMutation = useMarkMaintenanceAsCompletedMutation();
+
   const handleMaintenanceAction = (action, request) => {
     switch (action) {
       case "assign":
@@ -34,6 +38,16 @@ function MaintenanceListView() {
         break;
       case "update":
         navigate(`update/${request.maintenanceID}`);
+        break;
+      case "complete":
+        Toast.promise(
+          markCompletedMutation.mutateAsync(request.maintenanceID),
+          {
+            pending: "Marking as completed...",
+            success: `Maintenance request ${request.maintenanceID} marked as completed`,
+            error: "Failed to mark maintenance request as completed",
+          }
+        );
         break;
       default:
         break;
@@ -53,9 +67,8 @@ function MaintenanceListView() {
         {/* Content State - Mobile: scrollable page, Desktop: scrollable columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 h-auto md:h-full md:min-h-0 w-full">
           {statuses.map((status) => (
-            <div className="flex flex-col h-full min-h-[320px] md:min-h-0">
+            <div key={status} className="flex flex-col h-full min-h-[320px] md:min-h-0">
               <MaintenanceColumn
-                key={status}
                 status={status}
                 requests={maintenanceData.filter(
                   (request) => request.status === status
