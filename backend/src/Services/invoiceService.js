@@ -60,6 +60,7 @@ async function createInvoice(adminId, data){
             tenant: lease.tenant.firstName + " " + lease.tenant.surname,
             email: lease.tenant.email,
             propertyAddress: lease.listing.address,
+            leaseStatus: lease.status
         }
 
         // Generate automatic description if not provided
