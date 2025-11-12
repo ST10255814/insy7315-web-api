@@ -77,6 +77,7 @@ export function useAuth() {
         username: userData.username,
         fullname: userData.fullname,
         email: userData.email,
+        phone: userData.phone,
         password: userData.password,
       });
 
