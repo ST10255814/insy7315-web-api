@@ -3,6 +3,7 @@ import { FaPlusCircle } from "react-icons/fa";
 import { TabWrapper, StateHandler, ActionButton } from "../common/index.js";
 import {
   useInvoicesQuery,
+  useMarkInvoiceAsPaidMutation
 } from "../../utils/queries.js";
 import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import AddInvoice from "../feature/invoice/AddInvoice.jsx";
@@ -10,6 +11,7 @@ import DeleteInvoice from "../feature/invoice/DeleteInvoice.jsx";
 import ViewInvoice from "../feature/invoice/ViewInvoice.jsx";
 import DashboardNotFound from "../feature/DashboardNotFound.jsx";
 import InvoiceCard from "../feature/invoice/InvoiceCard.jsx";
+import Toast from "../../lib/toast.js";
 
 export default function InvoicesTab() {
   return (
@@ -27,6 +29,7 @@ function InvoicesListView() {
   const { userId: adminId } = useParams();
   // React Query to get invoices
   const { data, isLoading, isError } = useInvoicesQuery(adminId);
+  const markInvoiceAsPaidMutation = useMarkInvoiceAsPaidMutation();
   // Normalize the data shape so `invoices` is always an array
   const invoices = Array.isArray(data) ? data : data?.invoices ?? [];
   const navigate = useNavigate();
@@ -38,6 +41,16 @@ function InvoicesListView() {
         break;
       case "View":
         navigate(`view/${invoice.invoiceId}`);
+        break;
+      case "Pay":
+        Toast.promise(
+          markInvoiceAsPaidMutation.mutateAsync(invoice.invoiceId),
+          {
+            pending: "Marking invoice as paid...",
+            success: `Invoice ${invoice.invoiceId} marked as paid!`,
+            error: "Failed to mark invoice as paid"
+          }
+        );
         break;
       default:
         break;

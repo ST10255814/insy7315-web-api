@@ -45,3 +45,12 @@ export async function getInvoiceByIdForPreview(invoiceId) {
         throw error;
     }
 };
+
+export async function markInvoiceAsPaid(invoiceId) {
+    try {
+        const response = await api.patch(`/api/invoices/${invoiceId}/pay`, {}, { withCredentials: true });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};

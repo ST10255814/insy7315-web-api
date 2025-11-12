@@ -121,12 +121,14 @@ export default function InvoiceCard({ invoice, onAction }) {
           className="text-red-600 hover:bg-red-50"
         />
 
-        <HoverActionButton
-          icon={<FaHandHoldingUsd size={17} />}
-          label="Mark as Paid"
-          onClick={() => onAction("Paid", invoice)}
-          className="text-green-600 hover:bg-green-50"
-        />
+        {(invoice.status === "Pending" || invoice.status === "Overdue") && (
+          <HoverActionButton
+            icon={<FaHandHoldingUsd size={17} />}
+            label="Pay"
+            onClick={() => onAction("Pay", invoice)}
+            className="text-green-600 hover:bg-green-50"
+          />
+        )}
       </motion.div>
     </motion.div>
   );
