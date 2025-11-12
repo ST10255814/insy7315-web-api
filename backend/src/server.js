@@ -57,6 +57,7 @@ app.use(cors({
       'https://localhost:3000',
       'http://127.0.0.1:3000',
       'https://rentwiseproperties.onrender.com',
+      'https://insy7315-web-api.onrender.com',
       process.env.CLIENT_URL
     ].filter(Boolean);
     
