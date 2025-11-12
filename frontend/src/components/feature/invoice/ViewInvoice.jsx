@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { DataStateHandler, DataLoading } from "../../common/index.js";
 import {
-  useInvoiceByIdQuery,
+  useInvoiceDataByIdQuery,
 } from "../../../utils/queries.js";
 import { TabWrapper } from "../../common";
 import InvoicePreview from "./InvoicePreview.jsx";
@@ -15,7 +15,7 @@ export default function ViewInvoice() {
     data: invoice,
     isLoading: invoiceLoading,
     isError: invoiceError,
-  } = useInvoiceByIdQuery(adminId, invoiceId);
+  } = useInvoiceDataByIdQuery(adminId, invoiceId);
 
   const handleBack = () => {
     navigate(-1);
@@ -47,8 +47,7 @@ export default function ViewInvoice() {
         >
           {invoice && (
             <InvoicePreview
-              selectedLease={invoice.invoice}
-              formData={invoice.invoice}
+              formData={invoice.invoiceData}
             />
           )}
         </DataStateHandler>

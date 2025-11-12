@@ -9,7 +9,6 @@ import {
   FormValidationPreview,
   FormButtonGroup
 } from "../../common/index.js";
-import InvoicePreview from "./InvoicePreview.jsx";
 import {
   useCreateInvoiceMutation,
   useLeasesQuery,
@@ -243,17 +242,6 @@ export default function AddInvoice() {
                   </div>
                 </div>
             </FormSection>
-
-            {/* Invoice Preview */}
-            <FormSection
-              title="Invoice Preview"
-              stepNumber={2}
-            >
-              <InvoicePreview
-                selectedLease={selectedLease}
-                formData={formData}
-              />
-            </FormSection>
           </div>
           
           {/* Sidebar - Right Side */}
@@ -261,7 +249,7 @@ export default function AddInvoice() {
             {/* Action Buttons */}
             <FormSection
               title="Actions"
-              stepNumber={3}
+              stepNumber={2}
             >
               <FormButtonGroup
                 submitText="Create Invoice"
@@ -280,7 +268,7 @@ export default function AddInvoice() {
             {/* Form Preview */}
             <FormValidationPreview
               title="Form Validation"
-              stepNumber={4}
+              stepNumber={3}
               validationItems={validationItems}
               overallStatus={overallStatus}
             />

@@ -365,7 +365,7 @@ async function returnInvoiceData(invoiceId, adminId){
       tenantName: invoice.lease.tenant,
       tenantEmail: invoice.lease.email,
       leaseId: invoice.lease.leaseId,
-      leaseStatus: invoice.lease.status,
+      leaseStatus: invoice.lease.leaseStatus,
       status: invoice.status,
       propertyAddress: invoice.lease.propertyAddress,
       amount: invoice.amount

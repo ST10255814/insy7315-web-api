@@ -11,7 +11,7 @@ import { formatDateUS } from "../../../utils/formatters.js";
  * @param {string} props.formData.amount - Invoice amount
  * @param {string} props.formData.date - Due date
  */
-export default function InvoicePreview({ selectedLease, formData }) {
+export default function InvoicePreview({ formData }) {
   return (
       <div className="border-2 border-blue-200 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50/30 to-white">
         {/* Invoice Header */}
@@ -24,7 +24,7 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div className="text-right">
               <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <p className="text-xs text-blue-100 mb-1">Invoice #</p>
-                <p className="text-lg font-bold">{formData.invoiceId}</p>
+                <p className="text-lg font-bold">{formData.invoiceId || `INV-${new Date().getFullYear()}-XXXX`}</p>
               </div>
             </div>
           </div>
@@ -37,13 +37,19 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Issue Date</p>
               <p className="text-sm font-medium text-gray-900">
-                {formatDateUS(formData.createdAt) || new Date().toLocaleDateString('en-US')}
+                {new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Due Date</p>
-              <p className={`text-sm font-medium ${formData.date ? 'text-blue-700' : 'text-gray-400'}`}>
-                {formatDateUS(formData.dueDate) || new Date().toLocaleDateString('en-US') || 'Select a due date'}
+              <p className={`text-sm font-medium ${formData.dueDate ? 'text-blue-700' : 'text-gray-400'}`}>
+                {formData.dueDate
+                  ? formatDateUS(formData.dueDate)
+                  : 'Not specified'}
               </p>
             </div>
           </div>
@@ -53,13 +59,13 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
               <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Bill To</p>
               <div className="space-y-1">
-                <p className={`font-semibold ${selectedLease ? 'text-gray-900' : 'text-gray-400'}`}>
-                  {selectedLease
-                    ? `${selectedLease.tenant?.firstName || ''} ${selectedLease.tenant?.surname || ''}`.trim() || formData.tenantName || 'Tenant Name'
+                <p className={`font-semibold ${formData ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {formData
+                    ? `${formData.tenantName || ''}`.trim() || 'Tenant Name'
                     : 'Select a lease to view tenant'}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {selectedLease?.tenant?.email || formData.tenantEmail || 'tenant@email.com'}
+                  {formData?.tenantEmail || 'tenant@email.com'}
                 </p>
               </div>
             </div>
@@ -67,14 +73,14 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
               <p className="text-xs text-blue-700 uppercase font-semibold mb-2">Property Details</p>
               <div className="space-y-1">
-                <p className={`font-semibold ${selectedLease ? 'text-gray-900' : 'text-gray-400'}`}>
-                  {selectedLease?.listing?.address || 'Property Address'}
+                <p className={`font-semibold ${formData ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {formData?.propertyAddress || 'Property Address'}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Lease ID: {selectedLease?.leaseId || 'N/A'}
+                  Lease ID: {formData?.leaseId || 'N/A'}
                 </p>
-                <p className={`text-xs font-medium inline-block px-2 py-1 rounded ${statusClasses[selectedLease?.status] || 'bg-gray-100 text-gray-500'}`}>
-                  {selectedLease?.status?.toUpperCase() || 'STATUS'}
+                <p className={`text-xs font-medium inline-block px-2 py-1 rounded ${statusClasses[formData?.leaseStatus] || 'bg-gray-100 text-gray-500'}`}>
+                  {formData?.leaseStatus?.toUpperCase() || 'STATUS'}
                 </p>
               </div>
             </div>
@@ -95,7 +101,7 @@ export default function InvoicePreview({ selectedLease, formData }) {
                   <td className="px-4 py-4">
                     <p className="font-medium text-gray-900">Monthly Rent</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {selectedLease?.listing?.address || 'Property rental fee'}
+                      {formData?.listing?.address || 'Property rental fee'}
                     </p>
                   </td>
                   <td className="px-4 py-4 text-right text-sm text-gray-600">
@@ -141,7 +147,7 @@ export default function InvoicePreview({ selectedLease, formData }) {
             <p className="text-xs font-semibold text-gray-700 uppercase mb-2">Payment Instructions</p>
             <p className="text-sm text-gray-600 leading-relaxed">
               Please make payment to the account details provided in your lease agreement. 
-              Include your lease ID ({selectedLease?.leaseId || 'XXXXX'}) as payment reference.
+              Include your lease ID ({formData?.leaseId || 'XXXXX'}) as payment reference.
             </p>
           </div>
 

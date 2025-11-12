@@ -14,6 +14,7 @@ import {
   createInvoice,
   getInvoiceById,
   deleteInvoice,
+  getInvoiceByIdForPreview,
 } from "../services/invoice.api.js";
 import {
   getListingsByAdminId,
@@ -183,6 +184,19 @@ export const useInvoiceByIdQuery = (adminId, invoiceId) => {
     queryFn: async () => {
       await new Promise((r) => setTimeout(r, 2000));
       return getInvoiceById(invoiceId);
+    },
+    enabled: !!invoiceId,
+    ...CACHE_CONFIGS.MEDIUM,
+  });
+};
+
+// Get Invoice Data by ID Query
+export const useInvoiceDataByIdQuery = (adminId, invoiceId) => {
+  return useQuery({
+    queryKey: createQueryKey("invoiceData", { adminId, invoiceId }),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+      return getInvoiceByIdForPreview(invoiceId);
     },
     enabled: !!invoiceId,
     ...CACHE_CONFIGS.MEDIUM,
