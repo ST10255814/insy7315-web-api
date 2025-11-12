@@ -533,7 +533,8 @@ npm run test:coverage      # Run with coverage report
 
 ### 🔗 SonarCloud Dashboard
 
-**Project URL**: [https://sonarcloud.io/dashboard?id=insy7315-web-api](https://sonarcloud.io/dashboard?id=insy7315-web-api)
+**Project URL**: [https://sonarcloud.io/dashboard?id=insy7315-web-api](https://sonarcloud.io/dashboard?id=insy7315-web-api)  
+   
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ST10255814_insy7315-web-api)](https://sonarcloud.io/summary/new_code?id=ST10255814_insy7315-web-api)
 
 ### 🛠️ Code Quality Tools
