@@ -19,7 +19,6 @@ router.get('/', invoiceController.getInvoicesByAdminId);
 router.get('/:invoiceId', invoiceController.getInvoiceById);
 router.delete('/:invoiceId', csrfProtection, invoiceController.deleteInvoice);
 router.patch('/:invoiceId/pay', csrfProtection, invoiceController.markInvoiceAsPaid);
-router.get('/data/:id', invoiceController.returnInvoiceData);
 
 // Invoice statistics and utilities
 router.get('/stats', invoiceController.getInvoiceStats);

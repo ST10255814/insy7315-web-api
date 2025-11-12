@@ -3,6 +3,7 @@ import { client } from '../utils/db.js';
 import invoiceService from '../Services/invoiceService.js';
 import revenueService from '../Services/revenueService.js';
 import { determineLeaseStatus, determineBookingStatus } from '../utils/statusManager.js';
+import ObjectIDConverter from '../utils/ObjectIDConvert.js';
 
 // Function to update all lease statuses
 async function updateAllLeaseStatuses() {
@@ -11,6 +12,7 @@ async function updateAllLeaseStatuses() {
     
     const db = client.db("RentWise");
     const leasesCollection = db.collection("Leases");
+    const listingsCollection = db.collection("Listings");
 
     // Get all leases that are not already expired
     const leases = await leasesCollection
@@ -28,6 +30,8 @@ async function updateAllLeaseStatuses() {
         lease.bookingDetails.endDate
       );
 
+      const listing = await listingsCollection.findOne({ _id: ObjectIDConverter.toObjectId(lease.listing.listingId) });
+
       // Only update if status has changed
       if (currentStatus !== newStatus) {
         await leasesCollection.updateOne(
@@ -41,6 +45,22 @@ async function updateAllLeaseStatuses() {
         );
         updatedCount++;
         console.log(`Updated lease ${lease.leaseId} from ${currentStatus} to ${newStatus}`);
+      }
+
+      //if lease status is expired, update listing to vacant
+      if (newStatus === "Expired" && listing) {
+        await listingsCollection.updateOne(
+          { _id: listing._id },
+          {
+            $set: {
+              status: "Vacant",
+              lastStatusUpdate: new Date()
+            }
+          }
+        );
+        console.log(`Updated listing ${listing.listingId} to Vacant due to expired lease ${lease.leaseId}`);
+      } else if (newStatus === "Expired" && !listing) {
+        console.warn(`Could not find listing with ID ${lease.listing.listingId} for expired lease ${lease.leaseId}`);
       }
     }
 

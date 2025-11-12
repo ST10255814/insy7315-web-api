@@ -62,7 +62,7 @@ const getCurrentMonthRevenue = asyncHandler(async (req, res) => {
 });
 
 // Export individual functions for named imports
-export { getBookings, getCurrentMonthRevenue };
+export { getBookings, getBookingById, getCurrentMonthRevenue };
 
 // Export default object for backward compatibility
 export default {
