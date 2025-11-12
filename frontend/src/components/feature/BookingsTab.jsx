@@ -29,24 +29,8 @@ function BookingsListView() {
 
   const handleBookingAction = (action, booking) => {
     switch (action) {
-      case "Edit":
-        //TODO: Implement edit functionality
-        Toast.info(`Editing booking ${booking.bookingID}`);
-        break;
       case "Delete":
         navigate(`delete/${booking.bookingID}`);
-        break;
-      case "Confirm":
-        //TODO: Implement confirm functionality
-        Toast.success(`Confirmed booking ${booking.bookingID}`);
-        break;
-      case "Cancel":
-        // TODO: Implement cancel functionality
-        Toast.promise(new Promise((resolve) => setTimeout(resolve, 1500)), {
-          pending: `Cancelling booking ${booking.bookingID}...`,
-          success: `Cancelled booking ${booking.bookingID}`,
-          error: `Failed to cancel booking ${booking.bookingID}`,
-        });
         break;
       default:
         break;
