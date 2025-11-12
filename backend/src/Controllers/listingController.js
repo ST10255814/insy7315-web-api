@@ -154,6 +154,25 @@ const returnPropertiesByStatus = asyncHandler(async (req, res) => {
     sendBadRequest(res, error.message, error.details);
   }
 });
+
+const updateListingInfo = asyncHandler(async (req, res) => {
+  try {
+    const adminId = getAdminId(req);
+    const listingId = req.params.id;
+    const updateData = req.body;
+    logControllerAction('Update Listing Info', adminId);
+    const updatedListing = await listingService.updateListingInfo(listingId, adminId, updateData);
+
+    if (!updatedListing) {
+      return sendError(res, 'Listing not found or no changes made', 404);
+    }
+    sendSuccess(res, updatedListing, 'Listing updated successfully');
+  } catch (error) {
+    sendBadRequest(res, error.message, error.details);
+  }
+});
+
+
 // Export individual functions for named imports
 export {
     createListing,
@@ -162,7 +181,8 @@ export {
     deleteListingById,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth,
-    returnPropertiesByStatus
+    returnPropertiesByStatus,
+    updateListingInfo
 };
 
 // Export default object for backward compatibility
@@ -173,5 +193,6 @@ export default {
     deleteListingById,
     countNumberOfListingsByAdminId,
     countListingsAddedThisMonth,
-    returnPropertiesByStatus
+    returnPropertiesByStatus,
+    updateListingInfo
 };

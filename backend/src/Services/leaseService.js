@@ -146,7 +146,13 @@ async function createLease(bookingID, adminId) {
     };
     await activityCollection.insertOne(activityLog);
 
-    const _result = await leasesCollection.insertOne(lease);
+    //update listing status to 'occupied' in listingCollection
+    await listingCollection.updateOne(
+      { _id: toObjectId(booking.listingDetail.listingID) },
+      { $set: { status: 'Occupied' } }
+    );
+
+    await leasesCollection.insertOne(lease);
     return leaseId;
   } catch (err) {
     throw new Error("Error creating lease: " + err.message);

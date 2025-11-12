@@ -29,6 +29,9 @@ router.get('/count-this-month', (req, res, next) => {
 router.post('/create', csrfProtection, upload.array('imageURL', 10), listingController.createListing);
 router.get('/', listingController.getListingsByAdminId);
 
+//update listing info
+router.put('/update/:id', csrfProtection, upload.array('imageURL', 10), listingController.updateListingInfo);
+
 // Status route must come before /:id route to avoid parameter conflicts
 router.get('/status', (req, res, next) => {
   console.log('[ROUTE] Hit /status route');
