@@ -120,6 +120,9 @@ export function useAuth() {
    * @param {Object} params - { email: string }
    */
   const forgotPassword = useCallback(async (params) => {
+    setIsLoading(true);
+    // Add a slight delay for better UX
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     try {
       await api.post("/api/user/forgot-password", {
         email: params.email,
@@ -136,6 +139,9 @@ export function useAuth() {
       Toast.error(errorMsg);
       
       return { success: false, error: errorMsg };
+    }
+    finally {
+      setIsLoading(false);
     }
   }, []);
 
