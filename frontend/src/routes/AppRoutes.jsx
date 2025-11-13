@@ -32,11 +32,11 @@ export default function AppRoutes() {
     "/login",
     "/register",
     "/forgot-password",
-    "/reset-password",
   ];
   const isDashboardRoute = location.pathname.startsWith("/dashboard/");
+  const isResetPasswordRoute = location.pathname.startsWith("/reset-password");
   const isDefinedRoute =
-    definedRoutes.includes(location.pathname) || isDashboardRoute;
+    definedRoutes.includes(location.pathname) || isDashboardRoute || isResetPasswordRoute;
   const showNavbar = isDefinedRoute;
 
   return (
