@@ -93,25 +93,6 @@
 ![Nodemon](https://img.shields.io/badge/Nodemon-3.1.10-76D04B?style=flat-square&logo=nodemon) ![SonarQube](https://img.shields.io/badge/SonarQube-Scanner-4E9F3D?style=flat-square&logo=sonarqube) ![Babel](https://img.shields.io/badge/Babel-7.22.15-F9DC3E?style=flat-square&logo=babel) ![Multer](https://img.shields.io/badge/Multer-2.0.2-FF6B35?style=flat-square)
 
 </div>
-
----
-
-## 📱 Screenshots
-
-<div align="center">
-
-### 🏠 Landing Page  
-![Landing Page Animation](https://via.placeholder.com/800x400?text=Landing+Page+GIF)
-
-### 📊 Dashboard Overview  
-![Dashboard Animation](https://via.placeholder.com/800x400?text=Dashboard+GIF)
-
-### 🏘️ Property Management  
-![Property Management Animation](https://via.placeholder.com/800x400?text=Property+GIF)
-
-### 🔧 Maintenance Tracking  
-![Maintenance Tracking Animation](https://via.placeholder.com/800x400?text=Maintenance+GIF)
-
 ---
 
 </div>
