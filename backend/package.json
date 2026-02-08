@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@arcjet/inspect": "^1.0.0-beta.13",
-    "@arcjet/node": "^1.0.0-beta.13",
+    "@arcjet/node": "^1.1.0",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
